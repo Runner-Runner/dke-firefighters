@@ -58,7 +58,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		//add forrest
 		for(int i = MAX_CLOUD_DIM;i<MAX_CLOUD_DIM+FOREST_DIM;i++){
 			for(int j = MAX_CLOUD_DIM;j<MAX_CLOUD_DIM+FOREST_DIM;j++){
-				Wood w = new Wood();
+				Wood w = new Wood(1000,50,100,1);
 				context.add(w);
 				space.moveTo(w, i, j);
 			}
@@ -69,6 +69,11 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 			context.add(new StupidAgent(space, grid));
 		}
 		
+		Fire fire = new Fire(3,20,wind,grid,context,space);
+		context.add(fire);
+		space.moveTo(fire, 20,20);
+		grid.moveTo(fire, 20,20);
+		
 		//-------------------------------------
 		
 		//place the objects in the grid corresponding their continuous position
@@ -76,6 +81,8 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 			NdPoint pt = space.getLocation(o);
 			grid.moveTo(o, (int)pt.getX(), (int)pt.getY());
 		}
+		
+		
 		
 		return context;
 	}

@@ -61,7 +61,6 @@ public class CloudFactory {
 			context.add(newCloud);
 			space.moveTo(newCloud, x,y);
 			grid.moveTo(newCloud, x,y);
-			System.out.println(space.getLocation(newCloud));
 			newCloud.init(minCloudDim,maxCloudDim);
 		}	
 	}

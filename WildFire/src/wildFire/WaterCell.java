@@ -5,6 +5,7 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
+import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.ContextUtils;
 
 public class WaterCell {
@@ -37,7 +38,24 @@ public class WaterCell {
 			context.remove(this);
 		}
 		else{
-			//TODO wet the wood in current cell	or extinguish the fire 
+			Fire fire = null;
+			Wood wood = null;
+			GridPoint current = grid.getLocation(this);
+			for(Object o : grid.getObjectsAt(current.getX(), current.getY())){
+				if(o instanceof Fire){
+					fire = (Fire)o;
+					break;
+				}
+				else if(o instanceof Wood){
+					wood = (Wood)o;
+				}
+			}
+			if(fire!=null){				
+				fire.decreaseHeat(rain);
+			}
+			else if(wood!=null){
+				wood.shower(rain);
+			}
 		}
 	}
 	// move according wind direction/speed

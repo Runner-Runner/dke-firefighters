@@ -12,8 +12,8 @@ import repast.simphony.space.grid.Grid;
 import repast.simphony.util.ContextUtils;
 
 public class Cloud {
-	private ContinuousSpace<Object> space;	//actual exact position in terrain
-	private Grid<Object> grid;	//actual cell in grid
+	private ContinuousSpace<Object> space;	//actual terrain
+	private Grid<Object> grid;	//actual grid
 	private Wind wind;	//reference to global wind
 	private double tank;	//water for each cell this cloud carries
 	private double rain;	//number of water which rains in each iteration
