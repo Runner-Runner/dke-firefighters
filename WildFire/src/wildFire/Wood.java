@@ -5,22 +5,19 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.ContextUtils;
 
 public class Wood {
-	private double wetness;	//increases by rain decreases by time and fire in neighbourhood fire cannot enter if > 0 (threshold)
-	private double defaultWetness; //there is a default wetness - cannot decrease by time lower than this value
+	private double wetness;	//increases by rain decreases by time and fire in neighborhood fire cannot enter if > 0 (threshold)
 	private double power;	//life points - depends on material 
-	private double maxWetness; //maximum wetness
-	private double transpire; //wetness decreases over time
+	private double material; //defines material factor, how much water can be stored, how fast it transpires and how hot this material can burn
 	
 	
-	public Wood(double power, double defaultWetness, double maxWetness, double transpire) {
+	public Wood(double power, double material) {
 		super();
-		this.wetness = defaultWetness;
-		this.defaultWetness = defaultWetness;
+		this.wetness = power*material;
 		this.power = power;
-		this.transpire = transpire;
+		this.material = material;
 	}
 	
-	public boolean burn(double decrease){
+	public double burn(double decrease){
 		if(this.wetness>0){
 			this.wetness-=decrease;
 			if(this.wetness<0){
@@ -34,9 +31,9 @@ public class Wood {
 		if(this.power <= 0){
 			Context<Object> context = ContextUtils.getContext(this);
 			context.remove(this);
-			return false;
+			return 0;
 		}
-		return true;
+		return this.material*this.power*0.1+this.material;
 	}
 	
 	public double getWetness() {
@@ -45,15 +42,13 @@ public class Wood {
 
 	public void shower(double increase){
 		this.wetness+=increase;
-		if(this.wetness>this.maxWetness)
-			this.wetness = this.maxWetness;
+		if(this.wetness>this.power*material)
+			this.wetness = this.power*material;
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
 	public void transpire() {
-		if(this.wetness>this.defaultWetness){
-			this.wetness-=transpire;
-		}
+		this.wetness-=this.wetness*material*0.1;
 	}
 	
 }

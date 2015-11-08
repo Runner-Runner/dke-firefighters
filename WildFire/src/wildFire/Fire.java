@@ -15,13 +15,12 @@ import repast.simphony.util.ContextUtils;
 public class Fire {
 	private double heat; //number of points to decrease woods lifepoints each iteration
 	private Wind wind; //fire spreads in winds direction
-	private double maxHeat = 10;
 	private Grid<Object> grid;	//actual cell in grid
 	private Random random;
 	private Context<Object> context;
 	private ContinuousSpace<Object> space;
 	
-	public Fire(double heat, double maxHeat, Wind wind, Grid<Object> grid, Context<Object> context, ContinuousSpace<Object> space) {
+	public Fire(double heat, Wind wind, Grid<Object> grid, Context<Object> context, ContinuousSpace<Object> space) {
 		super();
 		this.heat = heat;
 		this.wind = wind;
@@ -29,7 +28,6 @@ public class Fire {
 		this.space = space;
 		this.context = context;
 		this.random = new Random();
-		this.maxHeat = maxHeat;
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -60,15 +58,15 @@ public class Fire {
 						}
 					}
 					if(fire == null){
-						if(random.nextDouble()<wind.getSpeed()){//TODO take length of windvector into consideration
-							Fire f = new Fire(wind.getSpeed()*this.heat, this.maxHeat, this.wind, this.grid,this.context, this.space);
+						if(random.nextDouble()<wind.getSpeed()*0.1){//TODO take length of windvector into consideration
+							Fire f = new Fire(wind.getSpeed()*0.05*this.heat, this.wind, this.grid,this.context, this.space);
 							context.add(f);
 							grid.moveTo(f, cell.getPoint().getX(), cell.getPoint().getY());
 							space.moveTo(f, cell.getPoint().getX(), cell.getPoint().getY());
 						}
 					}
 					else{
-						fire.increaseHeat(wind.getSpeed()*this.heat);//TODO take length of windvector into consideration
+						fire.increaseHeat(wind.getSpeed()*0.01*this.heat);//TODO take length of windvector into consideration
 					}
 				}
 			}
@@ -87,15 +85,15 @@ public class Fire {
 			context.remove(this);
 		}
 		else{
-			material.burn(heat);
+			double maxHeat =  material.burn(heat);
+			this.heat+=(maxHeat-this.heat)*0.05*wind.getSpeed();
 		}
 		
 	}
 	public void increaseHeat(double add){
 		this.heat+=add;
-		if(this.heat>maxHeat)
-			this.heat = maxHeat;
 	}
+	
 	public void decreaseHeat(double sub){
 		this.heat-=sub;
 		if(this.heat<=0){

@@ -15,9 +15,9 @@ import repast.simphony.space.grid.SimpleGridAdder;
 import repast.simphony.space.grid.StrictBorders;
 
 public class SimulationBuilder implements ContextBuilder<Object>{
-	public static final int FOREST_DIM = 20;
+	public static final int FOREST_DIM = 40;
 	
-	public static final int MAX_CLOUD_DIM = 6;
+	public static final int MAX_CLOUD_DIM = 8;
 	public static final int MIN_CLOUD_DIM = 3;
 	public static final double CLOUD_FREQUENCY = 2;
 	
@@ -56,23 +56,22 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		context.add(cf);
 		
 		//add forrest
+		ForrestFactory forrest = new ForrestFactory(1500, 800, 0.2, 0.05);
 		for(int i = MAX_CLOUD_DIM;i<MAX_CLOUD_DIM+FOREST_DIM;i++){
 			for(int j = MAX_CLOUD_DIM;j<MAX_CLOUD_DIM+FOREST_DIM;j++){
-				Wood w = new Wood(1000,50,100,1);
+				Wood w = forrest.getWood();
 				context.add(w);
 				space.moveTo(w, i, j);
 			}
 		}
 		
 		//create agents
-		for(int i = 0;i<1;i++){
+		for(int i = 0;i<0;i++){
 			context.add(new StupidAgent(space, grid));
 		}
 		
-		Fire fire = new Fire(3,20,wind,grid,context,space);
+		FireFactory fire = new FireFactory(context, grid, space, wind, 0.05);
 		context.add(fire);
-		space.moveTo(fire, 20,20);
-		grid.moveTo(fire, 20,20);
 		
 		//-------------------------------------
 		
