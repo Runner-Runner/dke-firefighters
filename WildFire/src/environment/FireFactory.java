@@ -1,8 +1,9 @@
-package wildFire;
+package environment;
 
 import java.util.Iterator;
 import java.util.Random;
 
+import main.SimulationBuilder;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.continuous.ContinuousSpace;

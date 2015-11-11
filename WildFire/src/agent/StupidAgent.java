@@ -1,4 +1,4 @@
-package wildFire;
+package agent;
 
 import java.util.Random;
 

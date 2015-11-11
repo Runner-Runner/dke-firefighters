@@ -1,7 +1,8 @@
-package wildFire;
+package environment;
 
 import java.util.Random;
 
+import main.SimulationBuilder;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.continuous.ContinuousSpace;
@@ -36,7 +37,7 @@ public class CloudFactory {
 			int x;
 			int y;
 			int dim = SimulationBuilder.FOREST_DIM+2*maxCloudDim;
-			double wD = this.wind.getWindDirectionRadians();
+			double wD = this.wind.getWindDirection();
 			if(wD>Math.PI/4 && wD<=0.75*Math.PI){
 				x = random.nextInt(dim);
 				y = 0;

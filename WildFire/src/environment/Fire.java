@@ -1,4 +1,4 @@
-package wildFire;
+package environment;
 
 import java.util.List;
 import java.util.Random;
@@ -37,8 +37,8 @@ public class Fire {
 		GridCellNgh<Wood> nghCreator = new GridCellNgh<Wood>(grid, pt,
 				Wood.class, 1, 1);
 		List<GridCell<Wood>> gridCells = nghCreator.getNeighborhood(true);
-		double windX = Math.cos(this.wind.getWindDirectionRadians())*wind.getSpeed();
-		double windY = Math.sin(this.wind.getWindDirectionRadians())*wind.getSpeed();
+		double windX = Math.cos(this.wind.getWindDirection())*wind.getSpeed();
+		double windY = Math.sin(this.wind.getWindDirection())*wind.getSpeed();
 		for (GridCell<Wood> cell : gridCells) {
 			double xDiff = cell.getPoint().getX() - pt.getX();
 			double yDiff = cell.getPoint().getY() - pt.getY();

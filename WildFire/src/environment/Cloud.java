@@ -1,17 +1,20 @@
-package wildFire;
+package environment;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
+import agent.Information;
+import agent.InformationProvider;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
+import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.ContextUtils;
 
-public class Cloud {
+public class Cloud implements InformationProvider {
 	private ContinuousSpace<Object> space;	//actual terrain
 	private Grid<Object> grid;	//actual grid
 	private Wind wind;	//reference to global wind
@@ -106,7 +109,7 @@ public class Cloud {
 		// get actual point
 		NdPoint myPoint = space.getLocation(this);
 		// get angle from wind
-		double angle = this.wind.getWindDirectionRadians();
+		double angle = this.wind.getWindDirection();
 		// cloud is a little bit slower than wind
 		double distance = this.inertia * this.wind.getSpeed();
 		// look if new position is on map
@@ -130,6 +133,24 @@ public class Cloud {
 		return x >= 0 && y >= 0 && x < grid.getDimensions().getWidth()
 				&& y < grid.getDimensions().getHeight();
 	}
+
+	@Override
+	public Information getInformation() {
+		GridPoint location = grid.getLocation(this);
+		return new CloudInformation(location.getX(), location.getY(), rain);
+	}
 	
-	
+	public class CloudInformation extends Information {
+
+		private double rain;
+		
+		private CloudInformation(Integer positionX, Integer positionY, double rain) {
+			super(positionX, positionY);
+			this.rain = rain;
+		}
+
+		public double getRain() {
+			return rain;
+		}
+	}
 }

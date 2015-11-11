@@ -1,4 +1,4 @@
-package wildFire;
+package environment;
 
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;

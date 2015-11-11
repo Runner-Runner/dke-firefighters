@@ -1,4 +1,4 @@
-package wildFire;
+package environment;
 
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
@@ -63,7 +63,7 @@ public class WaterCell {
 		// get actual point
 		NdPoint myPoint = space.getLocation(this);
 		// get angle from wind
-		double angle = this.wind.getWindDirectionRadians();
+		double angle = this.wind.getWindDirection();
 		// cloud is a little bit slower than wind
 		double distance = this.cloud.getInertia() * this.wind.getSpeed();
 		// look if new position is on map

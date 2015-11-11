@@ -1,8 +1,9 @@
-package wildFire;
+package agent;
 
 import java.util.List;
 import java.util.Random;
 
+import environment.Fire;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.space.continuous.ContinuousSpace;

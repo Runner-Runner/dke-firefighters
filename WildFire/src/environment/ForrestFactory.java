@@ -1,4 +1,4 @@
-package wildFire;
+package environment;
 
 import java.util.Random;
 

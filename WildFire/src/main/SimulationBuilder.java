@@ -1,5 +1,11 @@
-package wildFire;
+package main;
 
+import environment.CloudFactory;
+import environment.FireFactory;
+import environment.ForrestFactory;
+import environment.Wind;
+import environment.Wood;
+import agent.SimpleAgent;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactory;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactoryFinder;
@@ -66,8 +72,8 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		}
 		
 		//create agents
-		for(int i = 0;i<0;i++){
-			context.add(new StupidAgent(space, grid));
+		for(int i = 0;i<10;i++){
+			context.add(new SimpleAgent(space, grid, 1));
 		}
 		
 		FireFactory fire = new FireFactory(context, grid, space, wind, 0.05);

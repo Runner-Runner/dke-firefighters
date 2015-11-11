@@ -1,6 +1,4 @@
-package wildFire;
-
-import java.util.Random;
+package agent;
 
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
@@ -10,6 +8,7 @@ import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.ContextUtils;
+import environment.Fire;
 
 public abstract class ForesterAgent {
 	protected ContinuousSpace<Object> space;
@@ -20,8 +19,7 @@ public abstract class ForesterAgent {
 	//defines the number of time steps this forester experienced burning injuries
 	protected int burningTime = 0;
 	
-	//TODO how to best and easiest model the weather knowledge of a part of the map at a given time step?
-	protected Grid<Object> weatherKnowledgeGrid;
+	protected Knowledge knowledge;
 	
 	//number of time steps it takes until burning injuries of a forester become lethal and he dies
 	protected final static int LETHAL_BURNING_TIME = 3;
@@ -30,6 +28,7 @@ public abstract class ForesterAgent {
 		this.space = space;
 		this.grid = grid;
 		this.speed = speed;
+		knowledge = new Knowledge();
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -79,6 +78,7 @@ public abstract class ForesterAgent {
 		}
 		
 		//TODO include extinguishing duration?
+		@SuppressWarnings("unchecked")
 		Context<Object> context = ContextUtils.getContext(fire);
 		context.remove(fire);
 	}
