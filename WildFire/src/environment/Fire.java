@@ -33,7 +33,7 @@ public class Fire implements InformationProvider {
 		this.random = new Random();
 	}
 	
-	@ScheduledMethod(start = 1, interval = 1)
+	@ScheduledMethod(start = 1, interval = 1, priority = 3)
 	public void step() {
 		GridPoint pt = grid.getLocation(this);
 		//propagation

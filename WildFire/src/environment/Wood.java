@@ -46,7 +46,7 @@ public class Wood {
 			this.wetness = this.power*material;
 	}
 	
-	@ScheduledMethod(start = 1, interval = 1)
+	@ScheduledMethod(start = 1, interval = 1, priority = 4)
 	public void transpire() {
 		this.wetness-=this.wetness*material*0.1;
 	}

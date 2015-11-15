@@ -29,7 +29,7 @@ public class FireFactory {
 	}
 	
 	
-	@ScheduledMethod(start = 1, interval = 5)
+	@ScheduledMethod(start = 1, interval = 5, priority = 2)
 	public void step() {
 		int x = SimulationBuilder.MAX_CLOUD_DIM + random.nextInt(SimulationBuilder.FOREST_DIM);
 		int y = SimulationBuilder.MAX_CLOUD_DIM + random.nextInt(SimulationBuilder.FOREST_DIM);

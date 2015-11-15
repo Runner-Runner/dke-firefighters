@@ -22,7 +22,7 @@ public class Wind implements InformationProvider {
 		this.windDirection = random.nextDouble()*2*Math.PI;
 	}
 	
-	@ScheduledMethod(start = 1, interval = 3)
+	@ScheduledMethod(start = 1, interval = 3, priority = 1)
 	public void step() {
 		changeDirection();
 		changeSpeed();
