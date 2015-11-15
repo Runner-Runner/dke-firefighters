@@ -96,12 +96,19 @@ public class Fire implements InformationProvider {
 		this.heat+=add;
 	}
 	
-	public void decreaseHeat(double sub){
+	/**
+	 * @param sub
+	 * @return The amount of heat that was actually decreased.
+	 */
+	public double decreaseHeat(double sub){
 		this.heat-=sub;
 		if(this.heat<=0){
 			Context<Object> context = ContextUtils.getContext(this);
 			context.remove(this);
+			
+			return sub + this.heat; 
 		}
+		return sub;
 	}
 	
 	@Override

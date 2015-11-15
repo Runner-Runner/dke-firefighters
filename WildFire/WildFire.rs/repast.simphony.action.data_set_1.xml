@@ -16,12 +16,21 @@
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
+      <string>FireExtinguished</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>FireExtinguished</id>
+        <className>agent.ForesterAgent</className>
+        <methodName>getExtinguishedFireAmount</methodName>
+        <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
       <string>ForestHealth</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
         <id>ForestHealth</id>
         <className>environment.Wood</className>
         <methodName>getHealth</methodName>
-        <aggType>MEAN</aggType>
+        <aggType>SUM</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>

@@ -30,6 +30,8 @@ public abstract class ForesterAgent {
 	protected int health = STARTING_HEALTH;
 	//how many time steps until the last burning injury
 	private int regenerateTime = 0;
+	//how much fire this agent extinguished so far
+	private double extinguishedFireAmount = 0;
 	
 	protected Knowledge knowledge;
 	
@@ -96,7 +98,7 @@ public abstract class ForesterAgent {
 			return;
 		}
 		
-		fire.decreaseHeat(extinguishRate);
+		extinguishedFireAmount += fire.decreaseHeat(extinguishRate);
 	}
 	
 	/**
@@ -254,6 +256,11 @@ public abstract class ForesterAgent {
 	public CommunicationTool getCommunicationTool()
 	{
 		return communicationTool;
+	}
+	
+	public double getExtinguishedFireAmount()
+	{
+		return extinguishedFireAmount;
 	}
 	
 	public enum Behavior {
