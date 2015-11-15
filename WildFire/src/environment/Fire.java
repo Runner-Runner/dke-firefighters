@@ -3,7 +3,6 @@ package environment;
 import java.util.List;
 import java.util.Random;
 
-import environment.Cloud.CloudInformation;
 import agent.Information;
 import agent.InformationProvider;
 import repast.simphony.context.Context;

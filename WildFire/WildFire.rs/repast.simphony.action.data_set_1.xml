@@ -1,0 +1,53 @@
+<repast.simphony.data2.engine.DataSetDescriptor>
+  <name>Evaluation</name>
+  <type>AGGREGATE</type>
+  <inclTick>true</inclTick>
+  <inclBatchRun>false</inclBatchRun>
+  <inclRandomSeed>false</inclRandomSeed>
+  <scheduleParams>
+    <start>1.0</start>
+    <interval>1.0</interval>
+    <priority>-Infinity</priority>
+    <pType>LAST</pType>
+    <duration>-1.0</duration>
+    <frequency>REPEAT</frequency>
+    <hashCode>-229320189</hashCode>
+  </scheduleParams>
+  <atEnd>false</atEnd>
+  <methodDataSources class="linked-hash-map">
+    <entry>
+      <string>ForestHealth</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>ForestHealth</id>
+        <className>environment.Wood</className>
+        <methodName>getHealth</methodName>
+        <aggType>MEAN</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+  </methodDataSources>
+  <countSources class="linked-hash-map">
+    <entry>
+      <string>Agents</string>
+      <repast.simphony.data2.engine.CountSourceDefinition>
+        <typeName>agent.ForesterAgent</typeName>
+        <id>Agents</id>
+      </repast.simphony.data2.engine.CountSourceDefinition>
+    </entry>
+    <entry>
+      <string>Fire</string>
+      <repast.simphony.data2.engine.CountSourceDefinition>
+        <typeName>environment.Fire</typeName>
+        <id>Fire</id>
+      </repast.simphony.data2.engine.CountSourceDefinition>
+    </entry>
+    <entry>
+      <string>Forest</string>
+      <repast.simphony.data2.engine.CountSourceDefinition>
+        <typeName>environment.Wood</typeName>
+        <id>Forest</id>
+      </repast.simphony.data2.engine.CountSourceDefinition>
+    </entry>
+  </countSources>
+  <customNADataSources class="linked-hash-map"/>
+  <customAggDataSources class="linked-hash-map"/>
+</repast.simphony.data2.engine.DataSetDescriptor>

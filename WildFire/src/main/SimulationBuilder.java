@@ -34,18 +34,23 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		int forestDim = (Integer)params.getValue("forest_dim");
 		
 		double maxWindSpeed = (Double)params.getValue("max_wind_speed");
+		
 		int maxCloudDim = (Integer)params.getValue("max_cloud_dim");
 		int minCloudDim = (Integer)params.getValue("min_cloud_dim");
+		double maxRain = (Double)params.getValue("max_rain");
+		double minRain = (Double)params.getValue("min_rain");
+		double maxCloudTank = (Double)params.getValue("max_cloud_tank");
+		double minCloudTank = (Double)params.getValue("min_cloud_tank");
 		double cloudRate = (Double)params.getValue("cloud_rate");
+
 		double maxWoodHealth = (Double)params.getValue("max_wood_health");
 		double minWoodHealth = (Double)params.getValue("min_wood_health");
 		double maxMaterialFactor = (Double)params.getValue("max_material_factor");
 		double minMaterialFactor = (Double)params.getValue("min_material_factor");
+		
 		double sparkingFactor = (Double)params.getValue("sparking_factor");
-		double maxCloudTank = (Double)params.getValue("max_cloud_tank");
-		double minCloudTank = (Double)params.getValue("min_cloud_tank");
-		double maxRain = (Double)params.getValue("max_rain");
-		double minRain = (Double)params.getValue("min_rain");
+		
+		int numberAgents = (Integer)params.getValue("number_agents");
 		
 		//id of this context
 		context.setId("WildFire");
@@ -87,7 +92,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		}
 		
 		//create agents
-		for(int i = 0;i<10;i++){
+		for(int i = 0;i<numberAgents;i++){
 			context.add(new SimpleAgent(space, grid, 1, 2));
 		}
 		
