@@ -26,7 +26,6 @@ public class Wind implements InformationProvider {
 	public void step() {
 		changeDirection();
 		changeSpeed();
-		System.out.println("Wind: direction:"+getWindDirectionDegree()+" speed: "+speed);
 	}
 	
 	private double getWindDirectionDegree() {

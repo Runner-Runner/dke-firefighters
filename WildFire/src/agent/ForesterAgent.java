@@ -27,14 +27,18 @@ public abstract class ForesterAgent {
 	//rate at which the fire heat is lowered when extinguishing
 	protected double extinguishRate;
 	//defines the number of time steps this forester experienced burning injuries
-	protected int burningTime = 0;
+	protected int health = STARTING_HEALTH;
+	//how many time steps until the last burning injury
+	private int regenerateTime = 0;
 	
 	protected Knowledge knowledge;
 	
 	protected CommunicationTool communicationTool;
 	
-	//number of time steps it takes until burning injuries of a forester become lethal and he dies
-	protected final static int LETHAL_BURNING_TIME = 5;
+	//number of burning injuries it takes to kill a forester.
+	protected final static int STARTING_HEALTH = 5;
+	//defines the number of time steps it takes to regenerate 1 health point (if injured).
+	protected final static int REGENERATE_RATE = 7;
 	
 	public ForesterAgent(ContinuousSpace<Object> space, Grid<Object> grid, double speed, double extinguishRate) {
 		this.space = space;
@@ -52,8 +56,8 @@ public abstract class ForesterAgent {
 		if(isOnBurningTile())
 		{
 			burn();
-			return;
 		}
+		regenerate();
 		
 		decideOnActions();
 	}
@@ -216,18 +220,29 @@ public abstract class ForesterAgent {
 				}
 			}
 		}
-		System.out.println("Test: "+fireInformationList.size());
 		return fireInformationList;
 	}
 	
 	protected void burn()
 	{
-		burningTime++;
-		if(burningTime >= LETHAL_BURNING_TIME)
+		health--;
+		if(health <= 0)
 		{
 			//die
 			Context<Object> context = ContextUtils.getContext(this);
 			context.remove(this);
+		}
+		regenerateTime = 0;
+	}
+	
+	protected void regenerate()
+	{
+		if(regenerateTime % REGENERATE_RATE == 0 || true)
+		{
+			if(health < STARTING_HEALTH)
+			{
+				health++;
+			}
 		}
 	}
 	
