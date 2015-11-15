@@ -17,6 +17,7 @@ public class InformationMap<T extends Information> {
 		T oldInformation = informationMap.get(key);
 		if(information.isNewerInformation(oldInformation))
 		{
+			//overwrite old information
 			informationMap.put(key, information);
 			return true;
 		}

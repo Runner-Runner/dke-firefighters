@@ -13,8 +13,8 @@ import repast.simphony.space.grid.GridPoint;
 public class SimpleAgent extends ForesterAgent {
 
 	public SimpleAgent(ContinuousSpace<Object> space, Grid<Object> grid,
-			double speed) {
-		super(space, grid, speed);
+			double speed, double extinguishRate) {
+		super(space, grid, speed, extinguishRate);
 	}
 
 	@Override

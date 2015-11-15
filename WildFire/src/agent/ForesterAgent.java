@@ -8,7 +8,10 @@ import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.ContextUtils;
+import repast.simphony.util.collections.IndexedIterable;
+import environment.Cloud;
 import environment.Fire;
+import environment.Wind;
 
 public abstract class ForesterAgent {
 	protected ContinuousSpace<Object> space;
@@ -16,19 +19,26 @@ public abstract class ForesterAgent {
 	
 	//in distance per step
 	protected double speed;
+	//rate at which the fire heat is lowered when extinguishing
+	protected double extinguishRate;
 	//defines the number of time steps this forester experienced burning injuries
 	protected int burningTime = 0;
 	
 	protected Knowledge knowledge;
 	
+	protected CommunicationTool communicationTool;
+	
 	//number of time steps it takes until burning injuries of a forester become lethal and he dies
 	protected final static int LETHAL_BURNING_TIME = 3;
 	
-	public ForesterAgent(ContinuousSpace<Object> space, Grid<Object> grid, double speed) {
+	public ForesterAgent(ContinuousSpace<Object> space, Grid<Object> grid, double speed, double extinguishRate) {
 		this.space = space;
 		this.grid = grid;
 		this.speed = speed;
+		this.extinguishRate = extinguishRate;
 		knowledge = new Knowledge();
+		
+		communicationTool = new CommunicationTool(this, grid);
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -39,6 +49,8 @@ public abstract class ForesterAgent {
 			burn();
 			return;
 		}
+		
+		updateFireKnowledge();
 		
 		decideOnActions();
 	}
@@ -77,10 +89,7 @@ public abstract class ForesterAgent {
 			return;
 		}
 		
-		//TODO include extinguishing duration?
-		@SuppressWarnings("unchecked")
-		Context<Object> context = ContextUtils.getContext(fire);
-		context.remove(fire);
+		fire.decreaseHeat(extinguishRate);
 	}
 	
 	/**
@@ -88,7 +97,32 @@ public abstract class ForesterAgent {
 	 */
 	protected void checkWeather()
 	{
-		//TODO
+		//get information about wind 
+		Context<Object> context = ContextUtils.getContext(this);
+		IndexedIterable<Object> windObjects = context.getObjects(Wind.class);
+		Wind wind = (Wind)windObjects.get(0);
+		knowledge.setWindInformation(wind.getInformation());
+		
+		//get information about clouds
+		GridPoint location = grid.getLocation(this);
+		int startX = location.getX() - 1;
+		int startY = location.getY() - 1;
+		for(int xOffset=0; xOffset<3; xOffset++)
+		{
+			for(int yOffset=0; yOffset<3; yOffset++)
+			{
+				Iterable<Object> gridObjects = grid.getObjectsAt(startX + xOffset, startY + yOffset);
+				for(Object obj : gridObjects)
+				{
+					if(obj instanceof Cloud)
+					{
+						Cloud cloud = (Cloud)obj;
+						knowledge.getCloudInformationMap().addInformation(cloud.getInformation());
+						break;
+					}
+				}
+			}
+		}
 	}
 	
 	protected void moveTowards(GridPoint pt) {
@@ -121,6 +155,40 @@ public abstract class ForesterAgent {
 		return false;
 	}
 	
+	/**
+	 * Updates knowledge about fire in Moore neighborhood. This action does not require a time step.
+	 */
+	protected void updateFireKnowledge() {
+		//get information about fire
+		GridPoint location = grid.getLocation(this);
+		int startX = location.getX() - 1;
+		int startY = location.getY() - 1;
+		for(int xOffset=0; xOffset<3; xOffset++)
+		{
+			if(startX + xOffset < 0 || startX + xOffset == grid.getDimensions().getWidth())
+			{
+				continue;
+			}
+			for(int yOffset=0; yOffset<3; yOffset++)
+			{
+				if(startY + yOffset < 0 || startY + yOffset == grid.getDimensions().getHeight())
+				{
+					continue;
+				}
+				
+				Iterable<Object> gridObjects = grid.getObjectsAt(startX + xOffset, startY + yOffset);
+				for(Object obj : gridObjects)
+				{
+					if(obj instanceof Fire)
+					{
+						Fire fire = (Fire)obj;
+						knowledge.getFireInformationMap().addInformation(fire.getInformation());
+					}
+				}
+			}
+		}
+	}
+	
 	protected void burn()
 	{
 		burningTime++;
@@ -130,6 +198,16 @@ public abstract class ForesterAgent {
 			Context<Object> context = ContextUtils.getContext(this);
 			context.remove(this);
 		}
+	}
+	
+	public Knowledge getKnowledge()
+	{
+		return knowledge;
+	}
+	
+	public CommunicationTool getCommunicationTool()
+	{
+		return communicationTool;
 	}
 	
 	public enum Behavior {

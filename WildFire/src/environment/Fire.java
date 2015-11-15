@@ -3,6 +3,9 @@ package environment;
 import java.util.List;
 import java.util.Random;
 
+import environment.Cloud.CloudInformation;
+import agent.Information;
+import agent.InformationProvider;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
@@ -12,7 +15,7 @@ import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.ContextUtils;
 
-public class Fire {
+public class Fire implements InformationProvider {
 	private double heat; //number of points to decrease woods lifepoints each iteration
 	private Wind wind; //fire spreads in winds direction
 	private Grid<Object> grid;	//actual cell in grid
@@ -102,4 +105,23 @@ public class Fire {
 		}
 	}
 	
+	@Override
+	public FireInformation getInformation() {
+		GridPoint location = grid.getLocation(this);
+		return new FireInformation(location.getX(), location.getY(), heat);
+	}
+	
+	public class FireInformation extends Information {
+
+		private double heat;
+		
+		private FireInformation(Integer positionX, Integer positionY, double heat) {
+			super(positionX, positionY);
+			this.heat = heat;
+		}
+
+		public double getHeat() {
+			return heat;
+		}
+	}
 }

@@ -135,7 +135,7 @@ public class Cloud implements InformationProvider {
 	}
 
 	@Override
-	public Information getInformation() {
+	public CloudInformation getInformation() {
 		GridPoint location = grid.getLocation(this);
 		return new CloudInformation(location.getX(), location.getY(), rain);
 	}

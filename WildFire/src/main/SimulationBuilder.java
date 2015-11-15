@@ -41,11 +41,11 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
 		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace("space", context, terrainAdder , new repast.simphony.space.continuous.StrictBorders(), FOREST_DIM+2*MAX_CLOUD_DIM, FOREST_DIM+2*MAX_CLOUD_DIM);
 		
-		//create grid (to use for neighbourhood
+		//create grid (to use for neighbourhood)
 		SimpleGridAdder<Object> gridAdder = new SimpleGridAdder<Object>(); //adder who places objects in grid
 		
 		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
-		//the boolean determins, if more than one object can occupy a gridcell
+		//the boolean determines if more than one object can occupy a gridcell
 		Grid<Object> grid = gridFactory.createGrid("grid", context, new GridBuilderParameters <Object >(new StrictBorders(), gridAdder, true, FOREST_DIM+2*MAX_CLOUD_DIM, FOREST_DIM+2*MAX_CLOUD_DIM));
 		
 		
@@ -73,7 +73,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		
 		//create agents
 		for(int i = 0;i<10;i++){
-			context.add(new SimpleAgent(space, grid, 1));
+			context.add(new SimpleAgent(space, grid, 1, 2));
 		}
 		
 		FireFactory fire = new FireFactory(context, grid, space, wind, 0.05);

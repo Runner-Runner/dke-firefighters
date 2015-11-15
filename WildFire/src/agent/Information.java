@@ -27,6 +27,10 @@ public abstract class Information {
 	
 	public boolean isNewerInformation(Information otherInformation)
 	{
+		if(otherInformation == null)
+		{
+			return true;
+		}
 		return timestamp > otherInformation.getTimestamp();
 	}
 }
