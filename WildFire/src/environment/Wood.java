@@ -10,10 +10,10 @@ public class Wood {
 	private double material; //defines material factor, how much water can be stored, how fast it transpires and how hot this material can burn
 	
 	
-	public Wood(double power, double material) {
+	public Wood(double health, double material) {
 		super();
-		this.wetness = power*material;
-		this.health = power;
+		this.wetness = health*material;
+		this.health = health;
 		this.material = material;
 	}
 	
@@ -21,7 +21,7 @@ public class Wood {
 		if(this.wetness>0){
 			this.wetness-=decrease;
 			if(this.wetness<0){
-				this.health-=this.wetness;
+				this.health += this.wetness;
 				this.wetness = 0;
 			}
 		}

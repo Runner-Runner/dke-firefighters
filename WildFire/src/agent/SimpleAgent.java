@@ -6,6 +6,7 @@ import java.util.Random;
 
 import environment.Fire;
 import environment.Fire.FireInformation;
+import environment.Wood;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.space.continuous.ContinuousSpace;
@@ -32,22 +33,39 @@ public class SimpleAgent extends ForesterAgent {
 		//avoid being on burning forest tiles
 		if(isOnBurningTile())
 		{
-			//move to first nonburning tile
-			GridCellNgh<Fire> nghCreator = new GridCellNgh<>(grid, location,
-					Fire.class, 1, 1);
-			List<GridCell<Fire>> gridCells = nghCreator.getNeighborhood(true);
 			GridPoint fleeingPoint = null;
-			for (GridCell<Fire> cell : gridCells) {
+			//move to burned wood tile (secure space) if possible
+			GridCellNgh<Wood> nghWoodCreator = new GridCellNgh<>(grid, location,
+					Wood.class, 1, 1);
+			List<GridCell<Wood>> woodGridCells = nghWoodCreator.getNeighborhood(false);
+			for(GridCell<Wood> cell : woodGridCells)
+			{
 				if (cell.size() == 0) {
 					fleeingPoint = cell.getPoint();
 					break;
 				}
 			}
-			// all neighbor tiles on fire - move to first one
+			
 			if(fleeingPoint == null)
 			{
-				fleeingPoint = gridCells.get(0).getPoint();
+				//otherwise, move to first nonburning tile
+				GridCellNgh<Fire> nghFireCreator = new GridCellNgh<>(grid, location,
+						Fire.class, 1, 1);
+				List<GridCell<Fire>> fireGridCells = nghFireCreator.getNeighborhood(false);
+				for (GridCell<Fire> cell : fireGridCells) {
+					if (cell.size() == 0) {
+						fleeingPoint = cell.getPoint();
+						break;
+					}
+				}
+				
+				// all neighbor tiles on fire - move to first one
+				if(fleeingPoint == null)
+				{
+					fleeingPoint = fireGridCells.get(0).getPoint();
+				}
 			}
+			
 			moveTowards(fleeingPoint);
 			return;
 		}
