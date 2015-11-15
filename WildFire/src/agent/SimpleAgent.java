@@ -66,6 +66,11 @@ public class SimpleAgent extends ForesterAgent {
 			FireInformation fireTarget = null;
 			for(FireInformation fireInformation : allInformation)
 			{
+				if(fireInformation.isEmptyInstance())
+				{
+					continue;
+				}
+				
 				int xDiff = Math.abs(location.getX() - fireInformation.getPositionX());
 				int yDiff = Math.abs(location.getY() - fireInformation.getPositionY());
 				if(xDiff + yDiff < minDistance)

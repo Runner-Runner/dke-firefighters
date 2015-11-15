@@ -25,6 +25,12 @@ public class InformationMap<T extends Information> {
 		return false;
 	}
 	
+	public boolean removeInformation(int x, int y)
+	{
+		String key = x + DELIMITER + y;
+		return informationMap.remove(key) == null;
+	}
+	
 	public T getInformation(int positionX, int positionY)
 	{
 		String key = positionX + DELIMITER + positionY;

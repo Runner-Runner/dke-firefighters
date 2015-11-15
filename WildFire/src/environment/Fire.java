@@ -111,13 +111,24 @@ public class Fire implements InformationProvider {
 		return new FireInformation(location.getX(), location.getY(), heat);
 	}
 	
-	public class FireInformation extends Information {
+	public static class FireInformation extends Information {
 
 		private double heat;
 		
 		private FireInformation(Integer positionX, Integer positionY, double heat) {
 			super(positionX, positionY);
 			this.heat = heat;
+		}
+		
+		/**
+		 * "Remove" information constructor.
+		 * 
+		 * @param positionX
+		 * @param positionY
+		 */
+		public FireInformation(Integer positionX, Integer positionY)
+		{
+			super(positionX, positionY, true);
 		}
 
 		public double getHeat() {

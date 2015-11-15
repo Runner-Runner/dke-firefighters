@@ -140,7 +140,7 @@ public class Cloud implements InformationProvider {
 		return new CloudInformation(location.getX(), location.getY(), rain);
 	}
 	
-	public class CloudInformation extends Information {
+	public static class CloudInformation extends Information {
 
 		private double rain;
 		
@@ -149,6 +149,17 @@ public class Cloud implements InformationProvider {
 			this.rain = rain;
 		}
 
+		/**
+		 * "Remove" information constructor.
+		 * 
+		 * @param positionX
+		 * @param positionY
+		 */
+		public CloudInformation(Integer positionX, Integer positionY)
+		{
+			super(positionX, positionY, true);
+		}
+		
 		public double getRain() {
 			return rain;
 		}

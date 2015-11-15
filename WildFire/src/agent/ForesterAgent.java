@@ -13,6 +13,7 @@ import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.ContextUtils;
 import repast.simphony.util.collections.IndexedIterable;
 import environment.Cloud;
+import environment.Cloud.CloudInformation;
 import environment.Fire;
 import environment.Fire.FireInformation;
 import environment.Wind;
@@ -99,6 +100,8 @@ public abstract class ForesterAgent {
 	 */
 	protected void checkWeather()
 	{
+		//TODO send newly obtained information to (nearby?) agents
+		
 		//get information about wind 
 		Context<Object> context = ContextUtils.getContext(this);
 		IndexedIterable<Object> windObjects = context.getObjects(Wind.class);
@@ -114,14 +117,21 @@ public abstract class ForesterAgent {
 			for(int yOffset=0; yOffset<3; yOffset++)
 			{
 				Iterable<Object> gridObjects = grid.getObjectsAt(startX + xOffset, startY + yOffset);
+				boolean foundCloud = false;
 				for(Object obj : gridObjects)
 				{
 					if(obj instanceof Cloud)
 					{
 						Cloud cloud = (Cloud)obj;
 						knowledge.getCloudInformationMap().addInformation(cloud.getInformation());
+						foundCloud = true;
 						break;
 					}
+				}
+				if(!foundCloud)
+				{
+					knowledge.getCloudInformationMap().addInformation(
+						new CloudInformation(startX + xOffset, startY + yOffset));
 				}
 			}
 		}
@@ -183,6 +193,7 @@ public abstract class ForesterAgent {
 				}
 				
 				Iterable<Object> gridObjects = grid.getObjectsAt(startX + xOffset, startY + yOffset);
+				boolean foundFire = false;
 				for(Object obj : gridObjects)
 				{
 					if(obj instanceof Fire)
@@ -192,11 +203,20 @@ public abstract class ForesterAgent {
 						if(changed)
 						{
 							fireInformationList.add(fireInformation);
+							foundFire = true;
+							break;
 						}
 					}
 				}
+				if(!foundFire)
+				{
+					FireInformation removeInformation = new FireInformation(startX + xOffset, startY + yOffset);
+					fireInformationList.add(removeInformation);
+					knowledge.getFireInformationMap().addInformation(removeInformation);
+				}
 			}
 		}
+		System.out.println("Test: "+fireInformationList.size());
 		return fireInformationList;
 	}
 	
