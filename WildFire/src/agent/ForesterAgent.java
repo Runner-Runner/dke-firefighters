@@ -40,7 +40,7 @@ public abstract class ForesterAgent {
 	//number of burning injuries it takes to kill a forester.
 	protected final static int STARTING_HEALTH = 5;
 	//defines the number of time steps it takes to regenerate 1 health point (if injured).
-	protected final static int REGENERATE_RATE = 7;
+	protected final static int REGENERATE_RATE = 15;
 	
 	public ForesterAgent(ContinuousSpace<Object> space, Grid<Object> grid, double speed, double extinguishRate) {
 		this.space = space;
@@ -57,8 +57,13 @@ public abstract class ForesterAgent {
 		//check if in burning environment
 		if(isOnBurningTile())
 		{
-			burn();
+			boolean lethal = burn();
+			if(lethal)
+			{
+				return;
+			}
 		}
+		regenerateTime++;
 		regenerate();
 		
 		decideOnActions();
@@ -225,22 +230,29 @@ public abstract class ForesterAgent {
 		return fireInformationList;
 	}
 	
-	protected void burn()
+	/**
+	 * Returns true if the agent died from burning injuries.
+	 * @return
+	 */
+	protected boolean burn()
 	{
+		regenerateTime = 0;
 		health--;
 		if(health <= 0)
 		{
 			//die
 			Context<Object> context = ContextUtils.getContext(this);
 			context.remove(this);
+			return true;
 		}
-		regenerateTime = 0;
+		return false;
 	}
 	
 	protected void regenerate()
 	{
 		if(regenerateTime % REGENERATE_RATE == 0)
 		{
+			System.out.println("asd");
 			if(health < STARTING_HEALTH)
 			{
 				health++;

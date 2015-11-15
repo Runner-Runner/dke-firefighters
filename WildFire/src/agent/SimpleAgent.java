@@ -75,6 +75,12 @@ public class SimpleAgent extends ForesterAgent {
 		{
 			extinguishFire(fireGridPoint);
 		}
+		else if(true)
+		{
+			Random random = new Random();
+			GridPoint gp = new GridPoint(random.nextInt(grid.getDimensions().getWidth()), random.nextInt(grid.getDimensions().getHeight()));
+			moveTowards(gp);
+		}
 		else
 		{
 			//Move towards closest fire known from knowledge
