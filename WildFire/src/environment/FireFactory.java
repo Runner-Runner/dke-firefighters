@@ -3,7 +3,6 @@ package environment;
 import java.util.Iterator;
 import java.util.Random;
 
-import main.SimulationBuilder;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.continuous.ContinuousSpace;
@@ -16,9 +15,11 @@ public class FireFactory {
 	private double frequency;
 	private Wind wind;
 	private Random random;
+	private int forestDim;
+	private int maxCloudDim;
 	
 	public FireFactory(Context<Object> context, Grid<Object> grid, ContinuousSpace<Object> space, Wind wind,
-			double frequency) {
+			double frequency, int forestDim, int maxCloudDim) {
 		super();
 		this.context = context;
 		this.grid = grid;
@@ -26,13 +27,15 @@ public class FireFactory {
 		this.space = space;
 		this.frequency = frequency;
 		this.random = new Random();
+		this.forestDim = forestDim;
+		this.maxCloudDim = maxCloudDim;
 	}
 	
 	
-	@ScheduledMethod(start = 1, interval = 5)
+	@ScheduledMethod(start = 1, interval = 5, priority = 2)
 	public void step() {
-		int x = SimulationBuilder.MAX_CLOUD_DIM + random.nextInt(SimulationBuilder.FOREST_DIM);
-		int y = SimulationBuilder.MAX_CLOUD_DIM + random.nextInt(SimulationBuilder.FOREST_DIM);
+		int x = maxCloudDim+ random.nextInt(forestDim);
+		int y = maxCloudDim + random.nextInt(forestDim);
 		Iterator<Object> it = grid.getObjectsAt(x,y).iterator();
 		Wood w = null;
 		Fire f = null;

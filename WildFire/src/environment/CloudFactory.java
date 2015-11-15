@@ -2,7 +2,6 @@ package environment;
 
 import java.util.Random;
 
-import main.SimulationBuilder;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.continuous.ContinuousSpace;
@@ -17,8 +16,13 @@ public class CloudFactory {
 	private double cloudFrequency;
 	private int maxCloudDim;
 	private int minCloudDim;
+	private int forestDim;
+	private double maxTank;
+	private double minTank;
+	private double maxRain;
+	private double minRain;
 	
-	public CloudFactory(Context<Object> context, Wind wind, ContinuousSpace<Object> space, Grid<Object> grid, double cloudFrequency, int minCloudDim, int maxCloudDim){
+	public CloudFactory(Context<Object> context, Wind wind, ContinuousSpace<Object> space, Grid<Object> grid, double cloudFrequency, int minCloudDim, int maxCloudDim, int forestDim, double maxRain, double minRain, double maxTank, double minTank){
 		this.context = context;
 		this.wind = wind;
 		this.space = space;
@@ -27,16 +31,21 @@ public class CloudFactory {
 		this.cloudFrequency = cloudFrequency;
 		this.maxCloudDim = maxCloudDim;
 		this.minCloudDim = minCloudDim;
+		this.forestDim = forestDim;
+		this.maxRain = maxRain;
+		this.minRain = minRain;
+		this.maxTank = maxTank;
+		this.minTank = minTank;
 	}
 	
 	
-	@ScheduledMethod(start = 1, interval = 10)
+	@ScheduledMethod(start = 1, interval = 10, priority = 2)
 	public void createCloud() {
 		//if new cloud is going to be created depends on actual wind speed, cloud frequency and random value
 		if(random.nextDouble()<cloudFrequency*wind.getSpeed()){
 			int x;
 			int y;
-			int dim = SimulationBuilder.FOREST_DIM+2*maxCloudDim;
+			int dim = forestDim+2*maxCloudDim;
 			double wD = this.wind.getWindDirection();
 			if(wD>Math.PI/4 && wD<=0.75*Math.PI){
 				x = random.nextInt(dim);
@@ -54,10 +63,7 @@ public class CloudFactory {
 				x = 0;
 				y = random.nextInt(dim);
 			}
-			//TODO adjust tank, maxRain and minRain
-			double tank = 5000;
-			double maxRain = 4+random.nextDouble();
-			double minRain = 1+random.nextDouble();
+			double tank = minTank+random.nextDouble()*(maxTank-minTank);
 			Cloud newCloud = new Cloud(context, wind, space, grid, tank, maxRain, minRain);
 			context.add(newCloud);
 			space.moveTo(newCloud, x,y);

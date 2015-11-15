@@ -30,12 +30,6 @@
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
 		/>
-				<parameter name="min_rain" displayName="min_rain" type="double" 
-						defaultValue="2.0" 
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
-									
-		/>
 				<parameter name="min_cloud_tank" displayName="min_cloud_tank" type="double" 
 						defaultValue="4000.0" 
 						isReadOnly="false" 

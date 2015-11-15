@@ -54,7 +54,7 @@ public class Cloud implements InformationProvider {
 	
 	
 	
-	@ScheduledMethod(start = 1, interval = 1)
+	@ScheduledMethod(start = 1, interval = 1, priority = 2)
 	public void step() {
 		if(move()){
 			addCells();
