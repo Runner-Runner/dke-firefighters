@@ -237,7 +237,7 @@ public abstract class ForesterAgent {
 	
 	protected void regenerate()
 	{
-		if(regenerateTime % REGENERATE_RATE == 0 || true)
+		if(regenerateTime % REGENERATE_RATE == 0)
 		{
 			if(health < STARTING_HEALTH)
 			{
