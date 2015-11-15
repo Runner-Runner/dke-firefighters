@@ -252,7 +252,6 @@ public abstract class ForesterAgent {
 	{
 		if(regenerateTime % REGENERATE_RATE == 0)
 		{
-			System.out.println("asd");
 			if(health < STARTING_HEALTH)
 			{
 				health++;
