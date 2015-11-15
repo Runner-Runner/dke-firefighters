@@ -1,5 +1,6 @@
 package agent;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,5 +29,10 @@ public class InformationMap<T extends Information> {
 	{
 		String key = positionX + DELIMITER + positionY;
 		return informationMap.get(key);
+	}
+	
+	public Collection<T> getAllInformation()
+	{
+		return informationMap.values();
 	}
 }

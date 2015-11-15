@@ -1,5 +1,8 @@
 package agent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.SpatialMath;
@@ -11,6 +14,7 @@ import repast.simphony.util.ContextUtils;
 import repast.simphony.util.collections.IndexedIterable;
 import environment.Cloud;
 import environment.Fire;
+import environment.Fire.FireInformation;
 import environment.Wind;
 
 public abstract class ForesterAgent {
@@ -29,7 +33,7 @@ public abstract class ForesterAgent {
 	protected CommunicationTool communicationTool;
 	
 	//number of time steps it takes until burning injuries of a forester become lethal and he dies
-	protected final static int LETHAL_BURNING_TIME = 3;
+	protected final static int LETHAL_BURNING_TIME = 5;
 	
 	public ForesterAgent(ContinuousSpace<Object> space, Grid<Object> grid, double speed, double extinguishRate) {
 		this.space = space;
@@ -49,8 +53,6 @@ public abstract class ForesterAgent {
 			burn();
 			return;
 		}
-		
-		updateFireKnowledge();
 		
 		decideOnActions();
 	}
@@ -157,8 +159,12 @@ public abstract class ForesterAgent {
 	
 	/**
 	 * Updates knowledge about fire in Moore neighborhood. This action does not require a time step.
+	 * 
+	 * @return All information that actually changed the knowledge
 	 */
-	protected void updateFireKnowledge() {
+	protected List<FireInformation> updateFireKnowledge() {
+		List<FireInformation> fireInformationList = new ArrayList<FireInformation>();
+		
 		//get information about fire
 		GridPoint location = grid.getLocation(this);
 		int startX = location.getX() - 1;
@@ -181,12 +187,17 @@ public abstract class ForesterAgent {
 				{
 					if(obj instanceof Fire)
 					{
-						Fire fire = (Fire)obj;
-						knowledge.getFireInformationMap().addInformation(fire.getInformation());
+						FireInformation fireInformation = ((Fire)obj).getInformation();
+						boolean changed = knowledge.getFireInformationMap().addInformation(fireInformation);
+						if(changed)
+						{
+							fireInformationList.add(fireInformation);
+						}
 					}
 				}
 			}
 		}
+		return fireInformationList;
 	}
 	
 	protected void burn()

@@ -2,7 +2,7 @@ package main;
 
 import environment.CloudFactory;
 import environment.FireFactory;
-import environment.ForrestFactory;
+import environment.ForestFactory;
 import environment.Wind;
 import environment.Wood;
 import agent.SimpleAgent;
@@ -62,7 +62,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		context.add(cf);
 		
 		//add forrest
-		ForrestFactory forrest = new ForrestFactory(1500, 800, 0.2, 0.05);
+		ForestFactory forrest = new ForestFactory(1500, 800, 0.2, 0.05);
 		for(int i = MAX_CLOUD_DIM;i<MAX_CLOUD_DIM+FOREST_DIM;i++){
 			for(int j = MAX_CLOUD_DIM;j<MAX_CLOUD_DIM+FOREST_DIM;j++){
 				Wood w = forrest.getWood();

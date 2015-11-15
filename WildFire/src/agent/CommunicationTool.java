@@ -68,7 +68,7 @@ public class CommunicationTool {
 		
 		GridPoint senderLocation = grid.getLocation(sender);
 		
-		Context<Object> context = ContextUtils.getContext(this);
+		Context<Object> context = ContextUtils.getContext(sender);
 		IndexedIterable<Object> objects = context.getObjects(ForesterAgent.class);
 		
 		for(Object obj : objects)

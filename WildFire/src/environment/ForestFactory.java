@@ -2,13 +2,13 @@ package environment;
 
 import java.util.Random;
 
-public class ForrestFactory {
+public class ForestFactory {
 	private double maxPower;
 	private double minPower;
 	private Random random;
 	private double maxMaterial;
 	private double minMaterial;
-	public ForrestFactory(double maxPower, double minPower, double maxMaterial,
+	public ForestFactory(double maxPower, double minPower, double maxMaterial,
 			double minMaterial) {
 		super();
 		this.maxPower = maxPower;
