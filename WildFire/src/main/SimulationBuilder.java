@@ -1,11 +1,5 @@
 package main;
 
-import environment.CloudFactory;
-import environment.FireFactory;
-import environment.ForestFactory;
-import environment.Wind;
-import environment.Wood;
-import agent.SimpleAgent;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactory;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactoryFinder;
@@ -14,6 +8,7 @@ import repast.simphony.context.space.grid.GridFactoryFinder;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.parameter.Parameters;
+import repast.simphony.random.RandomHelper;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.continuous.RandomCartesianAdder;
@@ -21,6 +16,12 @@ import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridBuilderParameters;
 import repast.simphony.space.grid.SimpleGridAdder;
 import repast.simphony.space.grid.StrictBorders;
+import agent.SimpleAgent;
+import environment.CloudFactory;
+import environment.FireFactory;
+import environment.ForestFactory;
+import environment.Wind;
+import environment.Wood;
 
 public class SimulationBuilder implements ContextBuilder<Object>{
 	
@@ -81,11 +82,11 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		CloudFactory cf = new CloudFactory(context, wind, space, grid, cloudRate, minCloudDim, maxCloudDim, forestDim, maxRain, minRain, maxCloudTank, minCloudTank);
 		context.add(cf);
 		
-		//add forrest
-		ForestFactory forrest = new ForestFactory(maxWoodHealth, minWoodHealth, maxMaterialFactor, minMaterialFactor);
+		//add forest
+		ForestFactory forest = new ForestFactory(maxWoodHealth, minWoodHealth, maxMaterialFactor, minMaterialFactor);
 		for(int i = maxCloudDim;i<maxCloudDim+forestDim;i++){
 			for(int j = maxCloudDim;j<maxCloudDim+forestDim;j++){
-				Wood w = forrest.getWood();
+				Wood w = forest.getWood();
 				context.add(w);
 				space.moveTo(w, i, j);
 			}
@@ -93,7 +94,8 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		
 		//create agents
 		for(int i = 0;i<numberAgents;i++){
-			context.add(new SimpleAgent(space, grid, 1, 2));
+			double speed = RandomHelper.nextDoubleFromTo(0.25, 1);
+			context.add(new SimpleAgent(space, grid, speed, 2));
 		}
 		
 		FireFactory fire = new FireFactory(context, grid, space, wind, sparkingFactor, forestDim, maxCloudDim);
