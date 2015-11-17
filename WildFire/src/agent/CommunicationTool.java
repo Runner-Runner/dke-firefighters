@@ -8,8 +8,6 @@ import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.ContextUtils;
 import repast.simphony.util.collections.IndexedIterable;
-import environment.Cloud.CloudInformation;
-import environment.Fire.FireInformation;
 import environment.Wind.WindInformation;
 
 public class CommunicationTool {
@@ -35,30 +33,20 @@ public class CommunicationTool {
 		this.sendingRange = sendingRange;
 	}
 	
-	public void sendWindInformation(WindInformation windInformation)
+	public void sendInformation(Information information)
 	{
 		List<ForesterAgent> recipients = getRecipients();
 		for(ForesterAgent recipient : recipients)
 		{
-			recipient.getKnowledge().setWindInformation(windInformation);
-		}
-	}
-	
-	public void sendCloudInformation(CloudInformation cloudInformation)
-	{
-		List<ForesterAgent> recipients = getRecipients();
-		for(ForesterAgent recipient : recipients)
-		{
-			recipient.getKnowledge().getCloudInformationMap().addInformation(cloudInformation);
-		}
-	}
-	
-	public void sendFireInformation(FireInformation fireInformation)
-	{
-		List<ForesterAgent> recipients = getRecipients();
-		for(ForesterAgent recipient : recipients)
-		{
-			recipient.getKnowledge().getFireInformationMap().addInformation(fireInformation);
+			//special cases
+			if(information instanceof WindInformation)
+			{
+				recipient.getKnowledge().setWindInformation((WindInformation) information);
+			}
+			else
+			{
+				recipient.getKnowledge().addInformation(information);
+			}
 		}
 	}
 	

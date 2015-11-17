@@ -27,7 +27,7 @@ public class SimpleAgent extends ForesterAgent {
 		List<FireInformation> fireInformationList = updateFireKnowledge();
 		for(FireInformation fireInformation : fireInformationList)
 		{
-			communicationTool.sendFireInformation(fireInformation);
+			communicationTool.sendInformation(fireInformation);
 		}
 		
 		//avoid being on burning forest tiles
@@ -78,7 +78,7 @@ public class SimpleAgent extends ForesterAgent {
 		else
 		{
 			//Move towards closest fire known from knowledge
-			Collection<FireInformation> allInformation = knowledge.getFireInformationMap().getAllInformation();
+			Collection<FireInformation> allInformation = knowledge.getAllInformation(FireInformation.class);
 			
 			int minDistance = Integer.MAX_VALUE;
 			FireInformation fireTarget = null;

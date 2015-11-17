@@ -134,15 +134,14 @@ public abstract class ForesterAgent {
 					if(obj instanceof Cloud)
 					{
 						Cloud cloud = (Cloud)obj;
-						knowledge.getCloudInformationMap().addInformation(cloud.getInformation());
+						knowledge.addInformation(cloud.getInformation());
 						foundCloud = true;
 						break;
 					}
 				}
 				if(!foundCloud)
 				{
-					knowledge.getCloudInformationMap().addInformation(
-						new CloudInformation(startX + xOffset, startY + yOffset));
+					knowledge.addInformation(new CloudInformation(startX + xOffset, startY + yOffset));
 				}
 			}
 		}
@@ -210,7 +209,7 @@ public abstract class ForesterAgent {
 					if(obj instanceof Fire)
 					{
 						FireInformation fireInformation = ((Fire)obj).getInformation();
-						boolean changed = knowledge.getFireInformationMap().addInformation(fireInformation);
+						boolean changed = knowledge.addInformation(fireInformation);
 						if(changed)
 						{
 							fireInformationList.add(fireInformation);
@@ -223,7 +222,7 @@ public abstract class ForesterAgent {
 				{
 					FireInformation removeInformation = new FireInformation(startX + xOffset, startY + yOffset);
 					fireInformationList.add(removeInformation);
-					knowledge.getFireInformationMap().addInformation(removeInformation);
+					knowledge.addInformation(removeInformation);
 				}
 			}
 		}
