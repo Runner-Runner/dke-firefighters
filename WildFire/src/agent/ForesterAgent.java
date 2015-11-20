@@ -20,9 +20,9 @@ import environment.Fire.FireInformation;
 import environment.Wind;
 
 
-public abstract class ForesterAgent implements InformationProvider {
-	private static int agentCount = 0;
 
+public abstract class ForesterAgent implements InformationProvider, DataProviderExtinguishedFireAmount {
+private static int agentCount = 0;
 	protected ContinuousSpace<Object> space;
 	protected Grid<Object> grid;
 	
@@ -281,12 +281,19 @@ public abstract class ForesterAgent implements InformationProvider {
 		health--;
 		if(health <= 0)
 		{
-			//die
-			Context<Object> context = ContextUtils.getContext(this);
-			context.remove(this);
+			die();
 			return true;
 		}
 		return false;
+	}
+	
+	private void die()
+	{
+		GraveyardStatistic graveyardStatistic = GraveyardStatistic.getInstance();
+		graveyardStatistic.addExtinguishedFireAmount(getExtinguishedFireAmount());
+		
+		Context<Object> context = ContextUtils.getContext(this);
+		context.remove(this);
 	}
 	
 	protected void regenerate()
@@ -305,6 +312,7 @@ public abstract class ForesterAgent implements InformationProvider {
 		return communicationTool;
 	}
 	
+	@Override
 	public double getExtinguishedFireAmount()
 	{
 		return extinguishedFireAmount;
