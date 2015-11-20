@@ -8,7 +8,6 @@ import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.ContextUtils;
 import repast.simphony.util.collections.IndexedIterable;
-import environment.Wind.WindInformation;
 
 public class CommunicationTool {
 
@@ -19,8 +18,6 @@ public class CommunicationTool {
 	 * Local multicast sending range in grid tiles (in each cardinal direction). Null means send to all other agents (global broadcast).
 	 */
 	private Integer sendingRange;
-	
-	//TODO Add additional attribute for sending messages to one specific recipient
 	
 	public CommunicationTool(ForesterAgent sender, Grid<Object> grid)
 	{
@@ -33,24 +30,89 @@ public class CommunicationTool {
 		this.sendingRange = sendingRange;
 	}
 	
-	public void sendInformation(Information information)
+	public double sendInformation(Information information)
 	{
-		List<ForesterAgent> recipients = getRecipients();
-		for(ForesterAgent recipient : recipients)
-		{
-			//special cases
-			if(information instanceof WindInformation)
-			{
-				recipient.getKnowledge().setWindInformation((WindInformation) information);
-			}
-			else
-			{
-				recipient.getKnowledge().addInformation(information);
-			}
-		}
+		return sendInformation(getRangeRecipients(),information);
 	}
 	
-	private List<ForesterAgent> getRecipients()
+	public double sendInformation(Information information, List<String> recipientIDs){
+		List<ForesterAgent> list = getAgents(recipientIDs);
+		return sendInformation(list, information);
+	}
+	
+	public double sendInformation(Information information, String id){
+		return sendInformation(information, getAgent(id));
+	}
+	public double sendRequest(Request request)
+	{
+		return sendRequest(request, getRangeRecipients());
+	}
+	public double sendRequest(List<String> recipientIDs, Request request){
+		return sendRequest(request, getAgents(recipientIDs));
+	}
+	public double sendRequest(Request request, String id){
+		return sendRequest(request, getAgent(id));
+	}
+	private double sendInformation(List<ForesterAgent> recipients, Information information)
+	{
+		double sum = 0;
+		for(ForesterAgent recipient : recipients)
+		{
+			sum+=sendInformation(information, recipient);
+		}
+		return sum;
+	}
+	private double sendInformation(Information information, ForesterAgent recipient)
+	{
+		recipient.receiveInformation(information);
+		return calculateDistance(sender, recipient);
+	}
+	private double sendRequest(Request request, List<ForesterAgent> recipients)
+	{
+		double sum = 0;
+		for(ForesterAgent recipient : recipients)
+		{
+			sum+=sendRequest(request, recipient);
+		}
+		return sum;
+	}
+	private double sendRequest(Request request, ForesterAgent recipient)
+	{
+		recipient.receiveRequest(request);
+		return calculateDistance(sender, recipient);
+	}
+	private List<ForesterAgent> getAgents(List<String> ids){
+		ArrayList<ForesterAgent> list = new ArrayList<ForesterAgent>(ids.size());
+		Context<Object> context = ContextUtils.getContext(sender);
+		IndexedIterable<Object> objects = context.getObjects(ForesterAgent.class);
+		for(Object obj : objects)
+		{
+			if(obj instanceof ForesterAgent)
+			{
+				ForesterAgent agent = (ForesterAgent)obj;
+				if(ids.contains(agent.getCommunicationId()))
+					list.add(agent);
+			}
+		}
+		return list;
+	}
+	private ForesterAgent getAgent(String id){
+		Context<Object> context = ContextUtils.getContext(sender);
+		IndexedIterable<Object> objects = context.getObjects(ForesterAgent.class);
+		
+		for(Object obj : objects)
+		{
+			if(obj instanceof ForesterAgent)
+			{
+				ForesterAgent agent = (ForesterAgent)obj;
+				if(agent.getCommunicationId().equals(id)){
+					return agent;
+				}
+			}
+		}
+		return null;
+	}
+	private List<ForesterAgent> getRangeRecipients()
 	{
 		List<ForesterAgent> recipients = new ArrayList<>();
 		
@@ -64,18 +126,19 @@ public class CommunicationTool {
 			if(obj instanceof ForesterAgent)
 			{
 				ForesterAgent agent = (ForesterAgent)obj;
-				GridPoint location = grid.getLocation(agent);
 				
-				if(sendingRange == null ||
-					(location.getX() >= senderLocation.getX() - sendingRange && 
-					location.getX() <= senderLocation.getX() + sendingRange &&
-					location.getY() >= senderLocation.getY() - sendingRange &&
-					location.getY() <= senderLocation.getY() + sendingRange))
+				if(sendingRange == null || calculateDistance(sender, agent)<=sendingRange)
 				{
 					recipients.add(agent);
 				}
 			}
 		}
 		return recipients;
+	}
+	
+	private double calculateDistance(ForesterAgent a, ForesterAgent b){
+		GridPoint aP = grid.getLocation(a);
+		GridPoint bP = grid.getLocation(b);
+		return Math.sqrt(Math.pow(aP.getX()-bP.getX(), 2)+Math.pow(aP.getY()-bP.getY(), 2));
 	}
 }

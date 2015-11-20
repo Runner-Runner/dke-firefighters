@@ -11,6 +11,7 @@ import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
+import repast.simphony.space.grid.GridDimensions;
 import repast.simphony.space.grid.GridPoint;
 
 public class SimpleAgent extends ForesterAgent {
@@ -24,10 +25,16 @@ public class SimpleAgent extends ForesterAgent {
 	protected void decideOnActions() {
 		GridPoint location = grid.getLocation(this);
 		
-		List<FireInformation> fireInformationList = updateFireKnowledge();
+		GridDimensions dimensions = grid.getDimensions();
+		int gridHeight = dimensions.getHeight();
+		int gridWidth = dimensions.getWidth();
+		
+		List<FireInformation> fireInformationList = updateFireBelief();
 		for(FireInformation fireInformation : fireInformationList)
 		{
-			communicationTool.sendInformation(fireInformation);
+			//send to a fraction of the entire forest grid
+			communicationTool.setSendingRange((int)((gridHeight+gridWidth)/20));
+//			communicationTool.sendInformation(fireInformation);
 		}
 		
 		//avoid being on burning forest tiles
@@ -48,7 +55,7 @@ public class SimpleAgent extends ForesterAgent {
 			
 			if(fleeingPoint == null)
 			{
-				//otherwise, move to first nonburning tile
+				//otherwise, move to first non-burning tile
 				GridCellNgh<Fire> nghFireCreator = new GridCellNgh<>(grid, location,
 						Fire.class, 1, 1);
 				List<GridCell<Fire>> fireGridCells = nghFireCreator.getNeighborhood(false);
@@ -77,8 +84,8 @@ public class SimpleAgent extends ForesterAgent {
 		}
 		else
 		{
-			//Move towards closest fire known from knowledge
-			Collection<FireInformation> allInformation = knowledge.getAllInformation(FireInformation.class);
+			//Move towards closest fire known from belief
+			Collection<FireInformation> allInformation = belief.getAllInformation(FireInformation.class);
 			
 			int minDistance = Integer.MAX_VALUE;
 			FireInformation fireTarget = null;

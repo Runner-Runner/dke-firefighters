@@ -8,7 +8,7 @@ import environment.Cloud.CloudInformation;
 import environment.Fire.FireInformation;
 import environment.Wind.WindInformation;
 
-public class Knowledge {
+public class Belief {
 	private WindInformation windInformation;
 	private InformationMap<CloudInformation> cloudInformationMap;
 	private InformationMap<FireInformation> fireInformationMap;
@@ -16,7 +16,7 @@ public class Knowledge {
 
 	private HashMap<Class<? extends Information>, InformationMap<? extends Information>> specificInformationMap;
 	
-	public Knowledge() {
+	public Belief() {
 		specificInformationMap = new HashMap<>();
 		
 		cloudInformationMap = new InformationMap<>();
