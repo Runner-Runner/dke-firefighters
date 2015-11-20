@@ -16,6 +16,7 @@ import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridBuilderParameters;
 import repast.simphony.space.grid.SimpleGridAdder;
 import repast.simphony.space.grid.StrictBorders;
+import agent.GraveyardStatistic;
 import agent.SimpleAgent;
 import environment.CloudFactory;
 import environment.FireFactory;
@@ -108,8 +109,8 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 			NdPoint pt = space.getLocation(o);
 			grid.moveTo(o, (int)pt.getX(), (int)pt.getY());
 		}
-		
-		
+
+		context.add(GraveyardStatistic.getInstance());
 		
 		return context;
 	}

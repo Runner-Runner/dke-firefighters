@@ -33,9 +33,8 @@ public class SimpleAgent extends ForesterAgent {
 		for(FireInformation fireInformation : fireInformationList)
 		{
 			//send to a fraction of the entire forest grid
-			System.out.println((gridHeight+gridWidth)/20);
 			communicationTool.setSendingRange((int)((gridHeight+gridWidth)/20));
-			communicationTool.sendInformation(fireInformation);
+//			communicationTool.sendInformation(fireInformation);
 		}
 		
 		//avoid being on burning forest tiles
