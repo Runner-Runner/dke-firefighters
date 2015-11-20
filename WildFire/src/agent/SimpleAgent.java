@@ -11,6 +11,7 @@ import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
+import repast.simphony.space.grid.GridDimensions;
 import repast.simphony.space.grid.GridPoint;
 
 public class SimpleAgent extends ForesterAgent {
@@ -24,9 +25,16 @@ public class SimpleAgent extends ForesterAgent {
 	protected void decideOnActions() {
 		GridPoint location = grid.getLocation(this);
 		
+		GridDimensions dimensions = grid.getDimensions();
+		int gridHeight = dimensions.getHeight();
+		int gridWidth = dimensions.getWidth();
+		
 		List<FireInformation> fireInformationList = updateFireBelief();
 		for(FireInformation fireInformation : fireInformationList)
 		{
+			//send to a fraction of the entire forest grid
+			System.out.println((gridHeight+gridWidth)/20);
+			communicationTool.setSendingRange((int)((gridHeight+gridWidth)/20));
 			communicationTool.sendInformation(fireInformation);
 		}
 		
