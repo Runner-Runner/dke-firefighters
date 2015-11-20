@@ -3,6 +3,7 @@ package agent;
 import java.util.Collection;
 import java.util.HashMap;
 
+import agent.ForesterAgent.AgentInformation;
 import environment.Cloud.CloudInformation;
 import environment.Fire.FireInformation;
 import environment.Wind.WindInformation;
@@ -11,6 +12,7 @@ public class Knowledge {
 	private WindInformation windInformation;
 	private InformationMap<CloudInformation> cloudInformationMap;
 	private InformationMap<FireInformation> fireInformationMap;
+	private InformationMap<AgentInformation> agentInformationMap;
 
 	private HashMap<Class<? extends Information>, InformationMap<? extends Information>> specificInformationMap;
 	
@@ -19,9 +21,11 @@ public class Knowledge {
 		
 		cloudInformationMap = new InformationMap<>();
 		fireInformationMap = new InformationMap<>();
+		agentInformationMap = new InformationMap<>();
 		
 		specificInformationMap.put(CloudInformation.class, cloudInformationMap);
 		specificInformationMap.put(FireInformation.class, fireInformationMap);
+		specificInformationMap.put(AgentInformation.class, agentInformationMap);
 	}
 	
 	public <T extends Information> Collection<T> getAllInformation(Class<T> informationClass)

@@ -18,7 +18,7 @@ import environment.Fire;
 import environment.Fire.FireInformation;
 import environment.Wind;
 
-public abstract class ForesterAgent {
+public abstract class ForesterAgent implements InformationProvider {
 	protected ContinuousSpace<Object> space;
 	protected Grid<Object> grid;
 	
@@ -276,4 +276,41 @@ public abstract class ForesterAgent {
 	public enum Behavior {
 		COOPERATIVE, SELFISH, MIXED, DESTRUCTIVE
 	};
+	
+	@Override
+	public AgentInformation getInformation() {
+		GridPoint location = grid.getLocation(this);
+		return new AgentInformation(location.getX(), location.getY(), speed, health);
+	}
+	
+	public static class AgentInformation extends Information {
+
+		private double speed;
+		private int health;
+		
+		private AgentInformation(Integer positionX, Integer positionY, double speed, int health) {
+			super(positionX, positionY);
+			this.speed = speed;
+			this.health = health;
+		}
+
+		/**
+		 * "Remove" information constructor.
+		 * 
+		 * @param positionX
+		 * @param positionY
+		 */
+		public AgentInformation(Integer positionX, Integer positionY)
+		{
+			super(positionX, positionY, true);
+		}
+		
+		public double getSpeed() {
+			return speed;
+		}
+		
+		public int getHealth() {
+			return health;
+		}
+	}
 }
