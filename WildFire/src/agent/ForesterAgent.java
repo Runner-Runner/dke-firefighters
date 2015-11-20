@@ -37,14 +37,7 @@ private static int agentCount = 0;
 	private int regenerateTime = 0;
 	// how much fire this agent extinguished so far
 	private double extinguishedFireAmount = 0;
-<<<<<<< HEAD
 
-	protected Knowledge knowledge;
-
-	protected CommunicationTool communicationTool;
-
-	// number of burning injuries it takes to kill a forester.
-=======
 	//belief of environment (fire/wood/agents/wind/clouds)
 	protected Belief belief;
 	//tool to send information and requests to other agents
@@ -69,7 +62,6 @@ private static int agentCount = 0;
 	private String communicationId;
 	
 	//number of burning injuries it takes to kill a forester.
->>>>>>> fb59c7ac0cb978630e261b1eb0089170882562a3
 	protected final static int STARTING_HEALTH = 5;
 	// defines the number of time steps it takes to regenerate 1 health point
 	// (if injured).
@@ -81,13 +73,7 @@ private static int agentCount = 0;
 		this.grid = grid;
 		this.speed = speed;
 		this.extinguishRate = extinguishRate;
-<<<<<<< HEAD
-		knowledge = new Knowledge();
 
-		communicationTool = new CommunicationTool(this, grid);
-	}
-
-=======
 		this.belief = new Belief();
 		this.messages = new LinkedList<Information>();
 		this.requests = new LinkedList<Request>();
@@ -113,7 +99,6 @@ private static int agentCount = 0;
 	public void receiveRequest(Request request){
 		this.requests.add(request);
 	}
->>>>>>> fb59c7ac0cb978630e261b1eb0089170882562a3
 	@ScheduledMethod(start = 1, interval = 1)
 	public void step() {
 		// check if in burning environment
@@ -172,17 +157,11 @@ private static int agentCount = 0;
 		// get information about wind
 		Context<Object> context = ContextUtils.getContext(this);
 		IndexedIterable<Object> windObjects = context.getObjects(Wind.class);
-<<<<<<< HEAD
-		Wind wind = (Wind) windObjects.get(0);
-		knowledge.setWindInformation(wind.getInformation());
 
-		// get information about clouds
-=======
 		Wind wind = (Wind)windObjects.get(0);
 		belief.setWindInformation(wind.getInformation());
 		
 		//get information about clouds
->>>>>>> fb59c7ac0cb978630e261b1eb0089170882562a3
 		GridPoint location = grid.getLocation(this);
 		int startX = location.getX() - 1;
 		int startY = location.getY() - 1;
@@ -191,32 +170,20 @@ private static int agentCount = 0;
 				Iterable<Object> gridObjects = grid.getObjectsAt(startX
 						+ xOffset, startY + yOffset);
 				boolean foundCloud = false;
-<<<<<<< HEAD
-				for (Object obj : gridObjects) {
-					if (obj instanceof Cloud) {
-						Cloud cloud = (Cloud) obj;
-						knowledge.addInformation(cloud.getInformation());
-=======
 				for(Object obj : gridObjects)
 				{
 					if(obj instanceof Cloud)
 					{
 						Cloud cloud = (Cloud)obj;
 						belief.addInformation(cloud.getInformation());
->>>>>>> fb59c7ac0cb978630e261b1eb0089170882562a3
 						foundCloud = true;
 						break;
 					}
 				}
-<<<<<<< HEAD
-				if (!foundCloud) {
-					knowledge.addInformation(new CloudInformation(startX
-							+ xOffset, startY + yOffset));
-=======
+
 				if(!foundCloud)
 				{
 					belief.addInformation(new CloudInformation(startX + xOffset, startY + yOffset));
->>>>>>> fb59c7ac0cb978630e261b1eb0089170882562a3
 				}
 			}
 		}
@@ -310,12 +277,8 @@ private static int agentCount = 0;
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Updates knowledge about fire in Moore neighborhood. This action does not
-	 * require a time step.
-=======
+
 	 * Updates belief about fire in Moore neighborhood. This action does not require a time step.
->>>>>>> fb59c7ac0cb978630e261b1eb0089170882562a3
 	 * 
 	 * @return All information that actually changed the belief
 	 */
@@ -340,15 +303,7 @@ private static int agentCount = 0;
 				Iterable<Object> gridObjects = grid.getObjectsAt(startX
 						+ xOffset, startY + yOffset);
 				boolean foundFire = false;
-<<<<<<< HEAD
-				for (Object obj : gridObjects) {
-					if (obj instanceof Fire) {
-						FireInformation fireInformation = ((Fire) obj)
-								.getInformation();
-						boolean changed = knowledge
-								.addInformation(fireInformation);
-						if (changed) {
-=======
+
 				for(Object obj : gridObjects)
 				{
 					if(obj instanceof Fire)
@@ -357,7 +312,6 @@ private static int agentCount = 0;
 						boolean changed = belief.addInformation(fireInformation);
 						if(changed)
 						{
->>>>>>> fb59c7ac0cb978630e261b1eb0089170882562a3
 							fireInformationList.add(fireInformation);
 							foundFire = true;
 							break;
@@ -383,26 +337,15 @@ private static int agentCount = 0;
 	protected boolean burn() {
 		regenerateTime = 0;
 		health--;
-<<<<<<< HEAD
-		if (health <= 0) {
-			// die
-			Context<Object> context = ContextUtils.getContext(this);
-			context.remove(this);
-=======
+
 		if(health <= 0)
 		{
 			die();
->>>>>>> fb59c7ac0cb978630e261b1eb0089170882562a3
 			return true;
 		}
 		return false;
 	}
-<<<<<<< HEAD
 
-	protected void regenerate() {
-		if (regenerateTime % REGENERATE_RATE == 0) {
-			if (health < STARTING_HEALTH) {
-=======
 	
 	private void die()
 	{
@@ -419,35 +362,11 @@ private static int agentCount = 0;
 		{
 			if(health < STARTING_HEALTH)
 			{
->>>>>>> fb59c7ac0cb978630e261b1eb0089170882562a3
 				health++;
 			}
 		}
 	}
-<<<<<<< HEAD
 
-	public Knowledge getKnowledge() {
-		return knowledge;
-	}
-
-	public CommunicationTool getCommunicationTool() {
-		return communicationTool;
-	}
-
-	public double getExtinguishedFireAmount() {
-		return extinguishedFireAmount;
-	}
-
-	public enum Behavior {
-		COOPERATIVE, SELFISH, MIXED, DESTRUCTIVE
-	};
-
-	@Override
-	public AgentInformation getInformation() {
-		GridPoint location = grid.getLocation(this);
-		return new AgentInformation(location.getX(), location.getY(), speed,
-				health);
-=======
 	
 	public CommunicationTool getCommunicationTool()
 	{
@@ -474,23 +393,17 @@ private static int agentCount = 0;
 	public AgentInformation getInformation() {
 		GridPoint location = grid.getLocation(this);
 		return new AgentInformation(location.getX(), location.getY(), speed, health, currentIntention.getxPosition(), currentIntention.getyPosition());
->>>>>>> fb59c7ac0cb978630e261b1eb0089170882562a3
 	}
 
 	public static class AgentInformation extends Information {
 
 		private double speed;
 		private int health;
-<<<<<<< HEAD
 
-		private AgentInformation(Integer positionX, Integer positionY,
-				double speed, int health) {
-=======
 		private Integer intentionX;
 		private Integer intentionY;
 		
 		private AgentInformation(Integer positionX, Integer positionY, double speed, int health, Integer intentionX, Integer intentionY) {
->>>>>>> fb59c7ac0cb978630e261b1eb0089170882562a3
 			super(positionX, positionY);
 			this.speed = speed;
 			this.health = health;
@@ -511,8 +424,7 @@ private static int agentCount = 0;
 		public double getSpeed() {
 			return speed;
 		}
-<<<<<<< HEAD
-=======
+
 		
 		public Integer getIntentionX() {
 			return intentionX;
@@ -521,7 +433,6 @@ private static int agentCount = 0;
 		public Integer getIntentionY() {
 			return intentionY;
 		}
->>>>>>> fb59c7ac0cb978630e261b1eb0089170882562a3
 
 		public int getHealth() {
 			return health;
