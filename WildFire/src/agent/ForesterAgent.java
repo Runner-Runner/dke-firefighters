@@ -145,7 +145,7 @@ private static int agentCount = 0;
 			return;
 		}
 		
-		extinguishedFireAmount += fire.decreaseHeat(extinguishRate);
+		extinguishedFireAmount += fire.decreaseHeat(extinguishRate, true);
 	}
 	
 	/**

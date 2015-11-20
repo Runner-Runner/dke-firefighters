@@ -3,6 +3,7 @@ package environment;
 import java.util.Iterator;
 import java.util.Random;
 
+import agent.Statistic;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.continuous.ContinuousSpace;
@@ -53,7 +54,8 @@ public class FireFactory {
 		if(w != null && f == null){
 			//TODO with respect to wetness and material
 			if(random.nextDouble()<frequency){
-				Fire newFire = new Fire(2, wind, grid, context, space);
+				double heat = 2;
+				Fire newFire = new Fire(heat, wind, grid, context, space);
 				context.add(newFire);
 				grid.moveTo(newFire, x,y);
 				space.moveTo(newFire, x,y);

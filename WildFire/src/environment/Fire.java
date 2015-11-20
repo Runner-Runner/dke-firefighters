@@ -5,6 +5,7 @@ import java.util.Random;
 
 import agent.Information;
 import agent.InformationProvider;
+import agent.Statistic;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
@@ -30,6 +31,7 @@ public class Fire implements InformationProvider {
 		this.space = space;
 		this.context = context;
 		this.random = new Random();
+		Statistic.getStatisticFromContext(context).incrementFireCount();
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1, priority = 3)
@@ -90,8 +92,8 @@ public class Fire implements InformationProvider {
 			double maxHeat =  material.burn(heat);
 			this.heat+=(maxHeat-this.heat)*0.05*wind.getSpeed();
 		}
-		
 	}
+	
 	public void increaseHeat(double add){
 		this.heat+=add;
 	}
@@ -100,11 +102,16 @@ public class Fire implements InformationProvider {
 	 * @param sub
 	 * @return The amount of heat that was actually decreased.
 	 */
-	public double decreaseHeat(double sub){
+	public double decreaseHeat(double sub, boolean byForester){
 		this.heat-=sub;
 		if(this.heat<=0){
 			Context<Object> context = ContextUtils.getContext(this);
 			context.remove(this);
+			
+			if(byForester)
+			{
+				Statistic.getStatisticFromContext(context).incrementExtinguishedFireCount();
+			}
 			
 			return sub + this.heat; 
 		}

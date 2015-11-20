@@ -51,7 +51,7 @@ public class WaterCell {
 				}
 			}
 			if(fire!=null){				
-				fire.decreaseHeat(rain);
+				fire.decreaseHeat(rain, false);
 			}
 			else if(wood!=null){
 				wood.shower(rain);
