@@ -1,6 +1,7 @@
 package agent;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import repast.simphony.context.Context;
@@ -18,7 +19,10 @@ import environment.Fire;
 import environment.Fire.FireInformation;
 import environment.Wind;
 
+
 public abstract class ForesterAgent implements InformationProvider {
+	private static int agentCount = 0;
+
 	protected ContinuousSpace<Object> space;
 	protected Grid<Object> grid;
 	
@@ -32,10 +36,22 @@ public abstract class ForesterAgent implements InformationProvider {
 	private int regenerateTime = 0;
 	//how much fire this agent extinguished so far
 	private double extinguishedFireAmount = 0;
-	
+	//belief of environment (fire/wood/agents/wind/clouds)
 	protected Belief belief;
-	
+	//tool to send information and requests to other agents
 	protected CommunicationTool communicationTool;
+	//action and position, the agent wants to execute next
+	protected Intention currentIntention;
+	//list of information other agents sent via communicationtool in the last iteration "mailbox for information"
+	//trusting agents should integrate them in beliefs
+	protected List<Information> messages;
+	//list of requests other agents sent via communicationtool in the last iteration "mailbox for requests"
+	//agent can decide to help/answer
+	protected List<Request> requests;
+	//bounty the agent gets for extinguish fire, wetline or wood-cutting
+	protected double bounty;
+	//costs the agent pays for communication
+	protected double costs;
 	
 	/**
 	 * Does not have to be set. If set, represents a way for other agents 
@@ -53,11 +69,31 @@ public abstract class ForesterAgent implements InformationProvider {
 		this.grid = grid;
 		this.speed = speed;
 		this.extinguishRate = extinguishRate;
-		belief = new Belief();
+		this.belief = new Belief();
+		this.messages = new LinkedList<Information>();
+		this.requests = new LinkedList<Request>();
+		this.currentIntention = new Intention(null, null, null); //no initial intention
 		
-		communicationTool = new CommunicationTool(this, grid);
+		this.communicationTool = new CommunicationTool(this, grid);
+		
+		this.communicationId = this.getClass().toString()+"|"+(agentCount++);
 	}
-	
+	/**
+	 * used by other agents to communicate information
+	 * agent will work with them in the next iteration-step
+	 * @param information
+	 */
+	public void receiveInformation(Information information){
+		this.messages.add(information);
+	}
+	/**
+	 * used by other agents to ask for information or help
+	 * agent will handle them in the next iteration-step
+	 * @param request
+	 */
+	public void receiveRequest(Request request){
+		this.requests.add(request);
+	}
 	@ScheduledMethod(start = 1, interval = 1)
 	public void step() {
 		//check if in burning environment
@@ -264,11 +300,6 @@ public abstract class ForesterAgent implements InformationProvider {
 		}
 	}
 	
-	public Belief getBelief()
-	{
-		return belief;
-	}
-	
 	public CommunicationTool getCommunicationTool()
 	{
 		return communicationTool;
@@ -292,18 +323,22 @@ public abstract class ForesterAgent implements InformationProvider {
 	@Override
 	public AgentInformation getInformation() {
 		GridPoint location = grid.getLocation(this);
-		return new AgentInformation(location.getX(), location.getY(), speed, health);
+		return new AgentInformation(location.getX(), location.getY(), speed, health, currentIntention.getxPosition(), currentIntention.getyPosition());
 	}
 	
 	public static class AgentInformation extends Information {
 
 		private double speed;
 		private int health;
+		private Integer intentionX;
+		private Integer intentionY;
 		
-		private AgentInformation(Integer positionX, Integer positionY, double speed, int health) {
+		private AgentInformation(Integer positionX, Integer positionY, double speed, int health, Integer intentionX, Integer intentionY) {
 			super(positionX, positionY);
 			this.speed = speed;
 			this.health = health;
+			this.intentionX = intentionX;
+			this.intentionY = intentionY;
 		}
 
 		/**
@@ -321,6 +356,14 @@ public abstract class ForesterAgent implements InformationProvider {
 			return speed;
 		}
 		
+		public Integer getIntentionX() {
+			return intentionX;
+		}
+
+		public Integer getIntentionY() {
+			return intentionY;
+		}
+
 		public int getHealth() {
 			return health;
 		}
