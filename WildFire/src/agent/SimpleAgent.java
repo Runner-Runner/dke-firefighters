@@ -24,7 +24,7 @@ public class SimpleAgent extends ForesterAgent {
 	protected void decideOnActions() {
 		GridPoint location = grid.getLocation(this);
 		
-		List<FireInformation> fireInformationList = updateFireKnowledge();
+		List<FireInformation> fireInformationList = updateFireBelief();
 		for(FireInformation fireInformation : fireInformationList)
 		{
 			communicationTool.sendInformation(fireInformation);
@@ -48,7 +48,7 @@ public class SimpleAgent extends ForesterAgent {
 			
 			if(fleeingPoint == null)
 			{
-				//otherwise, move to first nonburning tile
+				//otherwise, move to first non-burning tile
 				GridCellNgh<Fire> nghFireCreator = new GridCellNgh<>(grid, location,
 						Fire.class, 1, 1);
 				List<GridCell<Fire>> fireGridCells = nghFireCreator.getNeighborhood(false);
@@ -77,8 +77,8 @@ public class SimpleAgent extends ForesterAgent {
 		}
 		else
 		{
-			//Move towards closest fire known from knowledge
-			Collection<FireInformation> allInformation = knowledge.getAllInformation(FireInformation.class);
+			//Move towards closest fire known from belief
+			Collection<FireInformation> allInformation = belief.getAllInformation(FireInformation.class);
 			
 			int minDistance = Integer.MAX_VALUE;
 			FireInformation fireTarget = null;

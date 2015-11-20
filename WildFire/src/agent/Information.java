@@ -8,7 +8,7 @@ public abstract class Information {
 	private Integer positionY;
 	
 	/**
-	 * If set true, this class is to be removed from its position in the knowledge mapping 
+	 * If set true, this class is to be removed from its position in the belief mapping 
 	 * (e.g. because the fire was extinguished etc.).
 	 */
 	private boolean emptyInstance;

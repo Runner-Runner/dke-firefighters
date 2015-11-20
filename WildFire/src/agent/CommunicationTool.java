@@ -20,8 +20,6 @@ public class CommunicationTool {
 	 */
 	private Integer sendingRange;
 	
-	//TODO Add additional attribute for sending messages to one specific recipient
-	
 	public CommunicationTool(ForesterAgent sender, Grid<Object> grid)
 	{
 		this.sender = sender;
@@ -35,22 +33,31 @@ public class CommunicationTool {
 	
 	public void sendInformation(Information information)
 	{
-		List<ForesterAgent> recipients = getRecipients();
+		sendInformation(information, getRangeRecipients());
+	}
+	
+	public void sendInformation(Information information, List<ForesterAgent> recipients)
+	{
 		for(ForesterAgent recipient : recipients)
 		{
-			//special cases
-			if(information instanceof WindInformation)
-			{
-				recipient.getKnowledge().setWindInformation((WindInformation) information);
-			}
-			else
-			{
-				recipient.getKnowledge().addInformation(information);
-			}
+			sendInformation(information, recipient);
 		}
 	}
 	
-	private List<ForesterAgent> getRecipients()
+	public void sendInformation(Information information, ForesterAgent recipient)
+	{
+		//special cases
+		if(information instanceof WindInformation)
+		{
+			recipient.getBelief().setWindInformation((WindInformation) information);
+		}
+		else
+		{
+			recipient.getBelief().addInformation(information);
+		}
+	}
+	
+	private List<ForesterAgent> getRangeRecipients()
 	{
 		List<ForesterAgent> recipients = new ArrayList<>();
 		

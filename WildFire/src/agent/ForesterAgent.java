@@ -33,9 +33,15 @@ public abstract class ForesterAgent implements InformationProvider {
 	//how much fire this agent extinguished so far
 	private double extinguishedFireAmount = 0;
 	
-	protected Knowledge knowledge;
+	protected Belief belief;
 	
 	protected CommunicationTool communicationTool;
+	
+	/**
+	 * Does not have to be set. If set, represents a way for other agents 
+	 * to directly communicate with this agent instance.
+	 */
+	private String communicationId;
 	
 	//number of burning injuries it takes to kill a forester.
 	protected final static int STARTING_HEALTH = 5;
@@ -47,7 +53,7 @@ public abstract class ForesterAgent implements InformationProvider {
 		this.grid = grid;
 		this.speed = speed;
 		this.extinguishRate = extinguishRate;
-		knowledge = new Knowledge();
+		belief = new Belief();
 		
 		communicationTool = new CommunicationTool(this, grid);
 	}
@@ -117,7 +123,7 @@ public abstract class ForesterAgent implements InformationProvider {
 		Context<Object> context = ContextUtils.getContext(this);
 		IndexedIterable<Object> windObjects = context.getObjects(Wind.class);
 		Wind wind = (Wind)windObjects.get(0);
-		knowledge.setWindInformation(wind.getInformation());
+		belief.setWindInformation(wind.getInformation());
 		
 		//get information about clouds
 		GridPoint location = grid.getLocation(this);
@@ -134,14 +140,14 @@ public abstract class ForesterAgent implements InformationProvider {
 					if(obj instanceof Cloud)
 					{
 						Cloud cloud = (Cloud)obj;
-						knowledge.addInformation(cloud.getInformation());
+						belief.addInformation(cloud.getInformation());
 						foundCloud = true;
 						break;
 					}
 				}
 				if(!foundCloud)
 				{
-					knowledge.addInformation(new CloudInformation(startX + xOffset, startY + yOffset));
+					belief.addInformation(new CloudInformation(startX + xOffset, startY + yOffset));
 				}
 			}
 		}
@@ -178,11 +184,11 @@ public abstract class ForesterAgent implements InformationProvider {
 	}
 	
 	/**
-	 * Updates knowledge about fire in Moore neighborhood. This action does not require a time step.
+	 * Updates belief about fire in Moore neighborhood. This action does not require a time step.
 	 * 
-	 * @return All information that actually changed the knowledge
+	 * @return All information that actually changed the belief
 	 */
-	protected List<FireInformation> updateFireKnowledge() {
+	protected List<FireInformation> updateFireBelief() {
 		List<FireInformation> fireInformationList = new ArrayList<FireInformation>();
 		
 		//get information about fire
@@ -209,7 +215,7 @@ public abstract class ForesterAgent implements InformationProvider {
 					if(obj instanceof Fire)
 					{
 						FireInformation fireInformation = ((Fire)obj).getInformation();
-						boolean changed = knowledge.addInformation(fireInformation);
+						boolean changed = belief.addInformation(fireInformation);
 						if(changed)
 						{
 							fireInformationList.add(fireInformation);
@@ -222,7 +228,7 @@ public abstract class ForesterAgent implements InformationProvider {
 				{
 					FireInformation removeInformation = new FireInformation(startX + xOffset, startY + yOffset);
 					fireInformationList.add(removeInformation);
-					knowledge.addInformation(removeInformation);
+					belief.addInformation(removeInformation);
 				}
 			}
 		}
@@ -258,9 +264,9 @@ public abstract class ForesterAgent implements InformationProvider {
 		}
 	}
 	
-	public Knowledge getKnowledge()
+	public Belief getBelief()
 	{
-		return knowledge;
+		return belief;
 	}
 	
 	public CommunicationTool getCommunicationTool()
@@ -273,9 +279,15 @@ public abstract class ForesterAgent implements InformationProvider {
 		return extinguishedFireAmount;
 	}
 	
-	public enum Behavior {
-		COOPERATIVE, SELFISH, MIXED, DESTRUCTIVE
-	};
+	public String getCommunicationId()
+	{
+		return communicationId;
+	}
+	
+	public void setCommunicationId(String communicationId) 
+	{
+		this.communicationId = communicationId;
+	}
 	
 	@Override
 	public AgentInformation getInformation() {
@@ -313,4 +325,9 @@ public abstract class ForesterAgent implements InformationProvider {
 			return health;
 		}
 	}
+	
+	public enum Behavior {
+		COOPERATIVE, SELFISH, MIXED, DESTRUCTIVE
+	};
+
 }
