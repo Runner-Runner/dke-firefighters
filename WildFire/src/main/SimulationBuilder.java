@@ -97,7 +97,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		
 		//create agents
 		for(int i = 0;i<numberAgents;i++){
-			double speed = RandomHelper.nextDoubleFromTo(0.25, 1);
+			double speed = RandomHelper.nextDoubleFromTo(1, 2);
 			context.add(new SimpleAgent(space, grid, speed, 2));
 		}
 		
