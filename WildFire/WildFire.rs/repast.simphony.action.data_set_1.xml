@@ -33,6 +33,33 @@
         <aggType>SUM</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
+    <entry>
+      <string>FirePercent</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>FirePercent</id>
+        <className>agent.Statistic</className>
+        <methodName>getFireCountPercent</methodName>
+        <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>WoodPercent</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>WoodPercent</id>
+        <className>agent.Statistic</className>
+        <methodName>getWoodCountPercent</methodName>
+        <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>FireExtinguishedPercent</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>FireExtinguishedPercent</id>
+        <className>agent.Statistic</className>
+        <methodName>getFireExtinguishedPercent</methodName>
+        <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
   </methodDataSources>
   <countSources class="linked-hash-map">
     <entry>
