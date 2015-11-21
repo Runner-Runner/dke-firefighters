@@ -40,6 +40,10 @@ public class Belief {
 	{
 		@SuppressWarnings("unchecked")
 		InformationMap<T> informationMap = (InformationMap<T>)specificInformationMap.get(information.getClass());
+		if(informationMap == null)
+		{
+			return false;
+		}
 		return informationMap.addInformation(information);
 	}
 	

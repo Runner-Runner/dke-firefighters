@@ -19,10 +19,8 @@ import environment.Fire;
 import environment.Fire.FireInformation;
 import environment.Wind;
 
-
-
 public abstract class ForesterAgent implements InformationProvider, DataProviderExtinguishedFireAmount {
-private static int agentCount = 0;
+	private static int agentCount = 0;
 	protected ContinuousSpace<Object> space;
 	protected Grid<Object> grid;
 
@@ -114,7 +112,7 @@ private static int agentCount = 0;
 		this.offers.add(ro);
 	}
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 10)
+	@ScheduledMethod(start = 1, interval = 1, priority = 45)
 	public void changeConditions(){
 		// check if in burning environment
 		if (isOnBurningTile()) {
@@ -126,22 +124,23 @@ private static int agentCount = 0;
 		regenerateTime++;
 		regenerate();
 	}
-	@ScheduledMethod(start = 1, interval = 1, priority = 11)
+	
+	@ScheduledMethod(start = 1, interval = 1, priority = 40)
 	public void checkNeighbourhood(){
 		updateNeighborhoodBelief();
 	}
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 12)
+	@ScheduledMethod(start = 1, interval = 1, priority = 35)
 	public abstract void doRequests();
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 13)
+	@ScheduledMethod(start = 1, interval = 1, priority = 30)
 	public abstract void checkResponds();
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 14)
-	public abstract void checkConfimations();
+	@ScheduledMethod(start = 1, interval = 1, priority = 25)
+	public abstract void checkConfirmations();
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 15)
-	protected abstract void doActions();
+	@ScheduledMethod(start = 1, interval = 1, priority = 20)
+	public abstract void doActions();
 
 	/**
 	 * Extinguish fire in one grid space. Time-consuming action: takes up one
@@ -341,7 +340,7 @@ private static int agentCount = 0;
 
 				for(Object obj : gridObjects)
 				{
-					if(obj instanceof InformationProvider)
+					if(obj instanceof Fire || obj instanceof ForesterAgent)
 					{
 						Information information = ((InformationProvider)obj).getInformation();
 						boolean changed = belief.addInformation(information);

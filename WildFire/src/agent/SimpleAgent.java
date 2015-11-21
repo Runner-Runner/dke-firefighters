@@ -144,12 +144,12 @@ public class SimpleAgent extends ForesterAgent {
 	}
 
 	@Override
-	public void checkConfimations() {
+	public void checkConfirmations() {
 		this.confirmations.clear();
 	}
 
 	@Override
-	protected void doActions() {
+	public void doActions() {
 		decideOnActions();
 	}
 }

@@ -93,16 +93,15 @@ public class BDIAgent extends ForesterAgent{
 	}
 
 	@Override
-	public void checkConfimations() {
+	public void checkConfirmations() {
 		// TODO if there is a confirmation change your intention
 		
 	}
 
 	@Override
-	protected void doActions() {
+	public void doActions() {
 		if (!flee()) {
 			// TODO act with respect to your intention (move, extinguish, wetline, woodcutting, check weather)
-			
 			// go for a walk
 			GridPoint location = grid.getLocation(this);
 			Random r = new Random();
