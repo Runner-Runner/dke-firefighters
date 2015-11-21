@@ -39,7 +39,7 @@ public class CloudFactory {
 	}
 	
 	
-	@ScheduledMethod(start = 1, interval = 10, priority = 2)
+	@ScheduledMethod(start = 1, interval = 10, priority = 998)
 	public void createCloud() {
 		//if new cloud is going to be created depends on actual wind speed, cloud frequency and random value
 		if(random.nextDouble()<cloudFrequency*wind.getSpeed()){

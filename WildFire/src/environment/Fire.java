@@ -34,7 +34,7 @@ public class Fire implements InformationProvider {
 		Statistic.getStatisticFromContext(context).incrementFireCount();
 	}
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 3)
+	@ScheduledMethod(start = 1, interval = 1, priority = 996)
 	public void step() {
 		GridPoint pt = grid.getLocation(this);
 		//propagation

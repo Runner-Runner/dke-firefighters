@@ -33,7 +33,7 @@ public class FireFactory {
 	}
 	
 	
-	@ScheduledMethod(start = 1, interval = 5, priority = 2)
+	@ScheduledMethod(start = 1, interval = 5, priority = 997)
 	public void step() {
 		int x = maxCloudDim+ random.nextInt(forestDim);
 		int y = maxCloudDim + random.nextInt(forestDim);
