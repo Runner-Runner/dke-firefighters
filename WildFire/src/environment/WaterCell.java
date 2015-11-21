@@ -24,7 +24,7 @@ public class WaterCell {
 		this.cloud = cloud;
 	}
 
-	@ScheduledMethod(start = 1, interval = 1, priority = 3)
+	@ScheduledMethod(start = 1, interval = 1, priority = 995)
 	public void step(){
 		if(move())
 			rain();
