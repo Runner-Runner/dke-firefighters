@@ -19,6 +19,7 @@ import repast.simphony.space.grid.StrictBorders;
 import agent.BDIAgent;
 import agent.GraveyardStatistic;
 import agent.SimpleAgent;
+import agent.Statistic;
 import environment.CloudFactory;
 import environment.FireFactory;
 import environment.ForestFactory;
@@ -27,9 +28,7 @@ import environment.Wood;
 
 public class SimulationBuilder implements ContextBuilder<Object>{
 	
-
-	
-	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Context build(Context<Object> context) {
 		Parameters  params = RunEnvironment.getInstance (). getParameters ();
@@ -85,10 +84,13 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		context.add(cf);
 		
 		//add forest
+		//value for statistics
+		double totalWoodHealth = 0;
 		ForestFactory forest = new ForestFactory(maxWoodHealth, minWoodHealth, maxMaterialFactor, minMaterialFactor);
 		for(int i = maxCloudDim;i<maxCloudDim+forestDim;i++){
 			for(int j = maxCloudDim;j<maxCloudDim+forestDim;j++){
 				Wood w = forest.getWood();
+				totalWoodHealth += w.getHealth();
 				context.add(w);
 				space.moveTo(w, i, j);
 			}
@@ -112,6 +114,9 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		}
 
 		context.add(GraveyardStatistic.getInstance());
+		
+		Statistic statistic = new Statistic(totalWoodHealth);
+		context.add(statistic);
 		
 		return context;
 	}

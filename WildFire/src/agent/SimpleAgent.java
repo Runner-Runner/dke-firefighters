@@ -34,7 +34,7 @@ public class SimpleAgent extends ForesterAgent {
 		{
 			//send to a fraction of the entire forest grid
 			communicationTool.setSendingRange((int)((gridHeight+gridWidth)/20));
-//			communicationTool.sendInformation(fireInformation);
+			communicationTool.sendInformation(fireInformation);
 		}
 		
 		//avoid being on burning forest tiles

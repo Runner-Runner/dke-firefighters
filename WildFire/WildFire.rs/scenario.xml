@@ -6,5 +6,6 @@
 <repast.simphony.action.time_series_chart context="WildFire" file="repast.simphony.action.time_series_chart_3.xml" />
 <repast.simphony.action.time_series_chart context="WildFire" file="repast.simphony.action.time_series_chart_4.xml" />
 <repast.simphony.action.time_series_chart context="WildFire" file="repast.simphony.action.time_series_chart_5.xml" />
-<repast.simphony.action.display context="WildFire" file="repast.simphony.action.display_6.xml" />
+<repast.simphony.action.time_series_chart context="WildFire" file="repast.simphony.action.time_series_chart_6.xml" />
+<repast.simphony.action.display context="WildFire" file="repast.simphony.action.display_7.xml" />
 </Scenario>

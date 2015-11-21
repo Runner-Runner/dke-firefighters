@@ -147,7 +147,7 @@ private static int agentCount = 0;
 			return false;
 		}
 		else{
-			extinguishedFireAmount += fire.decreaseHeat(extinguishRate);
+			extinguishedFireAmount += fire.decreaseHeat(extinguishRate, true);
 			return true;
 		}
 	}
