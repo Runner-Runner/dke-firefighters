@@ -21,7 +21,6 @@ public class SimpleAgent extends ForesterAgent {
 		super(space, grid, speed, extinguishRate);
 	}
 
-	@Override
 	protected void decideOnActions() {
 		GridPoint location = grid.getLocation(this);
 		
@@ -132,5 +131,25 @@ public class SimpleAgent extends ForesterAgent {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void doRequests() {
+	}
+
+	@Override
+	public void checkResponds() {
+		this.messages.clear();
+		this.offers.clear();
+	}
+
+	@Override
+	public void checkConfimations() {
+		this.confirmations.clear();
+	}
+
+	@Override
+	protected void doActions() {
+		decideOnActions();
 	}
 }

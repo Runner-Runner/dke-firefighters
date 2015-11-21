@@ -50,6 +50,10 @@ private static int agentCount = 0;
 	//list of requests other agents sent via communicationtool in the last iteration "mailbox for requests"
 	//agent can decide to help/answer
 	protected List<Request> requests;
+	//other agents responds to your request
+	protected List<RequestOffer> offers;
+	//confirmations according your offer
+	protected List<RequestConfirm> confirmations;
 	//bounty the agent gets for extinguish fire, wetline or wood-cutting
 	protected double bounty;
 	//costs the agent pays for communication
@@ -77,6 +81,8 @@ private static int agentCount = 0;
 		this.belief = new Belief();
 		this.messages = new LinkedList<Information>();
 		this.requests = new LinkedList<Request>();
+		this.offers = new LinkedList<RequestOffer>();
+		this.confirmations = new LinkedList<RequestConfirm>();
 		this.currentIntention = new Intention(null, null, null); //no initial intention
 		
 		this.communicationTool = new CommunicationTool(this, grid);
@@ -99,8 +105,17 @@ private static int agentCount = 0;
 	public void receiveRequest(Request request){
 		this.requests.add(request);
 	}
-	@ScheduledMethod(start = 1, interval = 1)
-	public void step() {
+	
+	public void receiveConfirmation(RequestConfirm rc){
+		this.confirmations.add(rc);
+	}
+	
+	public void receiveOffer(RequestOffer ro){
+		this.offers.add(ro);
+	}
+	
+	@ScheduledMethod(start = 1, interval = 1, priority = 10)
+	public void changeConditions(){
 		// check if in burning environment
 		if (isOnBurningTile()) {
 			boolean lethal = burn();
@@ -110,11 +125,23 @@ private static int agentCount = 0;
 		}
 		regenerateTime++;
 		regenerate();
-
-		decideOnActions();
 	}
-
-	protected abstract void decideOnActions();
+	@ScheduledMethod(start = 1, interval = 1, priority = 11)
+	public void checkNeighbourhood(){
+		updateNeighborhoodBelief();
+	}
+	
+	@ScheduledMethod(start = 1, interval = 1, priority = 12)
+	public abstract void doRequests();
+	
+	@ScheduledMethod(start = 1, interval = 1, priority = 13)
+	public abstract void checkResponds();
+	
+	@ScheduledMethod(start = 1, interval = 1, priority = 14)
+	public abstract void checkConfimations();
+	
+	@ScheduledMethod(start = 1, interval = 1, priority = 15)
+	protected abstract void doActions();
 
 	/**
 	 * Extinguish fire in one grid space. Time-consuming action: takes up one

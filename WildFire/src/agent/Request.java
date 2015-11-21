@@ -1,11 +1,13 @@
 package agent;
 
 public abstract class Request {
+	private static int requestCounter = 0;
 	//TODO maybe use enum for importance
 	protected int importance;
 	protected Integer positionX;
 	protected Integer positionY;
 	protected String senderID;
+	protected int id;
 	
 	public Request(String senderID, int importance, Integer positionX, Integer positionY) {
 		super();
@@ -13,6 +15,11 @@ public abstract class Request {
 		this.importance = importance;
 		this.positionX = positionX;
 		this.positionY = positionY;
+		this.id = requestCounter++;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	public String getSenderID() {

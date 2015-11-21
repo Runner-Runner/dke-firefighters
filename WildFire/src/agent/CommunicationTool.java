@@ -53,6 +53,17 @@ public class CommunicationTool {
 	public double sendRequest(Request request, String id){
 		return sendRequest(request, getAgent(id));
 	}
+	public double sendRequestOffer(String id, RequestOffer ro){
+		ForesterAgent recipient = getAgent(id);
+		recipient.receiveOffer(ro);
+		return calculateDistance(sender, recipient);
+	}
+	public double sendRequestConfirm(String id, RequestConfirm rc){
+		ForesterAgent recipient = getAgent(id);
+		recipient.receiveConfirmation(rc);
+		return calculateDistance(sender, recipient);
+	}
+	
 	private double sendInformation(List<ForesterAgent> recipients, Information information)
 	{
 		double sum = 0;
