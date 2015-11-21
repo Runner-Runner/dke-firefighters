@@ -1,14 +1,14 @@
 package agent;
 
 public class ActionRequest extends Request{
-	private Class<? extends Action> action;
+	private Action action;
 	
-	public ActionRequest(int importance, Integer positionX, Integer positionY, Class<? extends Action> action) {
-		super(importance, positionX, positionY);
+	public ActionRequest(int importance, Integer positionX, Integer positionY, Action action, String senderID) {
+		super(senderID, importance, positionX, positionY);
 		this.action = action;
 	}
 
-	public Class<? extends Action> getAction() {
+	public Action getAction() {
 		return action;
 	}
 	

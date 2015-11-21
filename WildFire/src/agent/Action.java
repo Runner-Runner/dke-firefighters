@@ -1,5 +1,7 @@
 package agent;
 
+import repast.simphony.space.grid.GridPoint;
+
 public abstract class Action {
 	protected double incrementalBounty; //bounty you get during the action
 	protected double finalBounty; //bounty you get for a finished action (woodcutting)
@@ -15,4 +17,5 @@ public abstract class Action {
 	public double getFinalBounty(){
 		return finalBounty;
 	}
+	public abstract boolean execute(ForesterAgent agent, GridPoint gp);
 }

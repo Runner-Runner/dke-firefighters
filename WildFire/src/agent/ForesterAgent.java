@@ -59,7 +59,7 @@ private static int agentCount = 0;
 	 * Does not have to be set. If set, represents a way for other agents 
 	 * to directly communicate with this agent instance.
 	 */
-	private String communicationId;
+	protected String communicationId;
 	
 	//number of burning injuries it takes to kill a forester.
 	protected final static int STARTING_HEALTH = 5;
@@ -122,14 +122,14 @@ private static int agentCount = 0;
 	 * 
 	 * @param pt
 	 */
-	protected void extinguishFire(GridPoint pt) {
+	protected boolean extinguishFire(GridPoint pt) {
 		GridPoint position = grid.getLocation(this);
 
 		// check if fire position really is in the Moore neighborhood
 		if (Math.abs(position.getX() - pt.getX()) > 1
 				|| Math.abs(position.getY() - pt.getY()) > 1) {
 			// illegal action
-			return;
+			return false;
 		}
 
 		Iterable<Object> objects = grid.getObjectsAt(pt.getX(), pt.getY());
@@ -142,10 +142,14 @@ private static int agentCount = 0;
 		}
 		if (fire == null) {
 			// no fire to extinguish
-			return;
+			FireInformation extinguished = new FireInformation(pt.getX(), pt.getY());
+			belief.addInformation(extinguished);
+			return false;
 		}
-
-		extinguishedFireAmount += fire.decreaseHeat(extinguishRate);
+		else{
+			extinguishedFireAmount += fire.decreaseHeat(extinguishRate);
+			return true;
+		}
 	}
 
 	/**
@@ -195,6 +199,9 @@ private static int agentCount = 0;
 	 * @param pt target gridpoint
 	 */
 	protected void moveTowards(GridPoint pt) {
+		if(pt.getX()<0||pt.getY()<0||pt.getX()>=grid.getDimensions().getWidth()||pt.getY()>=grid.getDimensions().getHeight()){
+			return;
+		}
 		//current grid position
 		GridPoint oldPos = grid.getLocation(this);
 		

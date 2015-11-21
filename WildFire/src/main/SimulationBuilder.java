@@ -16,6 +16,7 @@ import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridBuilderParameters;
 import repast.simphony.space.grid.SimpleGridAdder;
 import repast.simphony.space.grid.StrictBorders;
+import agent.BDIAgent;
 import agent.GraveyardStatistic;
 import agent.SimpleAgent;
 import environment.CloudFactory;
@@ -96,7 +97,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		//create agents
 		for(int i = 0;i<numberAgents;i++){
 			double speed = RandomHelper.nextDoubleFromTo(1, 2);
-			context.add(new SimpleAgent(space, grid, speed, 2));
+			context.add(new BDIAgent(space, grid, speed, 2));
 		}
 		
 		FireFactory fire = new FireFactory(context, grid, space, wind, sparkingFactor, forestDim, maxCloudDim);
