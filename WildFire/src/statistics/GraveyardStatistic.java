@@ -1,4 +1,4 @@
-package agent;
+package statistics;
 
 /**
  * Stores data from agents that died and are removed from the context, thus preventing 

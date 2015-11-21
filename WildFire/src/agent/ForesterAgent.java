@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import agent.bdi.Intention;
+import agent.communication.CommunicationTool;
+import agent.communication.info.Information;
+import agent.communication.info.InformationProvider;
+import agent.communication.request.Request;
+import agent.communication.request.RequestConfirm;
+import agent.communication.request.RequestOffer;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.SpatialMath;
@@ -13,6 +20,8 @@ import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.ContextUtils;
 import repast.simphony.util.collections.IndexedIterable;
+import statistics.DataProviderExtinguishedFireAmount;
+import statistics.GraveyardStatistic;
 import environment.Cloud;
 import environment.Cloud.CloudInformation;
 import environment.Fire;
@@ -148,7 +157,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	 * 
 	 * @param pt
 	 */
-	protected boolean extinguishFire(GridPoint pt) {
+	public boolean extinguishFire(GridPoint pt) {
 		GridPoint position = grid.getLocation(this);
 
 		// check if fire position really is in the Moore neighborhood

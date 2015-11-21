@@ -1,4 +1,4 @@
-package agent;
+package statistics;
 
 /**
  * Interface to tell the data evaluation where to grab certain data from. 

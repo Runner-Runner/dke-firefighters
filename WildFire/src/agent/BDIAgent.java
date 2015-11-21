@@ -3,6 +3,9 @@ package agent;
 import java.util.List;
 import java.util.Random;
 
+import agent.bdi.Extinguish;
+import agent.communication.info.Information;
+import agent.communication.request.ActionRequest;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.space.continuous.ContinuousSpace;

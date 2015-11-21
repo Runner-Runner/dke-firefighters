@@ -1,8 +1,13 @@
-package agent;
+package agent.communication;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import agent.ForesterAgent;
+import agent.communication.info.Information;
+import agent.communication.request.Request;
+import agent.communication.request.RequestConfirm;
+import agent.communication.request.RequestOffer;
 import repast.simphony.context.Context;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;

@@ -3,9 +3,8 @@ package environment;
 import java.util.List;
 import java.util.Random;
 
-import agent.Information;
-import agent.InformationProvider;
-import agent.Statistic;
+import agent.communication.info.Information;
+import agent.communication.info.InformationProvider;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
@@ -14,6 +13,7 @@ import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.ContextUtils;
+import statistics.Statistic;
 
 public class Fire implements InformationProvider {
 	private double heat; //number of points to decrease woods lifepoints each iteration

@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import agent.ForesterAgent.AgentInformation;
+import agent.communication.info.Information;
+import agent.communication.info.InformationMap;
 import environment.Cloud.CloudInformation;
 import environment.Fire.FireInformation;
 import environment.Wind.WindInformation;

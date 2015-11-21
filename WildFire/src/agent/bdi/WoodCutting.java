@@ -1,10 +1,11 @@
-package agent;
+package agent.bdi;
 
+import agent.ForesterAgent;
 import repast.simphony.space.grid.GridPoint;
 
-public class Wetline extends Action{
-	public Wetline() {
-		super(2, 5);
+public class WoodCutting extends Action{
+	public WoodCutting() {
+		super(0,20);
 	}
 
 	@Override

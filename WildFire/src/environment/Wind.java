@@ -2,8 +2,8 @@ package environment;
 
 import java.util.Random;
 
-import agent.Information;
-import agent.InformationProvider;
+import agent.communication.info.Information;
+import agent.communication.info.InformationProvider;
 import repast.simphony.context.Context;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;

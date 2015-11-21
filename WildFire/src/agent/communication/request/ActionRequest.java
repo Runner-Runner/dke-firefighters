@@ -1,4 +1,6 @@
-package agent;
+package agent.communication.request;
+
+import agent.bdi.Action;
 
 public class ActionRequest extends Request{
 	private Action action;

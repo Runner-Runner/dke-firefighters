@@ -1,4 +1,5 @@
-package agent;
+package agent.bdi;
+
 
 public class Intention {
 	private Action action;

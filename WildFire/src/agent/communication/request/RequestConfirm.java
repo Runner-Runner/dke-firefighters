@@ -1,4 +1,4 @@
-package agent;
+package agent.communication.request;
 
 public class RequestConfirm {
 	private String senderID;

@@ -3,11 +3,11 @@ package environment;
 import java.util.Iterator;
 import java.util.Random;
 
-import agent.Statistic;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
+import statistics.Statistic;
 
 public class FireFactory {
 	private Grid<Object> grid;

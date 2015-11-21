@@ -1,10 +1,11 @@
-package agent;
+package agent.bdi;
 
+import agent.ForesterAgent;
 import repast.simphony.space.grid.GridPoint;
 
 public class Extinguish extends Action{
 
-	protected Extinguish() {
+	public Extinguish() {
 		super(3, 20);
 	}
 

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+import agent.communication.info.Information;
 import environment.Fire;
 import environment.Fire.FireInformation;
 import environment.Wood;

@@ -1,4 +1,4 @@
-package agent;
+package agent.communication.request;
 
 public abstract class Request {
 	private static int requestCounter = 0;

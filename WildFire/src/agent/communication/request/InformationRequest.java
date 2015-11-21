@@ -1,4 +1,7 @@
-package agent;
+package agent.communication.request;
+
+import agent.communication.info.Information;
+
 
 public class InformationRequest extends Request{
 	private Class<? extends Information> information;

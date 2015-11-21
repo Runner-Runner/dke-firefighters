@@ -1,4 +1,4 @@
-package agent;
+package agent.communication.info;
 
 import repast.simphony.engine.environment.RunEnvironment;
 
