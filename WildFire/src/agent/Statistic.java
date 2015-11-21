@@ -10,13 +10,9 @@ import environment.Wood;
 public class Statistic 
 {
 	private double totalWoodHealth;
+	private double totalAgentCount;
 	private int totalFireCount = 0;
 	private int extinguishedFireCount = 0;
-	
-	public Statistic(double totalWoodHealth)
-	{
-		this.totalWoodHealth = totalWoodHealth;
-	}
 	
 	public static Statistic getStatisticFromContext(Context<Object> context)
 	{
@@ -31,6 +27,16 @@ public class Statistic
 			return (Statistic)object;
 		}
 		return null;
+	}
+	
+	public void setTotalWoodHealth(double totalWoodHealth)
+	{
+		this.totalWoodHealth = totalWoodHealth;
+	}
+	
+	public void setTotalAgentCount(double totalAgentCount)
+	{
+		this.totalAgentCount = totalAgentCount;
 	}
 	
 	public void incrementFireCount()
@@ -56,6 +62,15 @@ public class Statistic
 	
 	public double getWoodCountPercent()
 	{
+		return getWoodHealthPercent();
+	}
+	
+	public double getWoodHealthPercent()
+	{
+		if(totalWoodHealth == 0)
+		{
+			return 0;
+		}
 		Context<Object> context = ContextUtils.getContext(this);
 		IndexedIterable<Object> objects = context.getObjects(Wood.class);
 		double currentTotalWoodHealth = 0;
@@ -77,5 +92,16 @@ public class Statistic
 			return 0;
 		}
 		return ((double)extinguishedFireCount) / totalFireCount;
+	}
+	
+	public double getAgentCountPercent()
+	{
+		if(totalAgentCount == 0)
+		{
+			return 0;
+		}
+		Context<Object> context = ContextUtils.getContext(this);
+		double currentAgentCount = context.getObjects(ForesterAgent.class).size();
+		return currentAgentCount / totalAgentCount;
 	}
 }

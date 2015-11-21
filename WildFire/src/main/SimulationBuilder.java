@@ -115,7 +115,9 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 
 		context.add(GraveyardStatistic.getInstance());
 		
-		Statistic statistic = new Statistic(totalWoodHealth);
+		Statistic statistic = new Statistic();
+		statistic.setTotalWoodHealth(totalWoodHealth);
+		statistic.setTotalAgentCount(numberAgents);
 		context.add(statistic);
 		
 		return context;
