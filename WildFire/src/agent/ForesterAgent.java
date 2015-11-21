@@ -289,8 +289,8 @@ private static int agentCount = 0;
 	 * 
 	 * @return All information that actually changed the belief
 	 */
-	protected List<FireInformation> updateFireBelief() {
-		List<FireInformation> fireInformationList = new ArrayList<FireInformation>();
+	protected List<Information> updateNeighborhoodBelief() {
+		List<Information> informationList = new ArrayList<>();
 
 		// get information about fire
 		GridPoint location = grid.getLocation(this);
@@ -310,30 +310,52 @@ private static int agentCount = 0;
 				Iterable<Object> gridObjects = grid.getObjectsAt(startX
 						+ xOffset, startY + yOffset);
 				boolean foundFire = false;
+				boolean foundAgent = false;
 
 				for(Object obj : gridObjects)
 				{
-					if(obj instanceof Fire)
+					if(obj instanceof InformationProvider)
 					{
-						FireInformation fireInformation = ((Fire)obj).getInformation();
-						boolean changed = belief.addInformation(fireInformation);
+						Information information = ((InformationProvider)obj).getInformation();
+						boolean changed = belief.addInformation(information);
 						if(changed)
 						{
-							fireInformationList.add(fireInformation);
+							informationList.add(information);
+						}
+						
+						if(obj instanceof Fire)
+						{
 							foundFire = true;
-							break;
+						}
+						if(obj instanceof ForesterAgent)
+						{
+							foundAgent = true;
 						}
 					}
 				}
 				if (!foundFire) {
 					FireInformation removeInformation = new FireInformation(
 							startX + xOffset, startY + yOffset);
-					fireInformationList.add(removeInformation);
-					belief.addInformation(removeInformation);
+					boolean changed = belief.addInformation(removeInformation);
+					if(changed)
+					{
+						informationList.add(removeInformation);
+					}
+				}
+				if(!foundAgent)
+				{
+					AgentInformation removeInformation = new AgentInformation(
+							startX + xOffset, startY + yOffset);
+					informationList.add(removeInformation);
+					boolean changed = belief.addInformation(removeInformation);
+					if(changed)
+					{
+						informationList.add(removeInformation);
+					}
 				}
 			}
 		}
-		return fireInformationList;
+		return informationList;
 	}
 
 	/**

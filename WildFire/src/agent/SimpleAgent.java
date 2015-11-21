@@ -29,12 +29,12 @@ public class SimpleAgent extends ForesterAgent {
 		int gridHeight = dimensions.getHeight();
 		int gridWidth = dimensions.getWidth();
 		
-		List<FireInformation> fireInformationList = updateFireBelief();
-		for(FireInformation fireInformation : fireInformationList)
+		List<Information> informationList = updateNeighborhoodBelief();
+		for(Information information : informationList)
 		{
 			//send to a fraction of the entire forest grid
 			communicationTool.setSendingRange((int)((gridHeight+gridWidth)/20));
-			communicationTool.sendInformation(fireInformation);
+			communicationTool.sendInformation(information);
 		}
 		
 		//avoid being on burning forest tiles

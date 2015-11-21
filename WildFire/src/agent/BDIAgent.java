@@ -1,19 +1,17 @@
 package agent;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import environment.Fire;
-import environment.Fire.FireInformation;
-import environment.Wind.WindInformation;
-import environment.Wood;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
+import environment.Fire;
+import environment.Fire.FireInformation;
+import environment.Wood;
 
 public class BDIAgent extends ForesterAgent{
 
@@ -24,7 +22,7 @@ public class BDIAgent extends ForesterAgent{
 
 	@Override
 	protected void decideOnActions() {
-		checkMooreNeighbourhood(); 
+		updateNeighborhoodBelief(); 
 		checkMessages();
 		checkIntention();
 		handleRequests();
@@ -160,6 +158,8 @@ public class BDIAgent extends ForesterAgent{
 				}
 			}
 		}
+		//TODO What if another agent is even closer? Should the other agent 
+		//send back a confirmation and only then this intention is changed?
 		requests.clear();
 	}
 	private double calculateDistance(int x1, int y1, int x2, int y2){
@@ -172,24 +172,4 @@ public class BDIAgent extends ForesterAgent{
 		}
 		messages.clear();
 	}
-
-	private void checkMooreNeighbourhood() {
-		GridPoint location = grid.getLocation(this);
-		GridCellNgh<InformationProvider> nghCreator = new GridCellNgh<>(grid, location,
-				InformationProvider.class, 1, 1);
-		List<GridCell<InformationProvider>> gridCells = nghCreator.getNeighborhood(true);
-		for (GridCell<InformationProvider> cell : gridCells) {
-			Iterator<InformationProvider> it = cell.items().iterator();
-			while(it.hasNext()){
-				Information i = it.next().getInformation();
-				if(!(i instanceof WindInformation))
-					this.belief.addInformation(i);
-			}
-		}
-
-		//TODO check if fire disappeared in other cells
-	}
-	
-	
-	
 }
