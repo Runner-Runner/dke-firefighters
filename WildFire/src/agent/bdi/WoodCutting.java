@@ -1,7 +1,7 @@
 package agent.bdi;
 
-import agent.ForesterAgent;
 import repast.simphony.space.grid.GridPoint;
+import agent.ForesterAgent;
 
 public class WoodCutting extends Action{
 	public WoodCutting() {
@@ -9,7 +9,12 @@ public class WoodCutting extends Action{
 	}
 
 	@Override
-	public boolean execute(ForesterAgent agent, GridPoint gp) {
+	protected boolean isInExecutePosition(ForesterAgent agent, GridPoint gp) {
+		return agent.getPosition().equals(gp);
+	}
+	
+	@Override
+	public boolean executeInner(ForesterAgent agent, GridPoint gp) {
 		// TODO Auto-generated method stub
 		return false;
 	}

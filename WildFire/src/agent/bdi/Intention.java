@@ -5,18 +5,18 @@ public class Intention {
 	private Action action;
 	private Integer xPosition;
 	private Integer yPosition;
-	private String requester;
+	private String requesterId;
 
-	public Intention(Action action, Integer xPosition, Integer yPosition, String requester) {
+	public Intention(Action action, Integer xPosition, Integer yPosition, String requesterId) {
 		super();
 		this.action = action;
 		this.xPosition = xPosition;
 		this.yPosition = yPosition;
-		this.requester = requester;
+		this.requesterId = requesterId;
 	}
 
-	public String getRequester() {
-		return requester;
+	public String getRequesterId() {
+		return requesterId;
 	}
 
 	public Action getAction() {

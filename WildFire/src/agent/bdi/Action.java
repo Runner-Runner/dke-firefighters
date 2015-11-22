@@ -1,6 +1,7 @@
 package agent.bdi;
 
 import agent.ForesterAgent;
+import agent.communication.CommunicationTool;
 import repast.simphony.space.grid.GridPoint;
 
 public abstract class Action {
@@ -18,5 +19,20 @@ public abstract class Action {
 	public double getFinalBounty(){
 		return finalBounty;
 	}
-	public abstract boolean execute(ForesterAgent agent, GridPoint gp);
+
+	public boolean execute(ForesterAgent agent, GridPoint gp)
+	{
+		if(isInExecutePosition(agent, gp))
+		{
+			return executeInner(agent, gp);
+		}
+		else
+		{
+			agent.moveTowards(gp);
+			return true;
+		}
+	}
+	
+	protected abstract boolean isInExecutePosition(ForesterAgent agent, GridPoint gp);
+	protected abstract boolean executeInner(ForesterAgent agent, GridPoint gp);
 }

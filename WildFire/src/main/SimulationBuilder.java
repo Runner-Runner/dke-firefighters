@@ -89,7 +89,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		ForestFactory forest = new ForestFactory(maxWoodHealth, minWoodHealth, maxMaterialFactor, minMaterialFactor);
 		for(int i = maxCloudDim;i<maxCloudDim+forestDim;i++){
 			for(int j = maxCloudDim;j<maxCloudDim+forestDim;j++){
-				Wood w = forest.getWood();
+				Wood w = forest.getWood(i, j);
 				totalWoodHealth += w.getHealth();
 				context.add(w);
 				space.moveTo(w, i, j);
@@ -115,7 +115,8 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 
 		context.add(GraveyardStatistic.getInstance());
 		
-		Statistic statistic = new Statistic();
+		Statistic statistic = Statistic.getInstance();
+		statistic.setGridSize(grid.getDimensions().getWidth(), grid.getDimensions().getHeight());
 		statistic.setTotalWoodHealth(totalWoodHealth);
 		statistic.setTotalAgentCount(numberAgents);
 		context.add(statistic);

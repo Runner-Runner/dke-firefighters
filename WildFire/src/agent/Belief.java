@@ -9,25 +9,20 @@ import agent.communication.info.InformationMap;
 import environment.Cloud.CloudInformation;
 import environment.Fire.FireInformation;
 import environment.Wind.WindInformation;
+import environment.Wood.WoodInformation;
 
 public class Belief {
 	private WindInformation windInformation;
-	private InformationMap<CloudInformation> cloudInformationMap;
-	private InformationMap<FireInformation> fireInformationMap;
-	private InformationMap<AgentInformation> agentInformationMap;
 
 	private HashMap<Class<? extends Information>, InformationMap<? extends Information>> specificInformationMap;
 	
 	public Belief() {
 		specificInformationMap = new HashMap<>();
 		
-		cloudInformationMap = new InformationMap<>();
-		fireInformationMap = new InformationMap<>();
-		agentInformationMap = new InformationMap<>();
-		
-		specificInformationMap.put(CloudInformation.class, cloudInformationMap);
-		specificInformationMap.put(FireInformation.class, fireInformationMap);
-		specificInformationMap.put(AgentInformation.class, agentInformationMap);
+		specificInformationMap.put(CloudInformation.class, new InformationMap<CloudInformation>());
+		specificInformationMap.put(FireInformation.class, new InformationMap<FireInformation>());
+		specificInformationMap.put(WoodInformation.class, new InformationMap<WoodInformation>());
+		specificInformationMap.put(AgentInformation.class, new InformationMap<AgentInformation>());
 	}
 	
 	public <T extends Information> Collection<T> getAllInformation(Class<T> informationClass)

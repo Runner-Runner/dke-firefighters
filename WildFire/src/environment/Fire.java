@@ -31,7 +31,7 @@ public class Fire implements InformationProvider {
 		this.space = space;
 		this.context = context;
 		this.random = new Random();
-		Statistic.getStatisticFromContext(context).incrementFireCount();
+		Statistic.getInstance().incrementFireCount();
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1, priority = 996)
@@ -110,7 +110,7 @@ public class Fire implements InformationProvider {
 			
 			if(byForester)
 			{
-				Statistic.getStatisticFromContext(context).incrementExtinguishedFireCount();
+				Statistic.getInstance().incrementExtinguishedFireCount();
 			}
 			
 			return sub + this.heat; 

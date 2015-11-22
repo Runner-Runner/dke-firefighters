@@ -3,7 +3,6 @@ package agent;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
@@ -11,6 +10,8 @@ import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import agent.bdi.Extinguish;
+import agent.bdi.Intention;
+import agent.bdi.Patrol;
 import agent.communication.CommunicationTool;
 import agent.communication.info.Information;
 import agent.communication.request.ActionRequest;
@@ -104,18 +105,18 @@ public class BDIAgent extends ForesterAgent{
 		}
 		
 		//Send offer
-		//choose request with lowest distance (for now)
+		//choose request with smallest distance (for now)
 		//TODO Integrate importance: if distance difference insignificant (threshold), choose by importance
 		GridPoint location = grid.getLocation(this);
-		double lowestDistance = Double.MAX_VALUE;
+		double smallestDistance = Double.MAX_VALUE;
 		ActionRequest chosenRequest = null;
-		for(ActionRequest actionRequest : actionRequests)
+		for(ActionRequest actionRequest : actionRequests.values())
 		{
 			GridPoint target = new GridPoint(actionRequest.getPositionX(), actionRequest.getPositionY());
 			double distance = CommunicationTool.calculateDistance(location, target);
-			if(lowestDistance > distance)
+			if(smallestDistance > distance)
 			{
-				lowestDistance = distance;
+				smallestDistance = distance;
 				chosenRequest = actionRequest;
 			}
 		}
@@ -125,8 +126,8 @@ public class BDIAgent extends ForesterAgent{
 			return;
 		}
 		
-		RequestOffer requestOffer = new RequestOffer(chosenRequest.getSenderID(), 
-				chosenRequest.getId(), lowestDistance, false);
+		RequestOffer requestOffer = new RequestOffer(getCommunicationId(), 
+				chosenRequest.getId(), smallestDistance, false);
 		communicationTool.sendRequestOffer(chosenRequest.getSenderID(), requestOffer);
 	}
 	
@@ -151,16 +152,27 @@ public class BDIAgent extends ForesterAgent{
 			{
 				int requestID = requestConfirmation.getRequestID();
 				//TODO set request action as intention
-				
+				ActionRequest confirmedRequest = actionRequests.get(requestID);
+				if(confirmedRequest != null)
+				{
+					currentIntention = new Intention(confirmedRequest.getAction(), 
+							confirmedRequest.getPositionX(),  
+							confirmedRequest.getPositionY(), confirmedRequest.getSenderID());
+				}
 				requestConfirmation = null;
 			}
 			
-			// go for a walk
-			GridPoint location = grid.getLocation(this);
-			Random r = new Random();
-			int x = location.getX() + r.nextInt(3) - 1;
-			int y = location.getY() + r.nextInt(3) - 1;
-			moveTowards(new GridPoint(x, y));
+			//TODO derive other more urgent intentions from environment?
+			
+			if(currentIntention == null)
+			{
+				currentIntention = new Intention(new Patrol(), null, null, null);
+			}
+			
+			//execute intention
+			boolean executeSuccess = currentIntention.getAction().
+					execute(this, grid.getLocation(this));
+			//TODO Remove intention if !executeSuccess
 		}
 	}
 }

@@ -14,20 +14,43 @@ public class Statistic
 	private double totalAgentCount;
 	private int totalFireCount = 0;
 	private int extinguishedFireCount = 0;
+	private int gridWidth;
+	private int gridHeight;
 	
-	public static Statistic getStatisticFromContext(Context<Object> context)
+	private static Statistic statistic;
+	
+	private Statistic()
 	{
-		IndexedIterable<Object> objects = context.getObjects(Statistic.class);
-		if(objects.size() != 1)
+		//singleton
+	}
+	
+	public static Statistic getInstance()
+	{
+		if(statistic == null)
 		{
-			return null;
+			statistic = new Statistic();
 		}
-		Object object = objects.get(0);
-		if(object instanceof Statistic)
-		{
-			return (Statistic)object;
-		}
-		return null;
+		return statistic;
+	}
+	
+	public double getTotalAgentCount()
+	{
+		return totalAgentCount;
+	}
+	
+	public int getGridWidth()
+	{
+		return gridWidth;
+	}
+	
+	public int getGridHeight()
+	{
+		return gridHeight;
+	}
+	
+	public void setGridSize(int gridWidth, int gridHeight) {
+		this.gridWidth = gridWidth;
+		this.gridHeight = gridHeight;
 	}
 	
 	public void setTotalWoodHealth(double totalWoodHealth)

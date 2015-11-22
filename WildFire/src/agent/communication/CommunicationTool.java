@@ -1,9 +1,11 @@
 package agent.communication;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import agent.ForesterAgent;
+import agent.ForesterAgent.AgentInformation;
 import agent.communication.info.Information;
 import agent.communication.request.Request;
 import agent.communication.request.RequestConfirm;
@@ -38,7 +40,7 @@ public class CommunicationTool {
 	
 	public double sendInformation(Information information)
 	{
-		return sendInformation(getRangeRecipients(),information);
+		return sendInformation(getAgentsInRange(sender, sendingRange), information);
 	}
 	
 	public double sendInformation(Information information, List<String> recipientIDs){
@@ -51,7 +53,7 @@ public class CommunicationTool {
 	}
 	public double sendRequest(Request request)
 	{
-		return sendRequest(request, getRangeRecipients());
+		return sendRequest(request, getAgentsInRange(sender, sendingRange));
 	}
 	public double sendRequest(List<String> recipientIDs, Request request){
 		return sendRequest(request, getAgents(recipientIDs));
@@ -134,28 +136,6 @@ public class CommunicationTool {
 		}
 		return null;
 	}
-	private List<ForesterAgent> getRangeRecipients()
-	{
-		List<ForesterAgent> recipients = new ArrayList<>();
-		
-		
-		Context<Object> context = ContextUtils.getContext(sender);
-		IndexedIterable<Object> objects = context.getObjects(ForesterAgent.class);
-		
-		for(Object obj : objects)
-		{
-			if(obj instanceof ForesterAgent)
-			{
-				ForesterAgent agent = (ForesterAgent)obj;
-				
-				if(sendingRange == null || calculateDistance(sender, agent)<=sendingRange)
-				{
-					recipients.add(agent);
-				}
-			}
-		}
-		return recipients;
-	}
 	
 	public double calculateDistance(ForesterAgent a, ForesterAgent b){
 		GridPoint aP = grid.getLocation(a);
@@ -165,5 +145,78 @@ public class CommunicationTool {
 	
 	public static double calculateDistance(GridPoint start, GridPoint end){
 		return Math.sqrt(Math.pow(start.getX()-end.getX(), 2)+Math.pow(start.getY()-end.getY(), 2));
+	}
+	
+	public static boolean inMooreRange(ForesterAgent agent, GridPoint gp)
+	{
+		double distance = calculateDistance(agent.getPosition(), gp);
+		return distance <= 1;
+	}
+	
+	private static List<ForesterAgent> getAgentsInRange(ForesterAgent originAgent, Integer sendingRange)
+	{
+		List<ForesterAgent> recipients = new ArrayList<>();
+		
+		Context<Object> context = ContextUtils.getContext(originAgent);
+		IndexedIterable<Object> objects = context.getObjects(ForesterAgent.class);
+		
+		for(Object obj : objects)
+		{
+			if(obj instanceof ForesterAgent)
+			{
+				ForesterAgent agent = (ForesterAgent)obj;
+				if(sendingRange == null || calculateDistance(
+						originAgent.getPosition(), agent.getPosition())<=sendingRange)
+				{
+					recipients.add(agent);
+				}
+			}
+		}
+		return recipients;
+	}
+	
+	public static List<AgentInformation> getAgentInformationInRange(ForesterAgent originAgent, Integer sendingRange)
+	{
+		List<AgentInformation> agentInformationList = new ArrayList<>();
+		
+		Collection<AgentInformation> allAgentInformation = originAgent.getBelief().
+				getAllInformation(AgentInformation.class);
+		for(AgentInformation agentInformation : allAgentInformation)
+		{
+			GridPoint gp = new GridPoint(agentInformation.getPositionX(), 
+					agentInformation.getPositionY()); 
+			if(sendingRange == null || 
+					calculateDistance(originAgent.getPosition(), gp) <= sendingRange)
+			{
+				agentInformationList.add(agentInformation);
+			}
+		}
+		return agentInformationList;
+	}
+	
+	public static AgentInformation getClosestAgentInformation(ForesterAgent originAgent, Integer sendingRange)
+	{
+		AgentInformation closestAgentInformation = null;
+		double smallestDistance = Double.MAX_VALUE;
+		
+		Collection<AgentInformation> allAgentInformation = originAgent.getBelief().
+				getAllInformation(AgentInformation.class);
+		for(AgentInformation agentInformation : allAgentInformation)
+		{
+			GridPoint gp = new GridPoint(agentInformation.getPositionX(), 
+					agentInformation.getPositionY()); 
+			double distance = calculateDistance(originAgent.getPosition(), gp);
+			if(distance < smallestDistance && distance != 0)
+			{
+				closestAgentInformation = agentInformation;
+				smallestDistance = distance;
+			}
+		}
+		
+		if(sendingRange == null || smallestDistance <= sendingRange)
+		{
+			return closestAgentInformation;
+		}
+		return null;
 	}
 }
