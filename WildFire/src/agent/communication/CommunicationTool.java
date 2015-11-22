@@ -152,9 +152,13 @@ public class CommunicationTool {
 		return recipients;
 	}
 	
-	private double calculateDistance(ForesterAgent a, ForesterAgent b){
+	public double calculateDistance(ForesterAgent a, ForesterAgent b){
 		GridPoint aP = grid.getLocation(a);
 		GridPoint bP = grid.getLocation(b);
-		return Math.sqrt(Math.pow(aP.getX()-bP.getX(), 2)+Math.pow(aP.getY()-bP.getY(), 2));
+		return calculateDistance(aP, bP);
+	}
+	
+	public static double calculateDistance(GridPoint start, GridPoint end){
+		return Math.sqrt(Math.pow(start.getX()-end.getX(), 2)+Math.pow(start.getY()-end.getY(), 2));
 	}
 }

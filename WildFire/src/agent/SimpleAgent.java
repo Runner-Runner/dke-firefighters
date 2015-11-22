@@ -137,6 +137,10 @@ public class SimpleAgent extends ForesterAgent {
 	@Override
 	public void doRequests() {
 	}
+	
+	@Override
+	public void sendAnswers() {
+	}
 
 	@Override
 	public void checkResponds() {
@@ -145,12 +149,9 @@ public class SimpleAgent extends ForesterAgent {
 	}
 
 	@Override
-	public void checkConfirmations() {
-		this.confirmations.clear();
-	}
-
-	@Override
 	public void doActions() {
+		requestConfirmation = null;
+		
 		decideOnActions();
 	}
 }

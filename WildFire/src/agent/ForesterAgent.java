@@ -8,6 +8,8 @@ import agent.bdi.Intention;
 import agent.communication.CommunicationTool;
 import agent.communication.info.Information;
 import agent.communication.info.InformationProvider;
+import agent.communication.request.ActionRequest;
+import agent.communication.request.InformationRequest;
 import agent.communication.request.Request;
 import agent.communication.request.RequestConfirm;
 import agent.communication.request.RequestOffer;
@@ -55,12 +57,13 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	//trusting agents should integrate them in beliefs
 	protected List<Information> messages;
 	//list of requests other agents sent via communicationtool in the last iteration "mailbox for requests"
-	//agent can decide to help/answer
-	protected List<Request> requests;
+	protected List<InformationRequest> infoRequests;
+	//ActionRequests: agent can decide to help/answer
+	protected List<ActionRequest> actionRequests;
 	//other agents responds to your request
 	protected List<RequestOffer> offers;
-	//confirmations according your offer
-	protected List<RequestConfirm> confirmations;
+	//confirmation accepting your offer
+	protected RequestConfirm requestConfirmation;
 	//bounty the agent gets for extinguish fire, wetline or wood-cutting
 	protected double bounty;
 	//costs the agent pays for communication
@@ -87,9 +90,9 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 
 		this.belief = new Belief();
 		this.messages = new LinkedList<Information>();
-		this.requests = new LinkedList<Request>();
+		this.infoRequests = new LinkedList<InformationRequest>();
+		this.actionRequests = new LinkedList<ActionRequest>();
 		this.offers = new LinkedList<RequestOffer>();
-		this.confirmations = new LinkedList<RequestConfirm>();
 		this.currentIntention = new Intention(null, null, null); //no initial intention
 		
 		this.communicationTool = new CommunicationTool(this, grid);
@@ -110,11 +113,18 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	 * @param request
 	 */
 	public void receiveRequest(Request request){
-		this.requests.add(request);
+		if(request instanceof InformationRequest)
+		{
+			infoRequests.add((InformationRequest)request);
+		}
+		else if(request instanceof ActionRequest)
+		{
+			actionRequests.add((ActionRequest)request);
+		}
 	}
 	
-	public void receiveConfirmation(RequestConfirm rc){
-		this.confirmations.add(rc);
+	public void receiveConfirmation(RequestConfirm requestConfirmation){
+		this.requestConfirmation = requestConfirmation;
 	}
 	
 	public void receiveOffer(RequestOffer ro){
@@ -142,11 +152,11 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	@ScheduledMethod(start = 1, interval = 1, priority = 35)
 	public abstract void doRequests();
 	
+	@ScheduledMethod(start = 1, interval = 1, priority = 37)
+	public abstract void sendAnswers();
+	
 	@ScheduledMethod(start = 1, interval = 1, priority = 30)
 	public abstract void checkResponds();
-	
-	@ScheduledMethod(start = 1, interval = 1, priority = 25)
-	public abstract void checkConfirmations();
 	
 	@ScheduledMethod(start = 1, interval = 1, priority = 20)
 	public abstract void doActions();

@@ -9,8 +9,11 @@ import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import agent.bdi.Extinguish;
+import agent.communication.CommunicationTool;
 import agent.communication.info.Information;
 import agent.communication.request.ActionRequest;
+import agent.communication.request.InformationRequest;
+import agent.communication.request.RequestOffer;
 import environment.Fire;
 import environment.Wood;
 
@@ -65,9 +68,6 @@ public class BDIAgent extends ForesterAgent{
 		return false;
 	}
 
-
-
-
 	@Override
 	public void doRequests() {
 		GridPoint location = grid.getLocation(this);
@@ -88,24 +88,64 @@ public class BDIAgent extends ForesterAgent{
 	}
 
 	@Override
+	public void sendAnswers() {
+		for(InformationRequest infoRequest : infoRequests)
+		{
+			//TODO Send information answers
+		}
+		
+		//Send offer
+		//choose request with lowest distance (for now)
+		//TODO Integrate importance: if distance difference insignificant (threshold), choose by importance
+		GridPoint location = grid.getLocation(this);
+		double lowestDistance = Double.MAX_VALUE;
+		ActionRequest chosenRequest = null;
+		for(ActionRequest actionRequest : actionRequests)
+		{
+			GridPoint target = new GridPoint(actionRequest.getPositionX(), actionRequest.getPositionY());
+			double distance = CommunicationTool.calculateDistance(location, target);
+			if(lowestDistance > distance)
+			{
+				lowestDistance = distance;
+				chosenRequest = actionRequest;
+			}
+		}
+		if(chosenRequest == null)
+		{
+			//no request -> no offer
+			return;
+		}
+		
+		RequestOffer requestOffer = new RequestOffer(chosenRequest.getSenderID(), 
+				chosenRequest.getId(), lowestDistance);
+		communicationTool.sendRequestOffer(chosenRequest.getSenderID(), requestOffer);
+	}
+	
+	@Override
 	public void checkResponds() {
+		//check information answers
 		for(Information i:messages){
 			this.belief.addInformation(i);
 		}
 		messages.clear();
-		//TODO check offers and send confirmations
-	}
-
-	@Override
-	public void checkConfirmations() {
-		// TODO if there is a confirmation change your intention
 		
+		//TODO check offers and send confirmations
 	}
 
 	@Override
 	public void doActions() {
 		if (!flee()) {
 			// TODO act with respect to your intention (move, extinguish, wetline, woodcutting, check weather)
+			
+			// Check confirmation
+			if(requestConfirmation != null)
+			{
+				int requestID = requestConfirmation.getRequestID();
+				//TODO set request action as intention
+				
+				requestConfirmation = null;
+			}
+			
 			// go for a walk
 			GridPoint location = grid.getLocation(this);
 			Random r = new Random();
