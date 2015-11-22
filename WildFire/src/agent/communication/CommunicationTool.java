@@ -7,6 +7,7 @@ import agent.ForesterAgent;
 import agent.communication.info.Information;
 import agent.communication.request.Request;
 import agent.communication.request.RequestConfirm;
+import agent.communication.request.RequestDismiss;
 import agent.communication.request.RequestOffer;
 import repast.simphony.context.Context;
 import repast.simphony.space.grid.Grid;
@@ -61,6 +62,11 @@ public class CommunicationTool {
 	public double sendRequestOffer(String id, RequestOffer ro){
 		ForesterAgent recipient = getAgent(id);
 		recipient.receiveOffer(ro);
+		return calculateDistance(sender, recipient);
+	}
+	public double sendDismiss(String id, RequestDismiss dismiss){
+		ForesterAgent recipient = getAgent(id);
+		recipient.receiveDismiss(dismiss);
 		return calculateDistance(sender, recipient);
 	}
 	public double sendRequestConfirm(String id, RequestConfirm rc){
@@ -132,7 +138,6 @@ public class CommunicationTool {
 	{
 		List<ForesterAgent> recipients = new ArrayList<>();
 		
-		GridPoint senderLocation = grid.getLocation(sender);
 		
 		Context<Object> context = ContextUtils.getContext(sender);
 		IndexedIterable<Object> objects = context.getObjects(ForesterAgent.class);

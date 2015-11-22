@@ -1,5 +1,7 @@
 package agent;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -13,16 +15,23 @@ import agent.communication.CommunicationTool;
 import agent.communication.info.Information;
 import agent.communication.request.ActionRequest;
 import agent.communication.request.InformationRequest;
+import agent.communication.request.Request;
 import agent.communication.request.RequestOffer;
 import environment.Fire;
 import environment.Wood;
 
 public class BDIAgent extends ForesterAgent{
+	private int increasingRange;
+	private List<Request> myRequest;
+	private HashMap<String, String> requestedAgents; //agentID -> requestID
 	
 	
 	public BDIAgent(ContinuousSpace<Object> space, Grid<Object> grid,
 			double speed, double extinguishRate) {
 		super(space, grid, speed, extinguishRate);
+		this.increasingRange = 3;
+		this.myRequest = new LinkedList<Request>();
+		this.requestedAgents = new HashMap<String, String>();
 	}
 
 
@@ -117,7 +126,7 @@ public class BDIAgent extends ForesterAgent{
 		}
 		
 		RequestOffer requestOffer = new RequestOffer(chosenRequest.getSenderID(), 
-				chosenRequest.getId(), lowestDistance);
+				chosenRequest.getId(), lowestDistance, false);
 		communicationTool.sendRequestOffer(chosenRequest.getSenderID(), requestOffer);
 	}
 	
