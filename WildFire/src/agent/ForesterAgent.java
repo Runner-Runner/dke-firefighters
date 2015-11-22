@@ -405,6 +405,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 					boolean changed = belief.addInformation(removeInformation);
 					if(changed)
 					{
+						
 						informationList.add(removeInformation);
 					}
 				}

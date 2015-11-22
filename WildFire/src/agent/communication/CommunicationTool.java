@@ -203,13 +203,15 @@ public class CommunicationTool {
 				getAllInformation(AgentInformation.class);
 		for(AgentInformation agentInformation : allAgentInformation)
 		{
-			GridPoint gp = new GridPoint(agentInformation.getPositionX(), 
-					agentInformation.getPositionY()); 
-			double distance = calculateDistance(originAgent.getPosition(), gp);
-			if(distance < smallestDistance && distance != 0)
-			{
-				closestAgentInformation = agentInformation;
-				smallestDistance = distance;
+			if(!agentInformation.isEmptyInstance()){
+				GridPoint gp = new GridPoint(agentInformation.getPositionX(), 
+						agentInformation.getPositionY()); 
+				double distance = calculateDistance(originAgent.getPosition(), gp);
+				if(distance < smallestDistance && distance != 0)
+				{
+					closestAgentInformation = agentInformation;
+					smallestDistance = distance;
+				}
 			}
 		}
 		

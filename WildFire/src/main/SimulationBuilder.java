@@ -1,5 +1,7 @@
 package main;
 
+import java.util.Random;
+
 import repast.simphony.context.Context;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactory;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactoryFinder;
@@ -99,7 +101,12 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		//create agents
 		for(int i = 0;i<numberAgents;i++){
 			double speed = RandomHelper.nextDoubleFromTo(1, 2);
-			context.add(new BDIAgent(space, grid, speed, 2));
+			Random r = new Random();
+			int x = r.nextInt(forestDim)+maxCloudDim;
+			int y = r.nextInt(forestDim)+maxCloudDim;
+			BDIAgent agent = new BDIAgent(space, grid, speed, 2);
+			context.add(agent);
+			space.moveTo(agent, x,y);
 		}
 		
 		FireFactory fire = new FireFactory(context, grid, space, wind, sparkingFactor, forestDim, maxCloudDim);

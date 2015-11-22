@@ -15,9 +15,11 @@ import agent.communication.request.InformationRequest;
 public class Patrol extends Action {
 	private int timeSinceDistanceCheck = 0;
 	private static final int DISTANCE_CHECK_RATE = 5;
+	private double sendingRange;
 	
 	public Patrol() {
 		super(1, 0);
+		sendingRange = -1;
 	}
 
 	@Override
@@ -29,10 +31,14 @@ public class Patrol extends Action {
 	@Override
 	public boolean executeInner(ForesterAgent agent, GridPoint gp) {
 		timeSinceDistanceCheck++;
-		
-		int gridHeight = Statistic.getInstance().getGridHeight();
-		int gridWidth = Statistic.getInstance().getGridWidth();
-		double sendingRange = (gridWidth + gridHeight)/(2*Statistic.getInstance().getTotalAgentCount());
+		if(sendingRange == -1){
+			int gridWidth = Statistic.getInstance().getGridWidth();
+			int gridHeight = Statistic.getInstance().getGridHeight();
+			sendingRange = (gridWidth + gridHeight)/(2*Statistic.getInstance().getTotalAgentCount());
+		}
+		else{
+			sendingRange ++;
+		}
 		if(timeSinceDistanceCheck >= DISTANCE_CHECK_RATE)
 		{
 			CommunicationTool communicationTool = agent.getCommunicationTool();
@@ -80,6 +86,8 @@ public class Patrol extends Action {
 				{
 					break;
 				}
+				xTarget = (int)(ownPosition.getX() + xVectorValues[0]);
+				yTarget = (int)(ownPosition.getY() + yVectorValues[0]);
 			}
 			
 			if(xTarget != -1)
