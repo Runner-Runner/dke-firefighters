@@ -99,6 +99,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		this.infoRequests = new LinkedList<InformationRequest>();
 		this.actionRequests = new HashMap<Integer, ActionRequest>();
 		this.offers = new LinkedList<RequestOffer>();
+		this.rejections = new ArrayList<>();
 		
 		this.communicationTool = new CommunicationTool(this, grid);
 		

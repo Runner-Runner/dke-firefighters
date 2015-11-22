@@ -105,7 +105,7 @@ public class BDIAgent extends ForesterAgent{
 		
 		for(GridCell<Fire> fire: fires){
 			//my intention
-			if(fire.getPoint().getX() == currentIntention.getxPosition() && currentIntention.getyPosition() == fire.getPoint().getY()){
+			if(currentIntention != null && currentIntention.getxPosition() != null && fire.getPoint().getX() == currentIntention.getxPosition() && currentIntention.getyPosition() == fire.getPoint().getY()){
 				continue;
 			}
 			//agents already requested
@@ -146,7 +146,17 @@ public class BDIAgent extends ForesterAgent{
 	public void sendAnswers() {
 		for(InformationRequest infoRequest : infoRequests)
 		{
-			Information info = this.belief.getInformation(infoRequest.getPositionX(), infoRequest.getPositionY(), infoRequest.getInformationClass());
+			Integer positionX = infoRequest.getPositionX();
+			Integer positionY = infoRequest.getPositionY();
+			if(positionX == null)
+			{
+				positionX = getPosition().getX();
+			}
+			if(positionY == null)
+			{
+				positionY = getPosition().getY();
+			}
+			Information info = this.belief.getInformation(positionX, positionY, infoRequest.getInformationClass());
 			if(RunEnvironment.getInstance().getCurrentSchedule().getTickCount() - info.getTimestamp() < 20){ // only "new" information
 				this.costs+=communicationTool.sendInformation(info, infoRequest.getSenderID());
 			}
@@ -171,14 +181,10 @@ public class BDIAgent extends ForesterAgent{
 		}
 		if(chosenRequest != null)
 		{
-			RequestOffer requestOffer = new RequestOffer(chosenRequest.getSenderID(), 
+			RequestOffer requestOffer = new RequestOffer(getCommunicationId(), 
 					chosenRequest.getId(), smallestDistance, false);
 			this.costs+=communicationTool.sendRequestOffer(chosenRequest.getSenderID(), requestOffer);
 		}
-		
-		RequestOffer requestOffer = new RequestOffer(getCommunicationId(), 
-				chosenRequest.getId(), smallestDistance, false);
-		communicationTool.sendRequestOffer(chosenRequest.getSenderID(), requestOffer);
 	}
 	
 	@Override
