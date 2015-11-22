@@ -1,14 +1,14 @@
 package agent.communication.request;
 
 public class RequestDismiss {
-	private String requestID;
+	private int requestID;
 	private String senderID;
-	public RequestDismiss(String requestID, String senderID) {
+	public RequestDismiss(int requestID, String senderID) {
 		super();
 		this.requestID = requestID;
 		this.senderID = senderID;
 	}
-	public String getRequestID() {
+	public int getRequestID() {
 		return requestID;
 	}
 	public String getSenderID() {
