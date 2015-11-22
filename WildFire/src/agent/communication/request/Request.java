@@ -1,5 +1,7 @@
 package agent.communication.request;
 
+import repast.simphony.engine.environment.RunEnvironment;
+
 public abstract class Request {
 	private static int requestCounter = 0;
 	//TODO maybe use enum for importance
@@ -8,6 +10,7 @@ public abstract class Request {
 	protected Integer positionY;
 	protected String senderID;
 	protected int id;
+	protected double timestamp;
 	
 	public Request(String senderID, int importance, Integer positionX, Integer positionY) {
 		super();
@@ -16,10 +19,15 @@ public abstract class Request {
 		this.positionX = positionX;
 		this.positionY = positionY;
 		this.id = requestCounter++;
+		this.timestamp = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
 	}
 
 	public int getId() {
 		return id;
+	}
+
+	public double getTimestamp() {
+		return timestamp;
 	}
 
 	public String getSenderID() {

@@ -146,7 +146,6 @@ public class SimpleAgent extends ForesterAgent {
 
 	@Override
 	public void checkConfirmations() {
-		this.confirmations.clear();
 	}
 
 	@Override

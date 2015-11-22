@@ -10,6 +10,7 @@ import agent.communication.info.Information;
 import agent.communication.info.InformationProvider;
 import agent.communication.request.Request;
 import agent.communication.request.RequestConfirm;
+import agent.communication.request.RequestDismiss;
 import agent.communication.request.RequestOffer;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
@@ -60,7 +61,9 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	//other agents responds to your request
 	protected List<RequestOffer> offers;
 	//confirmations according your offer
-	protected List<RequestConfirm> confirmations;
+	protected RequestConfirm confirmation;
+	//already confirmed agents, who changed their intention
+	protected List<RequestDismiss> rejections;
 	//bounty the agent gets for extinguish fire, wetline or wood-cutting
 	protected double bounty;
 	//costs the agent pays for communication
@@ -89,8 +92,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		this.messages = new LinkedList<Information>();
 		this.requests = new LinkedList<Request>();
 		this.offers = new LinkedList<RequestOffer>();
-		this.confirmations = new LinkedList<RequestConfirm>();
-		this.currentIntention = new Intention(null, null, null); //no initial intention
+		this.currentIntention = new Intention(null, null, null, null); //no initial intention
+		this.confirmation = null;
 		
 		this.communicationTool = new CommunicationTool(this, grid);
 		
@@ -114,11 +117,15 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	}
 	
 	public void receiveConfirmation(RequestConfirm rc){
-		this.confirmations.add(rc);
+		this.confirmation = rc;
 	}
 	
 	public void receiveOffer(RequestOffer ro){
 		this.offers.add(ro);
+	}
+	
+	public void receiveDismiss(RequestDismiss rd){
+		this.rejections.add(rd);
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1, priority = 45)
