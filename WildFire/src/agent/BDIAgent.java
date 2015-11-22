@@ -3,14 +3,14 @@ package agent;
 import java.util.List;
 import java.util.Random;
 
-import agent.bdi.Extinguish;
-import agent.communication.info.Information;
-import agent.communication.request.ActionRequest;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
+import agent.bdi.Extinguish;
+import agent.communication.info.Information;
+import agent.communication.request.ActionRequest;
 import environment.Fire;
 import environment.Wood;
 
@@ -59,6 +59,7 @@ public class BDIAgent extends ForesterAgent{
 					fleeingPoint = fireGridCells.get(0).getPoint();
 				}
 			}
+			moveTowards(fleeingPoint);
 			return true;
 		}
 		return false;

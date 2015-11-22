@@ -274,7 +274,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	 * @param pt
 	 * @return if the move worked
 	 */
-	protected boolean moveTo(GridPoint pt) {
+	private boolean moveTo(GridPoint pt) {
 		if( pt.equals(grid.getLocation(this))){
 			return true;
 		}
