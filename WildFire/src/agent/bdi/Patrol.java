@@ -1,21 +1,19 @@
 package agent.bdi;
 
-import java.util.List;
-
-import environment.Wood;
-import environment.Wood.WoodInformation;
-import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import statistics.Statistic;
 import agent.ForesterAgent;
 import agent.ForesterAgent.AgentInformation;
 import agent.communication.CommunicationTool;
 import agent.communication.request.InformationRequest;
+import environment.Wood.WoodInformation;
 
 public class Patrol extends Action {
-	private int timeSinceDistanceCheck = 0;
+	private int timeSinceDistanceCheck = DISTANCE_CHECK_RATE;
 	private static final int DISTANCE_CHECK_RATE = 5;
 	private double sendingRange;
+	Double xVector = null;
+	Double yVector = null;
 	
 	public Patrol() {
 		super(1, 0);
@@ -36,9 +34,6 @@ public class Patrol extends Action {
 			int gridHeight = Statistic.getInstance().getGridHeight();
 			sendingRange = (gridWidth + gridHeight)/(2*Statistic.getInstance().getTotalAgentCount());
 		}
-		else{
-			sendingRange ++;
-		}
 		if(timeSinceDistanceCheck >= DISTANCE_CHECK_RATE)
 		{
 			CommunicationTool communicationTool = agent.getCommunicationTool();
@@ -50,14 +45,24 @@ public class Patrol extends Action {
 		
 		AgentInformation closestAgentInformation = CommunicationTool.
 				getClosestAgentInformation(agent, (int)sendingRange);
+		
+		GridPoint ownPosition = agent.getPosition();
+		int xTarget = -1;
+		int yTarget = -1;
+		
 		if(closestAgentInformation == null)
 		{
 			//TODO What to do?
+			if(xVector == null)
+			{
+				xVector = 1.0;
+				yVector = 0.0;
+			}
+			xTarget = (int)(ownPosition.getX() + xVector);
+			yTarget = (int)(ownPosition.getY() + yVector);
 		}
 		else
 		{
-			GridPoint ownPosition = agent.getPosition();
-			
 			double xDiff = ownPosition.getX() - closestAgentInformation.getPositionX(); 
 			double yDiff = ownPosition.getY() - closestAgentInformation.getPositionY();
 			double norm = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
@@ -67,9 +72,6 @@ public class Patrol extends Action {
 			
 			double[] xVectorValues = new double[]{xVector, -yVector, yVector, -xVector};
 			double[] yVectorValues = new double[]{yVector, xVector, -xVector, -yVector};
-			
-			int xTarget = -1;
-			int yTarget = -1;
 			
 			for(int i=0; i<4; i++)
 			{
@@ -89,13 +91,14 @@ public class Patrol extends Action {
 				xTarget = (int)(ownPosition.getX() + xVectorValues[0]);
 				yTarget = (int)(ownPosition.getY() + yVectorValues[0]);
 			}
-			
-			if(xTarget != -1)
-			{
-				System.out.println("+++ "+xTarget + " " + yTarget + " " + ownPosition.getX() + " " + ownPosition.getY() + " " + closestAgentInformation.getPositionX() + " " + closestAgentInformation.getPositionY());
-				agent.moveTowards(new GridPoint(xTarget, yTarget));
-			}
+			System.out.println("+++ "+xTarget + " " + yTarget + " " + ownPosition.getX() + " " + ownPosition.getY() + " " + closestAgentInformation.getPositionX() + " " + closestAgentInformation.getPositionY());
 		}
+		
+		if(xTarget != -1)
+		{
+			agent.moveTowards(new GridPoint(xTarget, yTarget));
+		}
+		
 		return true;
 	}
 }
