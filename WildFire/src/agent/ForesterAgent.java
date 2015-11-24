@@ -156,18 +156,16 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1, priority = 40)
-	public void checkNeighbourhood(){
-		updateNeighborhoodBelief();
-	}
+	public abstract void checkNeighbourhood();
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 35)
+	@ScheduledMethod(start = 1, interval = 1, priority = 38)
 	public abstract void doRequests();
 	
 	@ScheduledMethod(start = 1, interval = 1, priority = 37)
 	public abstract void sendAnswers();
 	
 	@ScheduledMethod(start = 1, interval = 1, priority = 30)
-	public abstract void checkResponds();
+	public abstract void checkResponses();
 	
 	@ScheduledMethod(start = 1, interval = 1, priority = 20)
 	public abstract void doActions();
@@ -198,7 +196,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		}
 		if (fire == null) {
 			// no fire to extinguish
-			FireInformation extinguished = new FireInformation(pt.getX(), pt.getY());
+			FireInformation extinguished = new FireInformation(pt);
 			belief.addInformation(extinguished);
 			return false;
 		}
@@ -243,7 +241,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 
 				if(!foundCloud)
 				{
-					belief.addInformation(new CloudInformation(startX + xOffset, startY + yOffset));
+					belief.addInformation(new CloudInformation(new GridPoint(startX + xOffset, startY + yOffset)));
 				}
 			}
 		}
@@ -400,8 +398,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 					}
 				}
 				if (!foundFire) {
-					FireInformation removeInformation = new FireInformation(
-							startX + xOffset, startY + yOffset);
+					FireInformation removeInformation = new FireInformation(new GridPoint(
+							startX + xOffset, startY + yOffset));
 					boolean changed = belief.addInformation(removeInformation);
 					if(changed)
 					{
@@ -411,8 +409,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 				}
 				if(!foundAgent)
 				{
-					AgentInformation removeInformation = new AgentInformation(
-							startX + xOffset, startY + yOffset);
+					AgentInformation removeInformation = new AgentInformation(new GridPoint(
+							startX + xOffset, startY + yOffset));
 					informationList.add(removeInformation);
 					boolean changed = belief.addInformation(removeInformation);
 					if(changed)
@@ -421,8 +419,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 					}
 				}
 				if (!foundWood) {
-					WoodInformation removeInformation = new WoodInformation(
-							startX + xOffset, startY + yOffset);
+					WoodInformation removeInformation = new WoodInformation(new GridPoint(
+							startX + xOffset, startY + yOffset));
 					boolean changed = belief.addInformation(removeInformation);
 					if(changed)
 					{
@@ -514,12 +512,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		GridPoint location = grid.getLocation(this);
 		Integer xPos = null;
 		Integer yPos = null;
-		if(currentIntention != null)
-		{
-			xPos = currentIntention.getxPosition();
-			yPos = currentIntention.getyPosition();
-		}
-		return new AgentInformation(location.getX(), location.getY(), speed, health, xPos, yPos);
+
+		return new AgentInformation(location, speed, health);
 	}
 
 	public static class AgentInformation extends Information {
@@ -527,15 +521,10 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		private double speed;
 		private int health;
 
-		private Integer intentionX;
-		private Integer intentionY;
-		
-		private AgentInformation(Integer positionX, Integer positionY, double speed, int health, Integer intentionX, Integer intentionY) {
-			super(positionX, positionY);
+		private AgentInformation(GridPoint position, double speed, int health) {
+			super(position);
 			this.speed = speed;
 			this.health = health;
-			this.intentionX = intentionX;
-			this.intentionY = intentionY;
 		}
 
 		/**
@@ -544,8 +533,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		 * @param positionX
 		 * @param positionY
 		 */
-		public AgentInformation(Integer positionX, Integer positionY) {
-			super(positionX, positionY, true);
+		public AgentInformation(GridPoint position) {
+			super(position, true);
 		}
 
 		public double getSpeed() {
@@ -553,13 +542,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		}
 
 		
-		public Integer getIntentionX() {
-			return intentionX;
-		}
-
-		public Integer getIntentionY() {
-			return intentionY;
-		}
+		
 
 		public int getHealth() {
 			return health;

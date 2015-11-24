@@ -3,6 +3,7 @@ package agent;
 import java.util.Collection;
 import java.util.HashMap;
 
+import repast.simphony.space.grid.GridPoint;
 import agent.ForesterAgent.AgentInformation;
 import agent.communication.info.Information;
 import agent.communication.info.InformationMap;
@@ -50,10 +51,10 @@ public class Belief {
 		return informationMap.removeInformation(positionX, positionY);
 	}
 	
-	public <T extends Information> T getInformation(int positionX, int positionY, Class<T> informationClass)
+	public <T extends Information> T getInformation(GridPoint position, Class<T> informationClass)
 	{
 		InformationMap<? extends Information> informationMap = specificInformationMap.get(informationClass);
-		Information information = informationMap.getInformation(positionX, positionY);
+		Information information = informationMap.getInformation(position);
 		return informationClass.cast(information);
 	}
 	

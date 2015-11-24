@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import repast.simphony.space.grid.GridPoint;
+
 public class InformationMap<T extends Information> {
 	private Map<String, T> informationMap;
 	
@@ -14,7 +16,7 @@ public class InformationMap<T extends Information> {
 	}
 	
 	public boolean addInformation(T information) {
-		String key = information.getPositionX() + DELIMITER + information.getPositionY();
+		String key = information.getPosition().getX() + DELIMITER + information.getPosition().getY();
 		T oldInformation = informationMap.get(key);
 		if(information.isNewerInformation(oldInformation))
 		{
@@ -31,9 +33,10 @@ public class InformationMap<T extends Information> {
 		return informationMap.remove(key) == null;
 	}
 	
-	public T getInformation(int positionX, int positionY)
+	public T getInformation(GridPoint position)
 	{
-		String key = positionX + DELIMITER + positionY;
+		
+		String key = position.getX() + DELIMITER + position.getY();
 		return informationMap.get(key);
 	}
 	

@@ -33,7 +33,9 @@ public class Fire implements InformationProvider {
 		this.random = new Random();
 		Statistic.getInstance().incrementFireCount();
 	}
-	
+	public double getHeat(){
+		return this.heat;
+	}
 	@ScheduledMethod(start = 1, interval = 1, priority = 996)
 	public void step() {
 		GridPoint pt = grid.getLocation(this);
@@ -120,16 +122,15 @@ public class Fire implements InformationProvider {
 	
 	@Override
 	public FireInformation getInformation() {
-		GridPoint location = grid.getLocation(this);
-		return new FireInformation(location.getX(), location.getY(), heat);
+		return new FireInformation(grid.getLocation(this), heat);
 	}
 	
 	public static class FireInformation extends Information {
 
 		private double heat;
 		
-		private FireInformation(Integer positionX, Integer positionY, double heat) {
-			super(positionX, positionY);
+		private FireInformation(GridPoint position, double heat) {
+			super(position);
 			this.heat = heat;
 		}
 		
@@ -139,9 +140,9 @@ public class Fire implements InformationProvider {
 		 * @param positionX
 		 * @param positionY
 		 */
-		public FireInformation(Integer positionX, Integer positionY)
+		public FireInformation(GridPoint position)
 		{
-			super(positionX, positionY, true);
+			super(position, true);
 		}
 
 		public double getHeat() {

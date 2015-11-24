@@ -7,6 +7,7 @@ import agent.communication.info.InformationProvider;
 import repast.simphony.context.Context;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.ContextUtils;
 
 public class Wind implements InformationProvider {
@@ -58,7 +59,7 @@ public class Wind implements InformationProvider {
 	@Override
 	public WindInformation getInformation()
 	{
-		return new WindInformation(null, null, speed, windDirection);
+		return new WindInformation( null, speed, windDirection);
 	}
 	
 	public class WindInformation extends Information {
@@ -66,8 +67,8 @@ public class Wind implements InformationProvider {
 		private double speed;
 		private double windDirection;
 		
-		private WindInformation(Integer positionX, Integer positionY, double speed, double windDirection) {
-			super(positionX, positionY);
+		private WindInformation(GridPoint position, double speed, double windDirection) {
+			super(position);
 			this.speed = speed;
 			this.windDirection = windDirection;
 		}

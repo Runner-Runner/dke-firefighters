@@ -183,8 +183,7 @@ public class CommunicationTool {
 				getAllInformation(AgentInformation.class);
 		for(AgentInformation agentInformation : allAgentInformation)
 		{
-			GridPoint gp = new GridPoint(agentInformation.getPositionX(), 
-					agentInformation.getPositionY()); 
+			GridPoint gp = agentInformation.getPosition(); 
 			if(sendingRange == null || 
 					calculateDistance(originAgent.getPosition(), gp) <= sendingRange)
 			{
@@ -204,8 +203,7 @@ public class CommunicationTool {
 		for(AgentInformation agentInformation : allAgentInformation)
 		{
 			if(!agentInformation.isEmptyInstance()){
-				GridPoint gp = new GridPoint(agentInformation.getPositionX(), 
-						agentInformation.getPositionY()); 
+				GridPoint gp = agentInformation.getPosition(); 
 				double distance = calculateDistance(originAgent.getPosition(), gp);
 				if(distance < smallestDistance && distance != 0)
 				{

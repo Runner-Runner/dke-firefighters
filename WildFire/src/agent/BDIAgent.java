@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import bibliothek.util.container.Tuple;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
@@ -26,17 +27,17 @@ import environment.Fire;
 import environment.Wood;
 
 public class BDIAgent extends ForesterAgent{
-	private HashMap<Request, Integer> openRequests; //request -> range
-	private HashMap<Integer, Request> openIDs; //requestID -> request
+	private HashMap<Integer, Tuple<Request, Double>> openRequests;
 	private HashMap<String, Request> requestedAgents; //agentID -> request
+	private ActionRequest myOffer;
 	
 	
 	public BDIAgent(ContinuousSpace<Object> space, Grid<Object> grid,
 			double speed, double extinguishRate) {
 		super(space, grid, speed, extinguishRate);
-		this.openRequests = new HashMap<Request, Integer>();
-		this.openIDs = new HashMap<Integer, Request>();
+		this.openRequests = new HashMap<>();
 		this.requestedAgents = new HashMap<String, Request>();
+		this.myOffer = null;
 	}
 
 
@@ -105,37 +106,33 @@ public class BDIAgent extends ForesterAgent{
 		
 		for(GridCell<Fire> fire: fires){
 			//my intention
-			if(currentIntention != null && currentIntention.getxPosition() != null && fire.getPoint().getX() == currentIntention.getxPosition() && currentIntention.getyPosition() == fire.getPoint().getY()){
+			if(fire.getPoint().equals(currentIntention.getPosition())){
 				continue;
 			}
 			//agents already requested
-			if(agentRequested(fire.getPoint().getX(), fire.getPoint().getY())){
+			if(agentRequested(fire.getPoint())){
 				continue;
 			}
 			Request request = null;
-			Integer range = null;
+			Double range = null;
 			//already sent request -> increase range
-			for(Request r: openRequests.keySet()){
-				if(r.getPositionX() == fire.getPoint().getX() && r.getPositionY() == fire.getPoint().getY()){
-					request = r;
-					range = openRequests.get(r);
+			for(Tuple<Request, Double> tuple : openRequests.values()){
+				if(tuple.getA().getPosition().equals(fire.getPoint())){
+					request = tuple.getA();
+					range = tuple.getB();
 					break;
 				}
 			}
 			if(request == null){
-				request = new ActionRequest(1, fire.getPoint().getX(), fire.getPoint().getY(), new Extinguish(), communicationId);
-				range = new Integer(3); // starting range
-				this.openRequests.put(request, range);
+				request = new ActionRequest(1, fire.getPoint(), new Extinguish(), communicationId);
+				range = new Double(3); // starting range
 			}
-			else{
-				this.openRequests.put(request, ++range);
-			}
-			
+			this.openRequests.put(request.getId(), new Tuple<Request,Double>(request, range));
 		}
 	}
-	private boolean agentRequested(int x, int y){
+	private boolean agentRequested(GridPoint p){
 		for(Request request: requestedAgents.values()){
-			if(request.getPositionX() == x && request.getPositionY()== y){
+			if(request.getPosition().equals(p)){
 				return true;
 			}
 		}
@@ -146,17 +143,13 @@ public class BDIAgent extends ForesterAgent{
 	public void sendAnswers() {
 		for(InformationRequest infoRequest : infoRequests)
 		{
-			Integer positionX = infoRequest.getPositionX();
-			Integer positionY = infoRequest.getPositionY();
-			if(positionX == null)
+			GridPoint asked = infoRequest.getPosition();
+			if(asked == null) //send my position
 			{
-				positionX = getPosition().getX();
+				asked = getPosition();
 			}
-			if(positionY == null)
-			{
-				positionY = getPosition().getY();
-			}
-			Information info = this.belief.getInformation(positionX, positionY, infoRequest.getInformationClass());
+			
+			Information info = this.belief.getInformation(asked, infoRequest.getInformationClass());
 			if(RunEnvironment.getInstance().getCurrentSchedule().getTickCount() - info.getTimestamp() < 20){ // only "new" information
 				this.costs+=communicationTool.sendInformation(info, infoRequest.getSenderID());
 			}
@@ -167,12 +160,12 @@ public class BDIAgent extends ForesterAgent{
 		//choose request with smallest distance (for now)
 		//TODO Integrate importance: if distance difference insignificant (threshold), choose by importance
 		GridPoint location = grid.getLocation(this);
-		double smallestDistance = Double.MAX_VALUE;
+		double smallestDistance = grid.getDistance(currentIntention.getPosition(), location);
 		ActionRequest chosenRequest = null;
 		for(ActionRequest actionRequest : actionRequests.values())
 		{
-			GridPoint target = new GridPoint(actionRequest.getPositionX(), actionRequest.getPositionY());
-			double distance = CommunicationTool.calculateDistance(location, target);
+			GridPoint target = actionRequest.getPosition();
+			double distance = grid.getDistance(location, target);
 			if(smallestDistance > distance)
 			{
 				smallestDistance = distance;
@@ -183,12 +176,23 @@ public class BDIAgent extends ForesterAgent{
 		{
 			RequestOffer requestOffer = new RequestOffer(getCommunicationId(), 
 					chosenRequest.getId(), smallestDistance, false);
+			myOffer= chosenRequest;
+			actionRequests.remove(chosenRequest);
 			this.costs+=communicationTool.sendRequestOffer(chosenRequest.getSenderID(), requestOffer);
 		}
+		//delete old requests
+		LinkedList<Integer> old =new LinkedList<Integer>();
+		double currentTimestamp = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
+		for(Request request: actionRequests.values()){
+			if(currentTimestamp-request.getTimestamp()>10){
+				old.add(request.getId());
+			}
+		}
+		actionRequests.keySet().removeAll(old);
 	}
 	
 	@Override
-	public void checkResponds() {
+	public void checkResponses() {
 		//check information answers
 		for(Information i:messages){
 			this.belief.addInformation(i);
@@ -199,18 +203,17 @@ public class BDIAgent extends ForesterAgent{
 		HashMap<Integer, RequestOffer> bestOffers = new HashMap<Integer, RequestOffer>();
 		for(RequestOffer offer: this.offers){
 			RequestOffer best = bestOffers.get(offer.getRequestID());
-			Request request = openIDs.get(offer.getRequestID());
-			if(request!=null && !agentRequested(request.getPositionX(), request.getPositionY()) && (best == null || offer.getDistance()<best.getDistance())){
+			Request request = openRequests.get(offer.getRequestID()).getA();
+			if(request!=null && !agentRequested(request.getPosition()) && (best == null || offer.getDistance()<best.getDistance())){
 				bestOffers.put(request.getId(), offer);
 			}
 		}
 		//send confirmations to best offers and add to requested agents
 		for(Entry<Integer, RequestOffer> entry: bestOffers.entrySet()){
 			this.costs+=communicationTool.sendRequestConfirm(entry.getValue().getSenderId(), new RequestConfirm(communicationId, entry.getValue().getRequestID()));
-			requestedAgents.put(entry.getValue().getSenderId(), openIDs.get(entry.getKey()));
-			Request removed = openIDs.remove(entry.getKey());
-			openRequests.remove(removed);
-			
+			Request confirmed = openRequests.get(entry.getKey()).getA();
+			requestedAgents.put(entry.getValue().getSenderId(), confirmed);
+			openRequests.remove(confirmed.getId());
 		}
 		//delete other offers
 		offers.clear();
@@ -222,31 +225,49 @@ public class BDIAgent extends ForesterAgent{
 			// TODO act with respect to your intention (move, extinguish, wetline, woodcutting, check weather)
 			
 			// Check confirmation
-			if(requestConfirmation != null)
-			{
-				int requestID = requestConfirmation.getRequestID();
-				//TODO set request action as intention
-				ActionRequest confirmedRequest = actionRequests.get(requestID);
-				if(confirmedRequest != null)
-				{
-					currentIntention = new Intention(confirmedRequest.getAction(), 
-							confirmedRequest.getPositionX(),  
-							confirmedRequest.getPositionY(), confirmedRequest.getSenderID());
+			if(requestConfirmation != null){
+				if(currentIntention.getRequesterId()!=null){
+					communicationTool.sendDismiss(currentIntention.getRequesterId(), new RequestDismiss(currentIntention.getRequestId(), currentIntention.getRequesterId()));
 				}
-				requestConfirmation = null;
+				this.currentIntention = new Intention(myOffer.getAction(), myOffer.getPosition(), null,null);
 			}
+			myOffer = null;
 			
-			//TODO derive other more urgent intentions from environment?
-			
-			if(currentIntention == null)
-			{
-				currentIntention = new Intention(new Patrol(), null, null, null);
-			}
 			
 			//execute intention
 			boolean executeSuccess = currentIntention.getAction().
 					execute(this, grid.getLocation(this));
-			//TODO Remove intention if !executeSuccess
+			if(!executeSuccess){
+				this.currentIntention = new Intention(new Patrol(), getPosition(), null, null);
+			}
+		}
+	}
+
+
+
+	@Override
+	public void checkNeighbourhood() {
+		GridPoint me = grid.getLocation(this);
+		updateNeighborhoodBelief();
+		//look for fire in direct neighbourhood and choose coldest
+		GridCellNgh<Fire> nghWoodCreator = new GridCellNgh<>(grid, me,
+				Fire.class, 1, 1);
+		List<GridCell<Fire>> fireGridCells = nghWoodCreator.getNeighborhood(false);
+		GridPoint nextFire = null;
+		double hottest = Double.MAX_VALUE;
+		for(GridCell<Fire> cell : fireGridCells){
+			Fire f = cell.items().iterator().next();
+			if(f.getHeat()<hottest){
+				nextFire = cell.getPoint();
+				hottest = f.getHeat();
+			}
+		}
+		//change intention if better
+		if(nextFire!=null && (currentIntention.getPosition()==null || grid.getDistance(currentIntention.getPosition(), me)==0)){
+			if(currentIntention.getRequesterId()!=null){
+				communicationTool.sendDismiss(currentIntention.getRequesterId(), new RequestDismiss(currentIntention.getRequestId(), currentIntention.getRequesterId()));
+			}
+			this.currentIntention = new Intention(new Extinguish(), nextFire, null,null);
 		}
 	}
 }
