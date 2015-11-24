@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InformationMap<T extends Information> {
-	private Map<String, T> informationMap;
+	protected Map<String, T> informationMap;
 	
 	public static final String DELIMITER = "#"; 
 	

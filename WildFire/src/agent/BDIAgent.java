@@ -157,7 +157,7 @@ public class BDIAgent extends ForesterAgent{
 				positionY = getPosition().getY();
 			}
 			Information info = this.belief.getInformation(positionX, positionY, infoRequest.getInformationClass());
-			if(RunEnvironment.getInstance().getCurrentSchedule().getTickCount() - info.getTimestamp() < 20){ // only "new" information
+			if(info != null && RunEnvironment.getInstance().getCurrentSchedule().getTickCount() - info.getTimestamp() < 20){ // only "new" information
 				this.costs+=communicationTool.sendInformation(info, infoRequest.getSenderID());
 			}
 		}

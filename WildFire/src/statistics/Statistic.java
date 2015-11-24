@@ -3,6 +3,7 @@ package statistics;
 import agent.ForesterAgent;
 import repast.simphony.context.Context;
 import repast.simphony.space.grid.Grid;
+import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.ContextUtils;
 import repast.simphony.util.collections.IndexedIterable;
 import environment.Fire;
@@ -46,6 +47,11 @@ public class Statistic
 	public int getGridHeight()
 	{
 		return gridHeight;
+	}
+	
+	public GridPoint getCenter()
+	{
+		return new GridPoint(gridWidth/2, gridHeight/2);
 	}
 	
 	public void setGridSize(int gridWidth, int gridHeight) {

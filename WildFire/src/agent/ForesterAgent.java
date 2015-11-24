@@ -371,7 +371,6 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 				Iterable<Object> gridObjects = grid.getObjectsAt(startX
 						+ xOffset, startY + yOffset);
 				boolean foundFire = false;
-				boolean foundAgent = false;
 				boolean foundWood = false;
 
 				for(Object obj : gridObjects)
@@ -389,10 +388,6 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 						{
 							foundFire = true;
 						}
-						if(obj instanceof ForesterAgent)
-						{
-							foundAgent = true;
-						}
 						if(obj instanceof Wood)
 						{
 							foundWood = true;
@@ -406,17 +401,6 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 					if(changed)
 					{
 						
-						informationList.add(removeInformation);
-					}
-				}
-				if(!foundAgent)
-				{
-					AgentInformation removeInformation = new AgentInformation(
-							startX + xOffset, startY + yOffset);
-					informationList.add(removeInformation);
-					boolean changed = belief.addInformation(removeInformation);
-					if(changed)
-					{
 						informationList.add(removeInformation);
 					}
 				}
@@ -519,25 +503,29 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 			xPos = currentIntention.getxPosition();
 			yPos = currentIntention.getyPosition();
 		}
-		return new AgentInformation(location.getX(), location.getY(), speed, health, xPos, yPos);
+		return new AgentInformation(communicationId, location.getX(), location.getY(), speed, health, xPos, yPos);
 	}
 
 	public static class AgentInformation extends Information {
 
+		private String communicationId;
 		private double speed;
 		private int health;
 
 		private Integer intentionX;
 		private Integer intentionY;
 		
-		private AgentInformation(Integer positionX, Integer positionY, double speed, int health, Integer intentionX, Integer intentionY) {
+		private AgentInformation(String communicationId, Integer positionX, Integer positionY, double speed, int health, Integer intentionX, Integer intentionY) {
 			super(positionX, positionY);
+			this.communicationId = communicationId;
 			this.speed = speed;
 			this.health = health;
 			this.intentionX = intentionX;
 			this.intentionY = intentionY;
 		}
 
+		//TODO Delete remove const?
+		
 		/**
 		 * "Remove" information constructor.
 		 * 
@@ -548,10 +536,13 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 			super(positionX, positionY, true);
 		}
 
+		public String getCommunicationId() {
+			return communicationId;
+		}
+		
 		public double getSpeed() {
 			return speed;
 		}
-
 		
 		public Integer getIntentionX() {
 			return intentionX;

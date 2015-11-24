@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import agent.ForesterAgent.AgentInformation;
+import agent.communication.info.AgentInformationMap;
 import agent.communication.info.Information;
 import agent.communication.info.InformationMap;
 import environment.Cloud.CloudInformation;
@@ -22,7 +23,7 @@ public class Belief {
 		specificInformationMap.put(CloudInformation.class, new InformationMap<CloudInformation>());
 		specificInformationMap.put(FireInformation.class, new InformationMap<FireInformation>());
 		specificInformationMap.put(WoodInformation.class, new InformationMap<WoodInformation>());
-		specificInformationMap.put(AgentInformation.class, new InformationMap<AgentInformation>());
+		specificInformationMap.put(AgentInformation.class, new AgentInformationMap());
 	}
 	
 	public <T extends Information> Collection<T> getAllInformation(Class<T> informationClass)

@@ -12,8 +12,8 @@ public class Patrol extends Action {
 	private int timeSinceDistanceCheck = DISTANCE_CHECK_RATE;
 	private static final int DISTANCE_CHECK_RATE = 5;
 	private double sendingRange;
-	Double xVector = null;
-	Double yVector = null;
+	Double lastxVector = null;
+	Double lastyVector = null;
 	
 	public Patrol() {
 		super(1, 0);
@@ -32,7 +32,8 @@ public class Patrol extends Action {
 		if(sendingRange == -1){
 			int gridWidth = Statistic.getInstance().getGridWidth();
 			int gridHeight = Statistic.getInstance().getGridHeight();
-			sendingRange = (gridWidth + gridHeight)/(2*Statistic.getInstance().getTotalAgentCount());
+			sendingRange = (gridWidth + gridHeight)/(Statistic.getInstance().getTotalAgentCount());
+			sendingRange = Math.min(sendingRange, 5);
 		}
 		if(timeSinceDistanceCheck >= DISTANCE_CHECK_RATE)
 		{
@@ -49,17 +50,34 @@ public class Patrol extends Action {
 		GridPoint ownPosition = agent.getPosition();
 		int xTarget = -1;
 		int yTarget = -1;
+		GridPoint center = Statistic.getInstance().getCenter();
 		
-		if(closestAgentInformation == null)
+		//if no agent nearby or agent is at the forest border, move towards the center
+		final int BORDER_SIZE = 8;
+		int gridHeight = Statistic.getInstance().getGridHeight();
+		int gridWidth = Statistic.getInstance().getGridWidth();
+		if(ownPosition.getX() <= BORDER_SIZE 
+				|| ownPosition.getX() >= gridWidth - BORDER_SIZE
+				|| ownPosition.getY() <= BORDER_SIZE
+				|| ownPosition.getY() >= gridHeight - BORDER_SIZE)
 		{
-			//TODO What to do?
-			if(xVector == null)
+			xTarget = center.getX();
+			yTarget = center.getY();
+			lastxVector = null;
+			lastyVector = null;
+		}
+		else if(closestAgentInformation == null)
+		{
+			if(lastxVector == null)
 			{
-				xVector = 1.0;
-				yVector = 0.0;
+				xTarget = center.getX();
+				yTarget = center.getY();
 			}
-			xTarget = (int)(ownPosition.getX() + xVector);
-			yTarget = (int)(ownPosition.getY() + yVector);
+			else
+			{
+				xTarget = (int)(ownPosition.getX() + lastxVector);
+				yTarget = (int)(ownPosition.getY() + lastyVector);
+			}
 		}
 		else
 		{
@@ -70,28 +88,23 @@ public class Patrol extends Action {
 			double xVector = xDiff / norm * agent.getSpeed();
 			double yVector = yDiff / norm * agent.getSpeed();
 			
-			double[] xVectorValues = new double[]{xVector, -yVector, yVector, -xVector};
-			double[] yVectorValues = new double[]{yVector, xVector, -xVector, -yVector};
-			
-			for(int i=0; i<4; i++)
-			{
-				xTarget = (int)(ownPosition.getX() + xVectorValues[i]);
-				yTarget = (int)(ownPosition.getY() + yVectorValues[i]);
-			
-				if(xTarget<0 || yTarget<0 || xTarget >=Statistic.getInstance().getGridWidth() || 
-						yTarget >= Statistic.getInstance().getGridHeight()){
-					continue;
-				}
-				
-				WoodInformation information = agent.getBelief().getInformation((int)xTarget, (int)yTarget, WoodInformation.class);
-				if(information != null && !information.isEmptyInstance())
-				{
-					break;
-				}
-				xTarget = (int)(ownPosition.getX() + xVectorValues[0]);
-				yTarget = (int)(ownPosition.getY() + yVectorValues[0]);
+			xTarget = (int)(ownPosition.getX() + xVector);
+			yTarget = (int)(ownPosition.getY() + yVector);
+		
+			if(xTarget<0 || yTarget<0 || xTarget >=gridWidth || yTarget >= gridHeight){
+				xTarget = center.getX();
+				yTarget = center.getY();
+				lastxVector = null;
+				lastyVector = null;
 			}
-			System.out.println("+++ "+xTarget + " " + yTarget + " " + ownPosition.getX() + " " + ownPosition.getY() + " " + closestAgentInformation.getPositionX() + " " + closestAgentInformation.getPositionY());
+			else
+			{
+				xTarget = (int)(ownPosition.getX() + xVector);
+				yTarget = (int)(ownPosition.getY() + yVector);
+				
+				lastxVector = xVector;
+				lastyVector = yVector;
+			}
 		}
 		
 		if(xTarget != -1)
