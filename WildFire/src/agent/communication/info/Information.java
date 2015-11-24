@@ -1,11 +1,11 @@
 package agent.communication.info;
 
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.space.grid.GridPoint;
 
 public abstract class Information {
 	private double timestamp;
-	private Integer positionX;
-	private Integer positionY;
+	private GridPoint position;
 	
 	/**
 	 * If set true, this class is to be removed from its position in the belief mapping 
@@ -13,15 +13,14 @@ public abstract class Information {
 	 */
 	private boolean emptyInstance;
 	
-	public Information(Integer positionX, Integer positionY)
+	public Information(GridPoint position)
 	{
-		this(positionX, positionY, false);
+		this(position, false);
 	}
 	
-	public Information(Integer positionX, Integer positionY, boolean removeInstance) {
+	public Information(GridPoint position, boolean removeInstance) {
 		this.timestamp = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
-		this.positionX = positionX;
-		this.positionY = positionY;
+		this.position = position;
 		this.emptyInstance = removeInstance;
 	}
 
@@ -29,12 +28,8 @@ public abstract class Information {
 		return timestamp;
 	}
 
-	public Integer getPositionX() {
-		return positionX;
-	}
-
-	public Integer getPositionY() {
-		return positionY;
+	public GridPoint getPosition(){
+		return this.position;
 	}
 	
 	public boolean isEmptyInstance() {

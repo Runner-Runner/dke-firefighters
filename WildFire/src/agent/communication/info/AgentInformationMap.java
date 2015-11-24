@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.space.grid.GridPoint;
 import agent.ForesterAgent.AgentInformation;
 
 public class AgentInformationMap extends InformationMap<AgentInformation>{
@@ -19,8 +20,7 @@ public class AgentInformationMap extends InformationMap<AgentInformation>{
 			{
 				AgentInformation agentInformation = entry.getValue();
 				if(agentInformation.getCommunicationId().equals(information.getCommunicationId()) && 
-						(!agentInformation.getPositionX().equals(information.getPositionX()) ||
-						!agentInformation.getPositionY().equals(information.getPositionY())))
+						!agentInformation.getPosition().equals(information.getPosition()))
 				{
 					obsoleteKey = entry.getKey();
 					break;
@@ -35,16 +35,16 @@ public class AgentInformationMap extends InformationMap<AgentInformation>{
 	}
 	
 	@Override
-	public AgentInformation getInformation(int positionX, int positionY) {
-		AgentInformation information = super.getInformation(positionX, positionY);
+	public AgentInformation getInformation(GridPoint position) {
+		AgentInformation information = super.getInformation(position);
 		double currentTimestep = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
 		if(currentTimestep > information.getTimestamp()+3)
 		{
-			String key = positionX + DELIMITER + positionY;
+			String key = position.getX() + DELIMITER + position.getY();
 			informationMap.remove(key);
 			return null;
 		}
-		return super.getInformation(positionX, positionY);
+		return super.getInformation(position);
 	}
 	
 	@Override

@@ -2,6 +2,8 @@ package environment;
 
 import java.util.Random;
 
+import repast.simphony.space.grid.GridPoint;
+
 public class ForestFactory {
 	private double maxPower;
 	private double minPower;
@@ -21,7 +23,7 @@ public class ForestFactory {
 	public Wood getWood(int x, int y){
 		double power = minPower+(maxPower-minPower)*random.nextDouble();
 		double material = minMaterial+(maxMaterial-minMaterial)*random.nextDouble();
-		return new Wood(power, material, x, y);
+		return new Wood(power, material, new GridPoint(x,y));
 	}
 	
 }

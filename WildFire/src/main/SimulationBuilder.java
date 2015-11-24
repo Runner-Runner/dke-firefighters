@@ -21,7 +21,6 @@ import repast.simphony.space.grid.StrictBorders;
 import statistics.GraveyardStatistic;
 import statistics.Statistic;
 import agent.BDIAgent;
-import agent.SimpleAgent;
 import environment.CloudFactory;
 import environment.FireFactory;
 import environment.ForestFactory;

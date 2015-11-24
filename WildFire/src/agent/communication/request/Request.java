@@ -1,23 +1,22 @@
 package agent.communication.request;
 
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.space.grid.GridPoint;
 
 public abstract class Request {
 	private static int requestCounter = 0;
 	//TODO maybe use enum for importance
 	protected int importance;
-	protected Integer positionX;
-	protected Integer positionY;
+	protected GridPoint position;
 	protected String senderID;
 	protected int id;
 	protected double timestamp;
 	
-	public Request(String senderID, int importance, Integer positionX, Integer positionY) {
+	public Request(String senderID, int importance, GridPoint position) {
 		super();
 		this.senderID = senderID;
 		this.importance = importance;
-		this.positionX = positionX;
-		this.positionY = positionY;
+		this.position = position;
 		this.id = requestCounter++;
 		this.timestamp = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
 	}
@@ -38,14 +37,9 @@ public abstract class Request {
 		return importance;
 	}
 
-	public Integer getPositionX() {
-		return positionX;
+	public GridPoint getPosition(){
+		return this.position;
 	}
-
-	public Integer getPositionY() {
-		return positionY;
-	}
-	
 	
 	
 	

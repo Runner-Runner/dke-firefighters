@@ -136,16 +136,15 @@ public class Cloud implements InformationProvider {
 
 	@Override
 	public CloudInformation getInformation() {
-		GridPoint location = grid.getLocation(this);
-		return new CloudInformation(location.getX(), location.getY(), rain);
+		return new CloudInformation(grid.getLocation(this), rain);
 	}
 	
 	public static class CloudInformation extends Information {
 
 		private double rain;
 		
-		private CloudInformation(Integer positionX, Integer positionY, double rain) {
-			super(positionX, positionY);
+		private CloudInformation(GridPoint position, double rain) {
+			super(position);
 			this.rain = rain;
 		}
 
@@ -155,9 +154,9 @@ public class Cloud implements InformationProvider {
 		 * @param positionX
 		 * @param positionY
 		 */
-		public CloudInformation(Integer positionX, Integer positionY)
+		public CloudInformation(GridPoint position)
 		{
-			super(positionX, positionY, true);
+			super(position, true);
 		}
 		
 		public double getRain() {

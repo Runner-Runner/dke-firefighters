@@ -6,7 +6,6 @@ import agent.ForesterAgent;
 import agent.ForesterAgent.AgentInformation;
 import agent.communication.CommunicationTool;
 import agent.communication.request.InformationRequest;
-import environment.Wood.WoodInformation;
 
 public class Patrol extends Action {
 	private int timeSinceDistanceCheck = DISTANCE_CHECK_RATE;
@@ -39,8 +38,7 @@ public class Patrol extends Action {
 		{
 			CommunicationTool communicationTool = agent.getCommunicationTool();
 			communicationTool.setSendingRange((int)sendingRange);
-			communicationTool.sendRequest(new InformationRequest(agent.getCommunicationId(), 1, 
-					null, null, AgentInformation.class));
+			communicationTool.sendRequest(new InformationRequest(agent.getCommunicationId(), 1, null, AgentInformation.class));
 			timeSinceDistanceCheck = 0;
 		}
 		
@@ -81,8 +79,8 @@ public class Patrol extends Action {
 		}
 		else
 		{
-			double xDiff = ownPosition.getX() - closestAgentInformation.getPositionX(); 
-			double yDiff = ownPosition.getY() - closestAgentInformation.getPositionY();
+			double xDiff = ownPosition.getX() - closestAgentInformation.getPosition().getX(); 
+			double yDiff = ownPosition.getY() - closestAgentInformation.getPosition().getY();
 			double norm = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
 			
 			double xVector = xDiff / norm * agent.getSpeed();

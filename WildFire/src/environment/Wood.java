@@ -12,16 +12,13 @@ public class Wood implements InformationProvider {
 	private double wetness;	//increases by rain decreases by time and fire in neighborhood fire cannot enter if > 0 (threshold)
 	private double health;	//life points - depends on material 
 	private double material; //defines material factor, how much water can be stored, how fast it transpires and how hot this material can burn
-	private int posX;
-	private int posY;
+	private GridPoint position;
 	
-	public Wood(double health, double material, int posX, int posY) {
-		super();
+	public Wood(double health, double material, GridPoint position) {
 		this.wetness = health*material;
 		this.health = health;
 		this.material = material;
-		this.posX = posX;
-		this.posY = posY;
+		this.position = position;
 	}
 	
 	public double burn(double decrease){
@@ -62,15 +59,15 @@ public class Wood implements InformationProvider {
 
 	@Override
 	public Information getInformation() {
-		return new WoodInformation(posX, posY, health);
+		return new WoodInformation(position, health);
 	}
 	
 	public static class WoodInformation extends Information {
 
 		private double health;
 		
-		private WoodInformation(Integer positionX, Integer positionY, double health) {
-			super(positionX, positionY);
+		private WoodInformation(GridPoint position, double health) {
+			super(position);
 			this.health = health;
 		}
 		
@@ -80,9 +77,9 @@ public class Wood implements InformationProvider {
 		 * @param positionX
 		 * @param positionY
 		 */
-		public WoodInformation(Integer positionX, Integer positionY)
+		public WoodInformation(GridPoint position)
 		{
-			super(positionX, positionY, true);
+			super(position, true);
 		}
 
 		public double getHealth() {
