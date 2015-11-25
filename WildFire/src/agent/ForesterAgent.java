@@ -2,6 +2,7 @@ package agent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,6 +20,8 @@ import agent.communication.request.RequestDismiss;
 import agent.communication.request.RequestOffer;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.query.space.grid.GridCell;
+import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.space.SpatialMath;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
@@ -84,9 +87,11 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	
 	//number of burning injuries it takes to kill a forester.
 	protected final static int STARTING_HEALTH = 5;
-	// defines the number of time steps it takes to regenerate 1 health point
-	// (if injured).
+	//defines the number of time steps it takes to regenerate 1 health point
+	//(if injured).
 	protected final static int REGENERATE_RATE = 15;
+	//
+	protected final static int SEEING_RANGE = 2;
 
 	public ForesterAgent(ContinuousSpace<Object> space, Grid<Object> grid,
 			double speed, double extinguishRate) {
@@ -358,68 +363,58 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	protected List<Information> updateNeighborhoodBelief() {
 		List<Information> informationList = new ArrayList<>();
 
-		// get information about fire
-		GridPoint location = grid.getLocation(this);
-		int startX = location.getX() - 1;
-		int startY = location.getY() - 1;
-		for (int xOffset = 0; xOffset < 3; xOffset++) {
-			if (startX + xOffset < 0
-					|| startX + xOffset == grid.getDimensions().getWidth()) {
-				continue;
-			}
-			for (int yOffset = 0; yOffset < 3; yOffset++) {
-				if (startY + yOffset < 0
-						|| startY + yOffset == grid.getDimensions().getHeight()) {
-					continue;
-				}
-
-				Iterable<Object> gridObjects = grid.getObjectsAt(startX
-						+ xOffset, startY + yOffset);
-				boolean foundFire = false;
-				boolean foundWood = false;
-
-				for(Object obj : gridObjects)
+		GridCellNgh<Object> nghCreator = new GridCellNgh<>(grid, getPosition(), Object.class, 
+				SEEING_RANGE, SEEING_RANGE);
+		List<GridCell<Object>> neighborhood = nghCreator.getNeighborhood(true);
+		Iterator<GridCell<Object>> nghIterator = neighborhood.iterator();
+		while(nghIterator.hasNext())
+		{
+			GridCell<Object> cell = nghIterator.next();
+			boolean foundFire = false;
+			boolean foundWood = false;
+			Iterable<Object> items = cell.items();
+			for(Object obj : items)
+			{
+				if(obj instanceof Fire || obj instanceof ForesterAgent || obj instanceof Wood)
 				{
-					if(obj instanceof Fire || obj instanceof ForesterAgent || obj instanceof Wood)
-					{
-						Information information = ((InformationProvider)obj).getInformation();
-						boolean changed = belief.addInformation(information);
-						if(changed)
-						{
-							informationList.add(information);
-						}
-						
-						if(obj instanceof Fire)
-						{
-							foundFire = true;
-						}
-						if(obj instanceof Wood)
-						{
-							foundWood = true;
-						}
-					}
-				}
-				if (!foundFire) {
-					FireInformation removeInformation = new FireInformation(new GridPoint(
-							startX + xOffset, startY + yOffset));
-					boolean changed = belief.addInformation(removeInformation);
+					Information information = ((InformationProvider)obj).getInformation();
+					boolean changed = belief.addInformation(information);
 					if(changed)
 					{
-						
-						informationList.add(removeInformation);
+						informationList.add(information);
 					}
-				}
-				if (!foundWood) {
-					WoodInformation removeInformation = new WoodInformation(new GridPoint(
-							startX + xOffset, startY + yOffset));
-					boolean changed = belief.addInformation(removeInformation);
-					if(changed)
+					
+					if(obj instanceof Fire)
 					{
-						informationList.add(removeInformation);
+						foundFire = true;
 					}
+					if(obj instanceof Wood)
+					{
+						foundWood = true;
+					}
+				}				
+			}
+			
+			if (!foundFire) {
+				FireInformation removeInformation = new FireInformation(cell.getPoint());
+				boolean changed = belief.addInformation(removeInformation);
+				if(changed)
+				{
+					
+					informationList.add(removeInformation);
+				}
+			}
+			if (!foundWood) {
+				WoodInformation removeInformation = new WoodInformation(cell.getPoint());
+				boolean changed = belief.addInformation(removeInformation);
+				if(changed)
+				{
+					informationList.add(removeInformation);
 				}
 			}
 		}
+		
+		
 		return informationList;
 	}
 
@@ -440,7 +435,6 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		return false;
 	}
 
-	
 	private void die()
 	{
 		GraveyardStatistic graveyardStatistic = GraveyardStatistic.getInstance();

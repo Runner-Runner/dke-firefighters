@@ -23,6 +23,7 @@ import agent.communication.request.RequestDismiss;
 import agent.communication.request.RequestOffer;
 import bibliothek.util.container.Tuple;
 import environment.Fire;
+import environment.Fire.FireInformation;
 import environment.Wood;
 
 public class BDIAgent extends ForesterAgent{
@@ -242,7 +243,7 @@ public class BDIAgent extends ForesterAgent{
 			// Check confirmation
 			if(requestConfirmation != null){
 				if(currentIntention.getRequesterId()!=null){
-					communicationTool.sendDismiss(currentIntention.getRequesterId(), new RequestDismiss(currentIntention.getRequestId(), currentIntention.getRequesterId()));
+					communicationTool.sendRequestDismiss(currentIntention.getRequesterId(), new RequestDismiss(currentIntention.getRequestId(), currentIntention.getRequesterId()));
 				}
 				requestConfirmation = null;
 				System.out.println("confirmed");
@@ -261,28 +262,39 @@ public class BDIAgent extends ForesterAgent{
 
 	@Override
 	public void checkNeighbourhood() {
-		GridPoint me = grid.getLocation(this);
 		updateNeighborhoodBelief();
-		//look for fire in direct neighbourhood and choose coldest
-		GridCellNgh<Fire> nghWoodCreator = new GridCellNgh<>(grid, me,
-				Fire.class, 1, 1);
-		List<GridCell<Fire>> fireGridCells = nghWoodCreator.getNeighborhood(false);
+		
+		int startX = getPosition().getX();
+		int startY = getPosition().getY();
+		
 		GridPoint nextFire = null;
+		double closestDistance = Double.MAX_VALUE;
 		double coldest = Double.MAX_VALUE;
-		for(GridCell<Fire> cell : fireGridCells){
-			if(cell.items().iterator().hasNext())
+		
+		//Look for fire in direct neighborhood and choose coldest
+		for(int offsetX = -SEEING_RANGE; offsetX<SEEING_RANGE; offsetX++)
+		{
+			for(int offsetY = -SEEING_RANGE; offsetY<SEEING_RANGE; offsetY++)
 			{
-				Fire f = cell.items().iterator().next();
-				if(f.getHeat()<coldest){
-					nextFire = cell.getPoint();
-					coldest = f.getHeat();
+				FireInformation fireInformation = belief.getInformation(
+						new GridPoint(startX + offsetX, startY + offsetY), FireInformation.class);
+				if(fireInformation != null && !fireInformation.isEmptyInstance())
+				{
+					int discreteDistance = Math.max(Math.abs(offsetX), Math.abs(offsetY));
+					double heat = fireInformation.getHeat();
+					if(discreteDistance < closestDistance || (discreteDistance == closestDistance && heat < coldest)){
+						nextFire = fireInformation.getPosition();
+						closestDistance = discreteDistance;
+						coldest = heat;
+					}
 				}
 			}
 		}
+		
 		//change intention if better
-		if(nextFire!=null && (currentIntention.getPosition()==null || grid.getDistance(currentIntention.getPosition(), me)>1.5)){
+		if(nextFire!=null && (currentIntention.getPosition()==null || grid.getDistance(currentIntention.getPosition(), getPosition())>1.5)){
 			if(currentIntention.getRequesterId()!=null){
-				communicationTool.sendDismiss(currentIntention.getRequesterId(), new RequestDismiss(currentIntention.getRequestId(), currentIntention.getRequesterId()));
+				communicationTool.sendRequestDismiss(currentIntention.getRequesterId(), new RequestDismiss(currentIntention.getRequestId(), currentIntention.getRequesterId()));
 			}
 			this.currentIntention = new Intention(new Extinguish(), nextFire, null,null);
 		}
