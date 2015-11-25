@@ -51,10 +51,6 @@ public class BDIAgent extends ForesterAgent{
 			GridCellNgh<Wood> nghWoodCreator = new GridCellNgh<>(grid, location,
 					Wood.class, 1, 1);
 			List<GridCell<Wood>> woodGridCells = nghWoodCreator.getNeighborhood(false);
-			if(woodGridCells.size() != 8)
-			{
-				System.out.println("");
-			}
 			for(GridCell<Wood> cell : woodGridCells)
 			{
 				if (cell.size() == 0) {
@@ -109,29 +105,34 @@ public class BDIAgent extends ForesterAgent{
 		List<GridCell<Fire>> fires = nghFire.getNeighborhood(true);
 		
 		for(GridCell<Fire> fire: fires){
-			//my intention
-			if(fire.getPoint().equals(currentIntention.getPosition())){
-				continue;
-			}
-			//agents already requested
-			if(agentRequested(fire.getPoint())){
-				continue;
-			}
-			Request request = null;
-			Double range = null;
-			//already sent request -> increase range
-			for(Tuple<Request, Double> tuple : openRequests.values()){
-				if(tuple.getA().getPosition().equals(fire.getPoint())){
-					request = tuple.getA();
-					range = tuple.getB();
-					break;
+			if(fire.size()>0){
+				//my intention
+				if(fire.getPoint().equals(currentIntention.getPosition())){
+					continue;
 				}
+				//agents already requested
+				if(agentRequested(fire.getPoint())){
+					continue;
+				}
+				Request request = null;
+				Double range = null;
+				//already sent request -> increase range
+				for(Tuple<Request, Double> tuple : openRequests.values()){
+					if(tuple.getA().getPosition().equals(fire.getPoint())){
+						request = tuple.getA();
+						range = tuple.getB();
+						break;
+					}
+				}
+				if(request == null){
+					request = new ActionRequest(1, fire.getPoint(), new Extinguish(), communicationId);
+					range = new Double(3); // starting range
+				}
+				range = range+2;
+				this.communicationTool.setSendingRange(range);
+				this.communicationTool.sendRequest(request);
+				this.openRequests.put(request.getId(), new Tuple<Request,Double>(request, range));
 			}
-			if(request == null){
-				request = new ActionRequest(1, fire.getPoint(), new Extinguish(), communicationId);
-				range = new Double(3); // starting range
-			}
-			this.openRequests.put(request.getId(), new Tuple<Request,Double>(request, range));
 		}
 	}
 	private boolean agentRequested(GridPoint p){
@@ -211,7 +212,10 @@ public class BDIAgent extends ForesterAgent{
 		HashMap<Integer, RequestOffer> bestOffers = new HashMap<Integer, RequestOffer>();
 		for(RequestOffer offer: this.offers){
 			RequestOffer best = bestOffers.get(offer.getRequestID());
-			Request request = openRequests.get(offer.getRequestID()).getA();
+			Tuple<Request,Double> tuple = openRequests.get(offer.getRequestID());
+			Request request = null;
+			if(tuple!=null)
+				request = tuple.getA();
 			if(request!=null && !agentRequested(request.getPosition()) && (best == null || offer.getDistance()<best.getDistance())){
 				bestOffers.put(request.getId(), offer);
 			}
@@ -237,6 +241,7 @@ public class BDIAgent extends ForesterAgent{
 				if(currentIntention.getRequesterId()!=null){
 					communicationTool.sendRequestDismiss(currentIntention.getRequesterId(), new RequestDismiss(currentIntention.getRequestId(), currentIntention.getRequesterId()));
 				}
+				requestConfirmation = null;
 				this.currentIntention = new Intention(myOffer.getAction(), myOffer.getPosition(), null,null);
 			}
 			myOffer = null;

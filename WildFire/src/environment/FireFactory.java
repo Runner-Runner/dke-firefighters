@@ -8,9 +8,9 @@ import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
-import statistics.Statistic;
 
-public class FireFactory {
+public class FireFactory 
+{
 	private Grid<Object> grid;
 	private ContinuousSpace<Object> space;
 	private Context<Object> context;
@@ -56,7 +56,7 @@ public class FireFactory {
 			//TODO with respect to wetness and material
 			if(random.nextDouble()<frequency){
 				double heat = 2;
-				Fire newFire = new Fire(heat, wind, grid, context, space);
+				Fire newFire = new Fire(heat, wind);
 				context.add(newFire);
 				grid.moveTo(newFire, x,y);
 				space.moveTo(newFire, x,y);

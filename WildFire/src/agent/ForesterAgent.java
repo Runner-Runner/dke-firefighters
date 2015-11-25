@@ -27,7 +27,6 @@ import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
-import repast.simphony.util.ContextUtils;
 import repast.simphony.util.collections.IndexedIterable;
 import statistics.DataProviderExtinguishedFireAmount;
 import statistics.GraveyardStatistic;
@@ -222,7 +221,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		// TODO send newly obtained information to (nearby?) agents
 
 		// get information about wind
-		Context<Object> context = ContextUtils.getContext(this);
+		Context<Object> context = CommonKnowledge.getContext();
 		IndexedIterable<Object> windObjects = context.getObjects(Wind.class);
 
 		Wind wind = (Wind)windObjects.get(0);
@@ -441,7 +440,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		GraveyardStatistic graveyardStatistic = GraveyardStatistic.getInstance();
 		graveyardStatistic.addExtinguishedFireAmount(getExtinguishedFireAmount());
 		
-		Context<Object> context = ContextUtils.getContext(this);
+		Context<Object> context = CommonKnowledge.getContext();
 		context.remove(this);
 	}
 	

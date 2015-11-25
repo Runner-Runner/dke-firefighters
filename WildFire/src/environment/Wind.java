@@ -5,11 +5,8 @@ import java.util.Random;
 import main.CommonKnowledge;
 import agent.communication.info.Information;
 import agent.communication.info.InformationProvider;
-import repast.simphony.context.Context;
-import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.grid.GridPoint;
-import repast.simphony.util.ContextUtils;
 
 public class Wind implements InformationProvider {
 	private Random random;
@@ -28,10 +25,6 @@ public class Wind implements InformationProvider {
 	public void step() {
 		changeDirection();
 		changeSpeed();
-	}
-	
-	private double getWindDirectionDegree() {
-		return this.windDirection*180/Math.PI;
 	}
 
 	public double getWindDirection() {

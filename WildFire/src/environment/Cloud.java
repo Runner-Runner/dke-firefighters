@@ -9,31 +9,34 @@ import agent.communication.info.Information;
 import agent.communication.info.InformationProvider;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
-import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
-import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
-import repast.simphony.util.ContextUtils;
 
-public class Cloud implements InformationProvider {
-	private ContinuousSpace<Object> space;	//actual terrain
-	private Grid<Object> grid;	//actual grid
-	private Wind wind;	//reference to global wind
-	private double tank;	//water for each cell this cloud carries
-	private double rain;	//number of water which rains in each iteration
-	private double maxRain;	//
+
+public class Cloud implements InformationProvider 
+{
+	//Reference to global wind
+	private Wind wind;	
+	//Water for each cell this cloud carries
+	private double tank;	
+	//Number of water which rains in each iteration
+	private double rain;	
+	//Max rain value
+	private double maxRain;	
+	//Min rain value
 	private double minRain;
 	private Random random;
 	private Context<Object> context;
+	//Cells which are not at the map yet
 	private ArrayList<Point> futureCells;
+	//Inertia of this cloud
 	private double inertia;
 	
-	public Cloud(Context<Object> context, Wind wind, ContinuousSpace<Object> space, Grid<Object> grid, double tank, double maxRain, double minRain) {
+	public Cloud(Context<Object> context, Wind wind, double tank, double maxRain, double minRain) 
+	{
 		super();
 		this.context = context;
 		this.wind = wind;
-		this.space = space;
-		this.grid = grid;
 		this.tank = tank;
 		this.random = new Random();
 		this.rain = minRain+random.nextDouble()*(maxRain-minRain);
@@ -43,11 +46,13 @@ public class Cloud implements InformationProvider {
 		this.inertia = 0.6; //TODO maybe depend on tank
 	}
 	
-	public void init(int minDim, int maxDim){
+	public void init(int minDim, int maxDim)
+	{
 		int xDim = random.nextInt(maxDim-minDim)+minDim;
 		int yDim = random.nextInt(maxDim-minDim)+minDim;
 		//generate futureCells 
-		for(int i =-xDim/2;i<=xDim/2;i++){
+		for(int i =-xDim/2;i<=xDim/2;i++)
+		{
 			for(int j = -yDim/2;j<yDim/2;j++)
 				futureCells.add(new Point(j,i));
 		}
@@ -56,48 +61,58 @@ public class Cloud implements InformationProvider {
 	
 	
 	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE, priority = 994)
-	public void step() {
-		if(move()){
+	public void step() 
+	{
+		if(move())
+		{
 			addCells();
 		}
 		changePower();
 	}
 	
 	//called by WaterCells
-	public double getRain(){
-		if(tank>=rain){
+	public double getRain()
+	{
+		if(tank>=rain)
+		{
 			tank-=rain;
 			return rain;
 		}
-		else{
+		else
+		{
 			return 0;
 		}
 	}
 	
-	public double getInertia() {
+	public double getInertia() 
+	{
 		return inertia;
 	}
 
-	//add cells to map
-	private void addCells() {
-		NdPoint myPoint = space.getLocation(this);
+	//Add cells to map
+	private void addCells() 
+	{
+		NdPoint myPoint = CommonKnowledge.getSpace().getLocation(this);
 		double x = myPoint.getX();
 		double y = myPoint.getY();
-		for(int i =0;i<futureCells.size();i++){
+		for(int i =0;i<futureCells.size();i++)
+		{
 			Point p = futureCells.get(i);
-			if(onMap(x+p.x, y+p.y)){
-				WaterCell wc = new WaterCell(space, grid, wind, this);
+			if(onMap(x+p.x, y+p.y))
+			{
+				WaterCell wc = new WaterCell(wind, this);
 				context.add(wc);
-				space.moveTo(wc, x+p.x, y+p.y);
-				grid.moveTo(wc, (int)(x+p.x), (int)(y+p.y));
+				CommonKnowledge.getSpace().moveTo(wc, x+p.x, y+p.y);
+				CommonKnowledge.getGrid().moveTo(wc, (int)(x+p.x), (int)(y+p.y));
 				futureCells.remove(p);
 				i--;
 			}
 		}
 	}
 	
-	//change power of rain 
-	private void changePower(){
+	//Change power of rain 
+	private void changePower()
+	{
 		this.rain+=random.nextGaussian();
 		if(this.rain>maxRain)
 			this.rain = maxRain;
@@ -105,46 +120,54 @@ public class Cloud implements InformationProvider {
 			this.rain = minRain;
 	}
 	
-	// move according wind direction/speed
-	private boolean move() {
-		// get actual point
-		NdPoint myPoint = space.getLocation(this);
-		// get angle from wind
+	//Move according wind direction/speed
+	private boolean move() 
+	{
+		//Get actual point
+		NdPoint myPoint = CommonKnowledge.getSpace().getLocation(this);
+		//Get angle from wind
 		double angle = this.wind.getWindDirection();
-		// cloud is a little bit slower than wind
+		//Cloud is a little bit slower than wind
 		double distance = this.inertia * this.wind.getSpeed();
-		// look if new position is on map
+		//Look if new position is on map
 		double newX = myPoint.getX() + Math.cos(angle) * distance;
 		double newY = myPoint.getY() + Math.sin(angle) * distance;
-		if (!onMap(newX, newY)) {
-			Context<Object> context = ContextUtils.getContext(this);
+		if (!onMap(newX, newY)) 
+		{
+			Context<Object> context = CommonKnowledge.getContext();
 			context.remove(this);
 			return false;
-		} else {
-			// move in continuous space
-			space.moveByVector(this, distance, angle, 0);
-			myPoint = space.getLocation(this);
-			// move in grid
-			grid.moveTo(this, (int) myPoint.getX(), (int) myPoint.getY());
+		} 
+		else 
+		{
+			//Move in continuous space
+			CommonKnowledge.getSpace().moveByVector(this, distance, angle, 0);
+			myPoint = CommonKnowledge.getSpace().getLocation(this);
+			//Move in grid
+			CommonKnowledge.getGrid().moveTo(this, (int) myPoint.getX(), (int) myPoint.getY());
 			return true;
 		}
 	}
 	
-	private boolean onMap(double x, double y){
-		return x >= 0 && y >= 0 && x < grid.getDimensions().getWidth()
-				&& y < grid.getDimensions().getHeight();
+	private boolean onMap(double x, double y)
+	{
+		return x >= 0 && y >= 0 && x < CommonKnowledge.getGrid().getDimensions().getWidth()
+				&& y < CommonKnowledge.getGrid().getDimensions().getHeight();
 	}
 
 	@Override
-	public CloudInformation getInformation() {
-		return new CloudInformation(grid.getLocation(this), rain);
+	public CloudInformation getInformation() 
+	{
+		return new CloudInformation(CommonKnowledge.getGrid().getLocation(this), rain);
 	}
 	
-	public static class CloudInformation extends Information {
+	public static class CloudInformation extends Information 
+	{
 
 		private double rain;
 		
-		private CloudInformation(GridPoint position, double rain) {
+		private CloudInformation(GridPoint position, double rain) 
+		{
 			super(position);
 			this.rain = rain;
 		}
@@ -160,7 +183,8 @@ public class Cloud implements InformationProvider {
 			super(position, true);
 		}
 		
-		public double getRain() {
+		public double getRain() 
+		{
 			return rain;
 		}
 	}
