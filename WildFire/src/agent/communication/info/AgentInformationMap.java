@@ -37,6 +37,10 @@ public class AgentInformationMap extends InformationMap<AgentInformation>{
 	@Override
 	public AgentInformation getInformation(GridPoint position) {
 		AgentInformation information = super.getInformation(position);
+		if(information == null)
+		{
+			return null;
+		}
 		double currentTimestep = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
 		if(currentTimestep > information.getTimestamp()+3)
 		{
