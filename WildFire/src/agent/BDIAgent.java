@@ -267,9 +267,9 @@ public class BDIAgent extends ForesterAgent{
 		double coldest = Double.MAX_VALUE;
 		
 		//Look for fire in direct neighborhood and choose coldest
-		for(int offsetX = -SEEING_RANGE; offsetX<SEEING_RANGE; offsetX++)
+		for(int offsetX = -SEEING_RANGE; offsetX<=SEEING_RANGE; offsetX++)
 		{
-			for(int offsetY = -SEEING_RANGE; offsetY<SEEING_RANGE; offsetY++)
+			for(int offsetY = -SEEING_RANGE; offsetY<=SEEING_RANGE; offsetY++)
 			{
 				FireInformation fireInformation = belief.getInformation(
 						new GridPoint(startX + offsetX, startY + offsetY), FireInformation.class);

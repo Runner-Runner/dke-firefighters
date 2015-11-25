@@ -21,6 +21,7 @@ import statistics.GraveyardStatistic;
 import statistics.Statistic;
 import agent.BDIAgent;
 import environment.CloudFactory;
+import environment.Fire;
 import environment.FireFactory;
 import environment.ForestFactory;
 import environment.Wind;
@@ -123,6 +124,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		context.add(GraveyardStatistic.getInstance());
 		
 		Statistic statistic = Statistic.getInstance();
+		statistic.reset();
 		statistic.setGridSize(grid.getDimensions().getWidth(), grid.getDimensions().getHeight());
 		statistic.setTotalWoodHealth(totalWoodHealth);
 		statistic.setTotalAgentCount(numberAgents);
