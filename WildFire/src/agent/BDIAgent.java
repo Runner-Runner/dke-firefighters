@@ -270,7 +270,7 @@ public class BDIAgent extends ForesterAgent{
 			}
 		}
 		//change intention if better
-		if(nextFire!=null && (currentIntention.getPosition()==null || grid.getDistance(currentIntention.getPosition(), me)==0)){
+		if(nextFire!=null && (currentIntention.getPosition()==null || grid.getDistance(currentIntention.getPosition(), me)>1.5)){
 			if(currentIntention.getRequesterId()!=null){
 				communicationTool.sendDismiss(currentIntention.getRequesterId(), new RequestDismiss(currentIntention.getRequestId(), currentIntention.getRequesterId()));
 			}

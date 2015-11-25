@@ -261,7 +261,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 			return;
 		}
 		//current grid position
-		GridPoint oldPos = grid.getLocation(this);
+		
+		NdPoint oldPos = space.getLocation(this);
 		
 		//angle of both tiles
 		double angle = getAngle(oldPos, pt);
@@ -270,7 +271,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		//if agent has been moved
 		boolean moved = false;
 		//distance of both tiles
-		double distance = grid.getDistance(oldPos, pt);
+		NdPoint target = new NdPoint(pt.getX(),pt.getY());
+		double distance = space.getDistance(oldPos, target);
 		
 		if(distance>speed){
 			while(!moved && tempSpeed > 0)
@@ -278,13 +280,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 				// position of step tile
 				double x = oldPos.getX() + tempSpeed * Math.cos(angle);
 				double y = oldPos.getY() + tempSpeed * Math.sin(angle);
-				moved = moveTo(new GridPoint((int)Math.round(x),(int)Math.round(y)));
-	
-				GridPoint newG = new GridPoint((int)Math.round(x),(int)Math.round(y));
-				if(newG.equals(oldPos))
-				{
-					System.out.println(oldPos);
-				}
+				moved = moveTo(x,y);	
 				
 				if(!moved){
 					--tempSpeed;
@@ -293,7 +289,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		}else{
 			//TODO implement not reaching the target point even now because another agent is on this tile
 			//if pt is reachable in one time step
-			moveTo(pt);
+			moveTo(pt.getX(),pt.getY());
 		}
 	}
 
@@ -303,8 +299,10 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	 * @param pt
 	 * @return if the move worked
 	 */
-	private boolean moveTo(GridPoint pt) {
+	private boolean moveTo(double x, double y) {
+		GridPoint pt = new GridPoint((int)Math.round(x),(int)Math.round(y));
 		if( pt.equals(grid.getLocation(this))){
+			space.moveTo(this, x, y);
 			return true;
 		}
 			
@@ -317,7 +315,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		}
 
 		if (!occupied) {
-			space.moveTo(this, pt.getX(), pt.getY());
+			space.moveTo(this, x, y);
 			grid.moveTo(this, pt.getX(), pt.getY());
 		}
 		return !occupied;
@@ -329,7 +327,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	 * @param to
 	 * @return angle
 	 */
-	private double getAngle(GridPoint from, GridPoint to) {
+	private double getAngle(NdPoint from, GridPoint to) {
 		NdPoint fromPt = new NdPoint(from.getX(), from.getY());
 		NdPoint toPt = new NdPoint(to.getX(), to.getY());
 		return SpatialMath.calcAngleFor2DMovement(space, fromPt, toPt);
