@@ -46,8 +46,8 @@ public class Cloud implements InformationProvider
 	
 	public void init(int minDim, int maxDim)
 	{
-		int xDim = RandomHelper.nextIntFromTo(0,maxDim-minDim)+minDim;
-		int yDim = RandomHelper.nextIntFromTo(0,maxDim-minDim)+minDim;
+		int xDim = RandomHelper.nextIntFromTo(0,maxDim-minDim-1)+minDim;
+		int yDim = RandomHelper.nextIntFromTo(0,maxDim-minDim-1)+minDim;
 		//generate futureCells 
 		for(int i =-xDim/2;i<=xDim/2;i++)
 		{

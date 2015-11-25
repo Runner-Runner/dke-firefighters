@@ -34,8 +34,8 @@ public class FireFactory
 	
 	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE*CommonKnowledge.FIRE_FACTOR, priority = 997)
 	public void step() {
-		int x = maxCloudDim+ RandomHelper.nextIntFromTo(0,forestDim);
-		int y = maxCloudDim + RandomHelper.nextIntFromTo(0,forestDim);
+		int x = maxCloudDim+ RandomHelper.nextIntFromTo(0,forestDim-1);
+		int y = maxCloudDim + RandomHelper.nextIntFromTo(0,forestDim-1);
 		Iterator<Object> it = grid.getObjectsAt(x,y).iterator();
 		Wood w = null;
 		Fire f = null;

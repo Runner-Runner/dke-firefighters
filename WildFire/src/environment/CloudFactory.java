@@ -43,23 +43,23 @@ public class CloudFactory
 			double wD = this.wind.getWindDirection();
 			if(wD>Math.PI/4 && wD<=0.75*Math.PI)
 			{
-				x = RandomHelper.nextIntFromTo(0,dim);
+				x = RandomHelper.nextIntFromTo(0,dim-1);
 				y = 0;
 			}
 			else if(wD > 0.75*Math.PI && wD<=1.25*Math.PI)
 			{
 				x = dim-1;
-				y = RandomHelper.nextIntFromTo(0,dim);
+				y = RandomHelper.nextIntFromTo(0,dim-1);
 			}
 			else if(wD > 1.25*Math.PI && wD<=1.75*Math.PI)
 			{
-				x = RandomHelper.nextIntFromTo(0,dim);
+				x = RandomHelper.nextIntFromTo(0,dim-1);
 				y = dim-1;
 			}
 			else
 			{
 				x = 0;
-				y = RandomHelper.nextIntFromTo(0,dim);
+				y = RandomHelper.nextIntFromTo(0,dim-1);
 			}
 			double tank = minTank+RandomHelper.nextDouble()*(maxTank-minTank);
 			Cloud newCloud = new Cloud(context, wind, tank, maxRain, minRain);

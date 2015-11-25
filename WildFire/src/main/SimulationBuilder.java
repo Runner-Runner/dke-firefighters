@@ -103,8 +103,8 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		//create agents
 		for(int i = 0;i<numberAgents;i++){
 			double speed = RandomHelper.nextDoubleFromTo(1, 2);
-			int x = RandomHelper.nextIntFromTo(0,forestDim)+maxCloudDim;
-			int y = RandomHelper.nextIntFromTo(0,forestDim)+maxCloudDim;
+			int x = RandomHelper.nextIntFromTo(0,forestDim-1)+maxCloudDim;
+			int y = RandomHelper.nextIntFromTo(0,forestDim-1)+maxCloudDim;
 			BDIAgent agent = new BDIAgent(space, grid, speed, 2);
 			context.add(agent);
 			space.moveTo(agent, x,y);
