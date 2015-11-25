@@ -1,16 +1,14 @@
 package environment;
 
-import java.util.Random;
-
 import main.CommonKnowledge;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.random.RandomHelper;
 
 public class CloudFactory 
 {
 	private Wind wind;
 	private Context<Object> context;
-	private Random random;
 	private double cloudFrequency;
 	private int maxCloudDim;
 	private int minCloudDim;
@@ -24,7 +22,6 @@ public class CloudFactory
 	{
 		this.context = context;
 		this.wind = wind;
-		this.random = new Random();
 		this.cloudFrequency = cloudFrequency;
 		this.maxCloudDim = maxCloudDim;
 		this.minCloudDim = minCloudDim;
@@ -39,32 +36,32 @@ public class CloudFactory
 	public void createCloud() 
 	{
 		//if new cloud is going to be created depends on actual wind speed, cloud frequency and random value
-		if(random.nextDouble()<cloudFrequency*wind.getSpeed()){
+		if(RandomHelper.nextDouble()<cloudFrequency*wind.getSpeed()){
 			int x;
 			int y;
 			int dim = forestDim+2*maxCloudDim;
 			double wD = this.wind.getWindDirection();
 			if(wD>Math.PI/4 && wD<=0.75*Math.PI)
 			{
-				x = random.nextInt(dim);
+				x = RandomHelper.nextIntFromTo(0,dim);
 				y = 0;
 			}
 			else if(wD > 0.75*Math.PI && wD<=1.25*Math.PI)
 			{
 				x = dim-1;
-				y = random.nextInt(dim);
+				y = RandomHelper.nextIntFromTo(0,dim);
 			}
 			else if(wD > 1.25*Math.PI && wD<=1.75*Math.PI)
 			{
-				x = random.nextInt(dim);
+				x = RandomHelper.nextIntFromTo(0,dim);
 				y = dim-1;
 			}
 			else
 			{
 				x = 0;
-				y = random.nextInt(dim);
+				y = RandomHelper.nextIntFromTo(0,dim);
 			}
-			double tank = minTank+random.nextDouble()*(maxTank-minTank);
+			double tank = minTank+RandomHelper.nextDouble()*(maxTank-minTank);
 			Cloud newCloud = new Cloud(context, wind, tank, maxRain, minRain);
 			context.add(newCloud);
 			CommonKnowledge.getSpace().moveTo(newCloud, x,y);

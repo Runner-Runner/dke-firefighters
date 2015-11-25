@@ -1,11 +1,11 @@
 package environment;
 
 import java.util.Iterator;
-import java.util.Random;
 
 import main.CommonKnowledge;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.random.RandomHelper;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
 
@@ -16,7 +16,6 @@ public class FireFactory
 	private Context<Object> context;
 	private double frequency;
 	private Wind wind;
-	private Random random;
 	private int forestDim;
 	private int maxCloudDim;
 	
@@ -28,7 +27,6 @@ public class FireFactory
 		this.wind = wind;
 		this.space = space;
 		this.frequency = frequency;
-		this.random = new Random();
 		this.forestDim = forestDim;
 		this.maxCloudDim = maxCloudDim;
 	}
@@ -36,8 +34,8 @@ public class FireFactory
 	
 	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE*CommonKnowledge.FIRE_FACTOR, priority = 997)
 	public void step() {
-		int x = maxCloudDim+ random.nextInt(forestDim);
-		int y = maxCloudDim + random.nextInt(forestDim);
+		int x = maxCloudDim+ RandomHelper.nextIntFromTo(0,forestDim);
+		int y = maxCloudDim + RandomHelper.nextIntFromTo(0,forestDim);
 		Iterator<Object> it = grid.getObjectsAt(x,y).iterator();
 		Wood w = null;
 		Fire f = null;
@@ -54,7 +52,7 @@ public class FireFactory
 		// wood without fire
 		if(w != null && f == null){
 			//TODO with respect to wetness and material
-			if(random.nextDouble()<frequency){
+			if(RandomHelper.nextDouble()<frequency){
 				double heat = 2;
 				Fire newFire = new Fire(heat, wind);
 				context.add(newFire);

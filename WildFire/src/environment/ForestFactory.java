@@ -1,14 +1,12 @@
 package environment;
 
-import java.util.Random;
-
+import repast.simphony.random.RandomHelper;
 import repast.simphony.space.grid.GridPoint;
 
 public class ForestFactory 
 {
 	private double maxPower;
 	private double minPower;
-	private Random random;
 	private double maxMaterial;
 	private double minMaterial;
 	
@@ -20,13 +18,12 @@ public class ForestFactory
 		this.minPower = minPower;
 		this.maxMaterial = maxMaterial;
 		this.minMaterial = minMaterial;
-		this.random = new Random();
 	}
 	
 	public Wood getWood(int x, int y)
 	{
-		double power = minPower+(maxPower-minPower)*random.nextDouble();
-		double material = minMaterial+(maxMaterial-minMaterial)*random.nextDouble();
+		double power = minPower+(maxPower-minPower)*RandomHelper.nextDouble();
+		double material = minMaterial+(maxMaterial-minMaterial)*RandomHelper.nextDouble();
 		return new Wood(power, material, new GridPoint(x,y));
 	}
 	

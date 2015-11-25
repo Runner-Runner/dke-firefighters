@@ -1,7 +1,6 @@
 package environment;
 
 import java.util.List;
-import java.util.Random;
 
 import main.CommonKnowledge;
 import agent.communication.info.Information;
@@ -10,6 +9,7 @@ import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
+import repast.simphony.random.RandomHelper;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import statistics.Statistic;
@@ -18,14 +18,12 @@ public class Fire implements InformationProvider
 {
 	private double heat; //number of points to decrease woods lifepoints each iteration
 	private Wind wind; //fire spreads in winds direction
-	private Random random;
 	
 	public Fire(double heat, Wind wind) 
 	{
 		super();
 		this.heat = heat;
 		this.wind = wind;
-		this.random = new Random();
 		Statistic.getInstance().incrementFireCount();
 	}
 	public double getHeat()
@@ -68,7 +66,7 @@ public class Fire implements InformationProvider
 						}
 					}
 					if(fire == null){
-						if(random.nextDouble()<wind.getSpeed()*0.1)
+						if(RandomHelper.nextDouble()<wind.getSpeed()*0.1)
 						{//TODO take length of windvector into consideration
 							Fire f = new Fire(wind.getSpeed()*0.05*this.heat, this.wind);
 							CommonKnowledge.getContext().add(f);

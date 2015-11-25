@@ -2,13 +2,13 @@ package environment;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Random;
 
 import main.CommonKnowledge;
 import agent.communication.info.Information;
 import agent.communication.info.InformationProvider;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.random.RandomHelper;
 import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.GridPoint;
 
@@ -25,7 +25,6 @@ public class Cloud implements InformationProvider
 	private double maxRain;	
 	//Min rain value
 	private double minRain;
-	private Random random;
 	private Context<Object> context;
 	//Cells which are not at the map yet
 	private ArrayList<Point> futureCells;
@@ -38,8 +37,7 @@ public class Cloud implements InformationProvider
 		this.context = context;
 		this.wind = wind;
 		this.tank = tank;
-		this.random = new Random();
-		this.rain = minRain+random.nextDouble()*(maxRain-minRain);
+		this.rain = minRain+RandomHelper.nextDouble()*(maxRain-minRain);
 		this.maxRain = maxRain;
 		this.minRain = minRain;
 		this.futureCells = new ArrayList<Point>();
@@ -48,8 +46,8 @@ public class Cloud implements InformationProvider
 	
 	public void init(int minDim, int maxDim)
 	{
-		int xDim = random.nextInt(maxDim-minDim)+minDim;
-		int yDim = random.nextInt(maxDim-minDim)+minDim;
+		int xDim = RandomHelper.nextIntFromTo(0,maxDim-minDim)+minDim;
+		int yDim = RandomHelper.nextIntFromTo(0,maxDim-minDim)+minDim;
 		//generate futureCells 
 		for(int i =-xDim/2;i<=xDim/2;i++)
 		{
@@ -113,7 +111,7 @@ public class Cloud implements InformationProvider
 	//Change power of rain 
 	private void changePower()
 	{
-		this.rain+=random.nextGaussian();
+		this.rain+=RandomHelper.createNormal(0,1).nextDouble();
 		if(this.rain>maxRain)
 			this.rain = maxRain;
 		else if (this.rain < minRain)

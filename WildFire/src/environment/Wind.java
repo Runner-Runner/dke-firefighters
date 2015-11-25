@@ -1,24 +1,21 @@
 package environment;
 
-import java.util.Random;
-
 import main.CommonKnowledge;
 import agent.communication.info.Information;
 import agent.communication.info.InformationProvider;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.random.RandomHelper;
 import repast.simphony.space.grid.GridPoint;
 
 public class Wind implements InformationProvider {
-	private Random random;
 	private double windDirection;	//in radiant
 	private double speed;		//in distance per step
 	private double maxSpeed;
 	
 	public Wind(double maxSpeed){
-		this.random = new Random();
 		this.maxSpeed = maxSpeed;
-		this.speed = random.nextDouble()*maxSpeed;
-		this.windDirection = random.nextDouble()*2*Math.PI;
+		this.speed = RandomHelper.nextDouble()*maxSpeed;
+		this.windDirection = RandomHelper.nextDouble()*2*Math.PI;
 	}
 	
 	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE*CommonKnowledge.WIND_FACTOR, priority = 999)
@@ -38,12 +35,12 @@ public class Wind implements InformationProvider {
 
 
 	private void changeDirection(){
-		this.windDirection += random.nextGaussian()*Math.PI/2/6;
+		this.windDirection += RandomHelper.createNormal(0,1).nextDouble() *Math.PI/2/6;
 		this.windDirection%=2*Math.PI;
 	}
 	
 	private void changeSpeed(){
-		this.speed += random.nextGaussian()*maxSpeed/6;
+		this.speed += RandomHelper.createNormal(0,1).nextDouble()*maxSpeed/6;
 		if(this.speed<0)
 			this.speed = 0;
 		else if(this.speed>maxSpeed)
