@@ -234,7 +234,7 @@ public class BDIAgent extends ForesterAgent{
 			// Check confirmation
 			if(requestConfirmation != null){
 				if(currentIntention.getRequesterId()!=null){
-					communicationTool.sendDismiss(currentIntention.getRequesterId(), new RequestDismiss(currentIntention.getRequestId(), currentIntention.getRequesterId()));
+					communicationTool.sendRequestDismiss(currentIntention.getRequesterId(), new RequestDismiss(currentIntention.getRequestId(), currentIntention.getRequesterId()));
 				}
 				this.currentIntention = new Intention(myOffer.getAction(), myOffer.getPosition(), null,null);
 			}
@@ -272,7 +272,7 @@ public class BDIAgent extends ForesterAgent{
 		//change intention if better
 		if(nextFire!=null && (currentIntention.getPosition()==null || grid.getDistance(currentIntention.getPosition(), me)>1.5)){
 			if(currentIntention.getRequesterId()!=null){
-				communicationTool.sendDismiss(currentIntention.getRequesterId(), new RequestDismiss(currentIntention.getRequestId(), currentIntention.getRequesterId()));
+				communicationTool.sendRequestDismiss(currentIntention.getRequesterId(), new RequestDismiss(currentIntention.getRequestId(), currentIntention.getRequesterId()));
 			}
 			this.currentIntention = new Intention(new Extinguish(), nextFire, null,null);
 		}

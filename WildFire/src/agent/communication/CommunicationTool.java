@@ -63,16 +63,37 @@ public class CommunicationTool {
 	}
 	public double sendRequestOffer(String id, RequestOffer ro){
 		ForesterAgent recipient = getAgent(id);
+		
+		if(recipient == null)
+		{
+			//recipient not reachable, possibly dead
+			return 0;
+		}
+		
 		recipient.receiveOffer(ro);
 		return calculateDistance(sender, recipient);
 	}
-	public double sendDismiss(String id, RequestDismiss dismiss){
+	public double sendRequestDismiss(String id, RequestDismiss dismiss){
 		ForesterAgent recipient = getAgent(id);
+		
+		if(recipient == null)
+		{
+			//recipient not reachable, possibly dead
+			return 0;
+		}
+		
 		recipient.receiveDismiss(dismiss);
 		return calculateDistance(sender, recipient);
 	}
 	public double sendRequestConfirm(String id, RequestConfirm rc){
 		ForesterAgent recipient = getAgent(id);
+		
+		if(recipient == null)
+		{
+			//recipient not reachable, possibly dead
+			return 0;
+		}
+		
 		recipient.receiveConfirmation(rc);
 		return calculateDistance(sender, recipient);
 	}
@@ -86,11 +107,18 @@ public class CommunicationTool {
 		}
 		return sum;
 	}
+	
 	private double sendInformation(Information information, ForesterAgent recipient)
 	{
+		if(recipient == null)
+		{
+			//recipient not reachable, possibly dead
+			return 0;
+		}
 		recipient.receiveInformation(information);
 		return calculateDistance(sender, recipient);
 	}
+	
 	private double sendRequest(Request request, List<ForesterAgent> recipients)
 	{
 		double sum = 0;
@@ -100,11 +128,19 @@ public class CommunicationTool {
 		}
 		return sum;
 	}
+	
 	private double sendRequest(Request request, ForesterAgent recipient)
 	{
+		if(recipient == null)
+		{
+			//recipient not reachable, possibly dead
+			return 0;
+		}
+		
 		recipient.receiveRequest(request);
 		return calculateDistance(sender, recipient);
 	}
+	
 	private List<ForesterAgent> getAgents(List<String> ids){
 		ArrayList<ForesterAgent> list = new ArrayList<ForesterAgent>(ids.size());
 		Context<Object> context = ContextUtils.getContext(sender);
@@ -120,6 +156,7 @@ public class CommunicationTool {
 		}
 		return list;
 	}
+	
 	private ForesterAgent getAgent(String id){
 		Context<Object> context = ContextUtils.getContext(sender);
 		IndexedIterable<Object> objects = context.getObjects(ForesterAgent.class);
