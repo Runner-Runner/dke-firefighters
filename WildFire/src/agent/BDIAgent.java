@@ -51,10 +51,6 @@ public class BDIAgent extends ForesterAgent{
 			GridCellNgh<Wood> nghWoodCreator = new GridCellNgh<>(grid, location,
 					Wood.class, 1, 1);
 			List<GridCell<Wood>> woodGridCells = nghWoodCreator.getNeighborhood(false);
-			if(woodGridCells.size() != 8)
-			{
-				System.out.println("");
-			}
 			for(GridCell<Wood> cell : woodGridCells)
 			{
 				if (cell.size() == 0) {
@@ -132,6 +128,7 @@ public class BDIAgent extends ForesterAgent{
 					request = new ActionRequest(1, fire.getPoint(), new Extinguish(), communicationId);
 					range = new Double(3); // starting range
 				}
+				range = range+2;
 				this.communicationTool.setSendingRange(range);
 				this.communicationTool.sendRequest(request);
 				this.openRequests.put(request.getId(), new Tuple<Request,Double>(request, range));
@@ -190,7 +187,6 @@ public class BDIAgent extends ForesterAgent{
 					chosenRequest.getId(), smallestDistance, false);
 			myOffer= chosenRequest;
 			actionRequests.remove(chosenRequest);
-			System.out.println("sent offer");
 			this.costs+=communicationTool.sendRequestOffer(chosenRequest.getSenderID(), requestOffer);
 		}
 		//delete old requests
@@ -246,7 +242,6 @@ public class BDIAgent extends ForesterAgent{
 					communicationTool.sendRequestDismiss(currentIntention.getRequesterId(), new RequestDismiss(currentIntention.getRequestId(), currentIntention.getRequesterId()));
 				}
 				requestConfirmation = null;
-				System.out.println("confirmed");
 				this.currentIntention = new Intention(myOffer.getAction(), myOffer.getPosition(), null,null);
 			}
 			myOffer = null;
