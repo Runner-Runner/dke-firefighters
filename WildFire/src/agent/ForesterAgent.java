@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import main.CommonKnowledge;
 import agent.bdi.Intention;
 import agent.bdi.Patrol;
 import agent.communication.CommunicationTool;
@@ -145,7 +146,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		this.rejections.add(rd);
 	}
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 45)
+	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE, priority = 45)
 	public void changeConditions(){
 		// check if in burning environment
 		if (isOnBurningTile()) {
@@ -158,19 +159,19 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		regenerate();
 	}
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 40)
+	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE, priority = 40)
 	public abstract void checkNeighbourhood();
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 38)
+	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE, priority = 38)
 	public abstract void doRequests();
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 37)
+	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE, priority = 37)
 	public abstract void sendAnswers();
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 30)
+	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE, priority = 30)
 	public abstract void checkResponses();
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 20)
+	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE, priority = 20)
 	public abstract void doActions();
 
 	/**
@@ -205,7 +206,6 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		}
 		else{
 			extinguishedFireAmount += fire.decreaseHeat(extinguishRate, true);
-			System.out.println(extinguishedFireAmount);
 			return true;
 		}
 	}
@@ -276,10 +276,16 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 			while(!moved && tempSpeed > 0)
 			{
 				// position of step tile
-				double x = oldPos.getX()+0.5 + tempSpeed * Math.cos(angle);
-				double y = oldPos.getY()+0.5 + tempSpeed * Math.sin(angle);
-				moved = moveTo(new GridPoint((int)x,(int)y));
+				double x = oldPos.getX() + tempSpeed * Math.cos(angle);
+				double y = oldPos.getY() + tempSpeed * Math.sin(angle);
+				moved = moveTo(new GridPoint((int)Math.round(x),(int)Math.round(y)));
 	
+				GridPoint newG = new GridPoint((int)Math.round(x),(int)Math.round(y));
+				if(newG.equals(oldPos))
+				{
+					System.out.println(oldPos);
+				}
+				
 				if(!moved){
 					--tempSpeed;
 				}
@@ -324,8 +330,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	 * @return angle
 	 */
 	private double getAngle(GridPoint from, GridPoint to) {
-		NdPoint fromPt = new NdPoint(from.getX() + 0.5, from.getY() + 0.5);
-		NdPoint toPt = new NdPoint(to.getX() + 0.5, to.getY() + 0.5);
+		NdPoint fromPt = new NdPoint(from.getX(), from.getY());
+		NdPoint toPt = new NdPoint(to.getX(), to.getY());
 		return SpatialMath.calcAngleFor2DMovement(space, fromPt, toPt);
 	}
 

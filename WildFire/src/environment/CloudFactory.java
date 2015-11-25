@@ -2,6 +2,7 @@ package environment;
 
 import java.util.Random;
 
+import main.CommonKnowledge;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.continuous.ContinuousSpace;
@@ -38,8 +39,7 @@ public class CloudFactory {
 		this.minTank = minTank;
 	}
 	
-	
-	@ScheduledMethod(start = 1, interval = 10, priority = 998)
+	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE*CommonKnowledge.CLOUD_FACTOR, priority = 998)
 	public void createCloud() {
 		//if new cloud is going to be created depends on actual wind speed, cloud frequency and random value
 		if(random.nextDouble()<cloudFrequency*wind.getSpeed()){

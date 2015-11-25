@@ -83,8 +83,8 @@ public class Patrol extends Action {
 			double yDiff = ownPosition.getY() - closestAgentInformation.getPosition().getY();
 			double norm = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
 			
-			double xVector = xDiff / norm * agent.getSpeed();
-			double yVector = yDiff / norm * agent.getSpeed();
+			double xVector = xDiff;// / norm * agent.getSpeed();
+			double yVector = yDiff;// / norm * agent.getSpeed();
 			
 			xTarget = (int)(ownPosition.getX() + xVector);
 			yTarget = (int)(ownPosition.getY() + yVector);

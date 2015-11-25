@@ -3,6 +3,7 @@ package environment;
 import java.util.Iterator;
 import java.util.Random;
 
+import main.CommonKnowledge;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.continuous.ContinuousSpace;
@@ -33,7 +34,7 @@ public class FireFactory {
 	}
 	
 	
-	@ScheduledMethod(start = 1, interval = 5, priority = 997)
+	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE*CommonKnowledge.FIRE_FACTOR, priority = 997)
 	public void step() {
 		int x = maxCloudDim+ random.nextInt(forestDim);
 		int y = maxCloudDim + random.nextInt(forestDim);

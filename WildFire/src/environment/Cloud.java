@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
+import main.CommonKnowledge;
 import agent.communication.info.Information;
 import agent.communication.info.InformationProvider;
 import repast.simphony.context.Context;
@@ -54,7 +55,7 @@ public class Cloud implements InformationProvider {
 	
 	
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 994)
+	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE, priority = 994)
 	public void step() {
 		if(move()){
 			addCells();

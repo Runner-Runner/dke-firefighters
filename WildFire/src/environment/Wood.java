@@ -1,5 +1,6 @@
 package environment;
 
+import main.CommonKnowledge;
 import environment.Fire.FireInformation;
 import agent.communication.info.Information;
 import agent.communication.info.InformationProvider;
@@ -52,7 +53,7 @@ public class Wood implements InformationProvider {
 			this.wetness = this.health*material;
 	}
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 993)
+	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE, priority = 993)
 	public void transpire() {
 		this.wetness-=this.wetness*material*0.1;
 	}

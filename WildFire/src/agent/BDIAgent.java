@@ -50,6 +50,10 @@ public class BDIAgent extends ForesterAgent{
 			GridCellNgh<Wood> nghWoodCreator = new GridCellNgh<>(grid, location,
 					Wood.class, 1, 1);
 			List<GridCell<Wood>> woodGridCells = nghWoodCreator.getNeighborhood(false);
+			if(woodGridCells.size() != 8)
+			{
+				System.out.println("");
+			}
 			for(GridCell<Wood> cell : woodGridCells)
 			{
 				if (cell.size() == 0) {
@@ -58,7 +62,7 @@ public class BDIAgent extends ForesterAgent{
 				}
 			}
 			if(fleeingPoint == null)
-			{
+			{	
 				//otherwise, move to first non-burning tile
 				GridCellNgh<Fire> nghFireCreator = new GridCellNgh<>(grid, location,
 						Fire.class, 1, 1);
@@ -236,7 +240,6 @@ public class BDIAgent extends ForesterAgent{
 			}
 			myOffer = null;
 			
-			
 			//execute intention
 			boolean executeSuccess = currentIntention.getAction().
 					execute(this, currentIntention.getPosition());
@@ -245,8 +248,6 @@ public class BDIAgent extends ForesterAgent{
 			}
 		}
 	}
-
-
 
 	@Override
 	public void checkNeighbourhood() {

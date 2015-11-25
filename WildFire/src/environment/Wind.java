@@ -2,6 +2,7 @@ package environment;
 
 import java.util.Random;
 
+import main.CommonKnowledge;
 import agent.communication.info.Information;
 import agent.communication.info.InformationProvider;
 import repast.simphony.context.Context;
@@ -23,7 +24,7 @@ public class Wind implements InformationProvider {
 		this.windDirection = random.nextDouble()*2*Math.PI;
 	}
 	
-	@ScheduledMethod(start = 1, interval = 3, priority = 999)
+	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE*CommonKnowledge.WIND_FACTOR, priority = 999)
 	public void step() {
 		changeDirection();
 		changeSpeed();

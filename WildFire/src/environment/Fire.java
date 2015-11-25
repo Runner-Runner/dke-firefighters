@@ -3,6 +3,7 @@ package environment;
 import java.util.List;
 import java.util.Random;
 
+import main.CommonKnowledge;
 import agent.communication.info.Information;
 import agent.communication.info.InformationProvider;
 import repast.simphony.context.Context;
@@ -36,7 +37,7 @@ public class Fire implements InformationProvider {
 	public double getHeat(){
 		return this.heat;
 	}
-	@ScheduledMethod(start = 1, interval = 1, priority = 996)
+	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE, priority = 996)
 	public void step() {
 		GridPoint pt = grid.getLocation(this);
 		//propagation
