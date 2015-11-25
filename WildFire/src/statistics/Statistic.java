@@ -13,8 +13,8 @@ public class Statistic
 {
 	private double totalWoodHealth;
 	private double totalAgentCount;
-	private int totalFireCount = 0;
-	private int extinguishedFireCount = 0;
+	private int totalFireCount;
+	private int extinguishedFireCount;
 	private int gridWidth;
 	private int gridHeight;
 	
@@ -133,5 +133,13 @@ public class Statistic
 		Context<Object> context = ContextUtils.getContext(this);
 		double currentAgentCount = context.getObjects(ForesterAgent.class).size();
 		return currentAgentCount / totalAgentCount;
+	}
+
+	public void reset() 
+	{
+		totalWoodHealth = 0;
+		totalAgentCount = 0;
+		totalFireCount = 0;
+		extinguishedFireCount = 0;
 	}
 }

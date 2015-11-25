@@ -255,7 +255,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		}
 	}
 
-	/***
+	/**
 	 * moves agent to a further away GridPoint in an angle to it, whereby max distance is its speed
 	 * (uses the center of the grids (e.g. 2.5| 3.5))
 	 * @param pt target gridpoint
@@ -312,7 +312,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 			
 		boolean occupied = false;
 		for (Object o : grid.getObjectsAt(pt.getX(), pt.getY())) {
-			if (o instanceof ForesterAgent) {
+			if (o instanceof ForesterAgent || o instanceof Fire) {
 				occupied = true;
 				break;
 			}

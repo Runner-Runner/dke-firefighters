@@ -114,20 +114,6 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		
 		FireFactory fire = new FireFactory(context, grid, space, wind, sparkingFactor, forestDim, maxCloudDim);
 		context.add(fire);
-		//Test
-//		Fire fire = new Fire(1, wind, grid, context, space);
-//		Fire fire2 = new Fire(1, wind, grid, context, space);
-//		Fire fire3 = new Fire(1, wind, grid, context, space);
-//		Fire fire4 = new Fire(1, wind, grid, context, space);
-//		context.add(fire);
-//		context.add(fire2);
-//		context.add(fire3);
-//		grid.moveTo(fire, 24, 23);
-//		space.moveTo(fire, 24, 23);
-//		grid.moveTo(fire2, 25, 23);
-//		space.moveTo(fire2, 25, 23);
-//		grid.moveTo(fire3, 24, 24);
-//		space.moveTo(fire3, 24, 24);
 		
 		//-------------------------------------
 		
@@ -140,6 +126,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		context.add(GraveyardStatistic.getInstance());
 		
 		Statistic statistic = Statistic.getInstance();
+		statistic.reset();
 		statistic.setGridSize(grid.getDimensions().getWidth(), grid.getDimensions().getHeight());
 		statistic.setTotalWoodHealth(totalWoodHealth);
 		statistic.setTotalAgentCount(numberAgents);
