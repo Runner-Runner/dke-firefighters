@@ -150,7 +150,7 @@ public class CommunicationTool {
 	public static boolean inMooreRange(ForesterAgent agent, GridPoint gp)
 	{
 		double distance = calculateDistance(agent.getPosition(), gp);
-		return distance <= 1;
+		return distance <= 1.5;
 	}
 	
 	private static List<ForesterAgent> getAgentsInRange(ForesterAgent originAgent, Integer sendingRange)
