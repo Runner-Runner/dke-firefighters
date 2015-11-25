@@ -55,6 +55,8 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		
 		int numberAgents = (Integer)params.getValue("number_agents");
 		
+		CommonKnowledge.setContext(context);
+		
 		//id of this context
 		context.setId("WildFire");
 		
@@ -63,6 +65,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		
 		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
 		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace("space", context, terrainAdder , new repast.simphony.space.continuous.StrictBorders(), forestDim+2*maxCloudDim, forestDim+2*maxCloudDim);
+		CommonKnowledge.setSpace(space);
 		
 		//create grid (to use for neighbourhood)
 		SimpleGridAdder<Object> gridAdder = new SimpleGridAdder<Object>(); //adder who places objects in grid
@@ -70,7 +73,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
 		//the boolean determines if more than one object can occupy a gridcell
 		Grid<Object> grid = gridFactory.createGrid("grid", context, new GridBuilderParameters <Object >(new StrictBorders(), gridAdder, true, forestDim+2*maxCloudDim, forestDim+2*maxCloudDim));
-		
+		CommonKnowledge.setGrid(grid);
 		
 		//-------------------------------------------------
 		//---------generate objects within the map --------------
@@ -81,7 +84,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		context.add(wind);
 		
 		//CloudFactory (creates clouds, which enter the map with respect to the actual wind-direction)
-		CloudFactory cf = new CloudFactory(context, wind, space, grid, cloudRate, minCloudDim, maxCloudDim, forestDim, maxRain, minRain, maxCloudTank, minCloudTank);
+		CloudFactory cf = new CloudFactory(context, wind, cloudRate, minCloudDim, maxCloudDim, forestDim, maxRain, minRain, maxCloudTank, minCloudTank);
 		context.add(cf);
 		
 		//add forest

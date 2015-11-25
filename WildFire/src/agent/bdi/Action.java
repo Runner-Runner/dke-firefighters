@@ -1,7 +1,6 @@
 package agent.bdi;
 
 import agent.ForesterAgent;
-import agent.communication.CommunicationTool;
 import repast.simphony.space.grid.GridPoint;
 
 public abstract class Action {

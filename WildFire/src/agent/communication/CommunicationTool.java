@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import main.CommonKnowledge;
 import agent.ForesterAgent;
 import agent.ForesterAgent.AgentInformation;
 import agent.communication.info.Information;
@@ -14,10 +15,10 @@ import agent.communication.request.RequestOffer;
 import repast.simphony.context.Context;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
-import repast.simphony.util.ContextUtils;
 import repast.simphony.util.collections.IndexedIterable;
 
-public class CommunicationTool {
+public class CommunicationTool 
+{
 
 	private ForesterAgent sender;
 	private Grid<Object> grid;
@@ -25,7 +26,7 @@ public class CommunicationTool {
 	/**
 	 * Local multicast sending range in grid tiles (in each cardinal direction). Null means send to all other agents (global broadcast).
 	 */
-	private Integer sendingRange;
+	private Double sendingRange;
 	
 	public CommunicationTool(ForesterAgent sender, Grid<Object> grid)
 	{
@@ -33,7 +34,7 @@ public class CommunicationTool {
 		this.grid = grid;
 	}
 	
-	public void setSendingRange(int sendingRange)
+	public void setSendingRange(double sendingRange)
 	{
 		this.sendingRange = sendingRange;
 	}
@@ -107,7 +108,7 @@ public class CommunicationTool {
 	}
 	private List<ForesterAgent> getAgents(List<String> ids){
 		ArrayList<ForesterAgent> list = new ArrayList<ForesterAgent>(ids.size());
-		Context<Object> context = ContextUtils.getContext(sender);
+		Context<Object> context = CommonKnowledge.getContext();
 		IndexedIterable<Object> objects = context.getObjects(ForesterAgent.class);
 		for(Object obj : objects)
 		{
@@ -121,7 +122,7 @@ public class CommunicationTool {
 		return list;
 	}
 	private ForesterAgent getAgent(String id){
-		Context<Object> context = ContextUtils.getContext(sender);
+		Context<Object> context = CommonKnowledge.getContext();
 		IndexedIterable<Object> objects = context.getObjects(ForesterAgent.class);
 		
 		for(Object obj : objects)
@@ -153,17 +154,21 @@ public class CommunicationTool {
 		return distance <= 1.5;
 	}
 	
-	private static List<ForesterAgent> getAgentsInRange(ForesterAgent originAgent, Integer sendingRange)
+	private List<ForesterAgent> getAgentsInRange(ForesterAgent originAgent, Double sendingRange)
 	{
 		List<ForesterAgent> recipients = new ArrayList<>();
 		
-		Context<Object> context = ContextUtils.getContext(originAgent);
+		Context<Object> context = CommonKnowledge.getContext();
 		IndexedIterable<Object> objects = context.getObjects(ForesterAgent.class);
 		
 		for(Object obj : objects)
 		{
 			if(obj instanceof ForesterAgent)
 			{
+				if(obj.equals(this.sender))
+				{
+					continue;
+				}
 				ForesterAgent agent = (ForesterAgent)obj;
 				if(sendingRange == null || calculateDistance(
 						originAgent.getPosition(), agent.getPosition())<=sendingRange)
