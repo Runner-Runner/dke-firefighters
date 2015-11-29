@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import main.Pair;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
@@ -21,13 +22,12 @@ import agent.communication.request.Request;
 import agent.communication.request.RequestConfirm;
 import agent.communication.request.RequestDismiss;
 import agent.communication.request.RequestOffer;
-import bibliothek.util.container.Tuple;
 import environment.Fire;
 import environment.Fire.FireInformation;
 import environment.Wood;
 
 public class BDIAgent extends ForesterAgent{
-	private HashMap<Integer, Tuple<Request, Double>> openRequests;
+	private HashMap<Integer, Pair<Request, Double>> openRequests;
 	private HashMap<String, Request> requestedAgents; //agentID -> request
 	private ActionRequest myOffer;
 	
@@ -117,21 +117,21 @@ public class BDIAgent extends ForesterAgent{
 				Request request = null;
 				Double range = null;
 				//already sent request -> increase range
-				for(Tuple<Request, Double> tuple : openRequests.values()){
-					if(tuple.getA().getPosition().equals(fire.getPoint())){
-						request = tuple.getA();
-						range = tuple.getB();
+				for(Pair<Request, Double> tuple : openRequests.values()){
+					if(tuple.getFirst().getPosition().equals(fire.getPoint())){
+						request = tuple.getFirst();
+						range = tuple.getSecond();
 						break;
 					}
 				}
 				if(request == null){
 					request = new ActionRequest(1, fire.getPoint(), new Extinguish(), communicationId);
-					range = new Double(3); // starting range
+					range = new Double(8); // starting range
 				}
-				range = range+2;
+				range = range+4;
 				this.communicationTool.setSendingRange(range);
 				this.communicationTool.sendRequest(request);
-				this.openRequests.put(request.getId(), new Tuple<Request,Double>(request, range));
+				this.openRequests.put(request.getId(), new Pair<Request,Double>(request, range));
 			}
 		}
 	}
@@ -175,7 +175,7 @@ public class BDIAgent extends ForesterAgent{
 		{
 			GridPoint target = actionRequest.getPosition();
 			double distance = grid.getDistance(location, target);
-			if(smallestDistance > distance)
+			if(smallestDistance >= distance)
 			{
 				smallestDistance = distance;
 				chosenRequest = actionRequest;
@@ -212,10 +212,10 @@ public class BDIAgent extends ForesterAgent{
 		HashMap<Integer, RequestOffer> bestOffers = new HashMap<Integer, RequestOffer>();
 		for(RequestOffer offer: this.offers){
 			RequestOffer best = bestOffers.get(offer.getRequestID());
-			Tuple<Request,Double> tuple = openRequests.get(offer.getRequestID());
+			Pair<Request,Double> tuple = openRequests.get(offer.getRequestID());
 			Request request = null;
 			if(tuple!=null)
-				request = tuple.getA();
+				request = tuple.getFirst();
 			if(request!=null && !agentRequested(request.getPosition()) && (best == null || offer.getDistance()<best.getDistance())){
 				bestOffers.put(request.getId(), offer);
 			}
@@ -223,7 +223,7 @@ public class BDIAgent extends ForesterAgent{
 		//send confirmations to best offers and add to requested agents
 		for(Entry<Integer, RequestOffer> entry: bestOffers.entrySet()){
 			this.costs+=communicationTool.sendRequestConfirm(entry.getValue().getSenderId(), new RequestConfirm(communicationId, entry.getValue().getRequestID()));
-			Request confirmed = openRequests.get(entry.getKey()).getA();
+			Request confirmed = openRequests.get(entry.getKey()).getFirst();
 			requestedAgents.put(entry.getValue().getSenderId(), confirmed);
 			openRequests.remove(confirmed.getId());
 		}

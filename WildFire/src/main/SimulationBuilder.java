@@ -21,7 +21,6 @@ import statistics.GraveyardStatistic;
 import statistics.Statistic;
 import agent.BDIAgent;
 import environment.CloudFactory;
-import environment.Fire;
 import environment.FireFactory;
 import environment.ForestFactory;
 import environment.Wind;
@@ -102,10 +101,11 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		
 		//create agents
 		for(int i = 0;i<numberAgents;i++){
-			double speed = RandomHelper.nextDoubleFromTo(1, 2);
+			double speed = RandomHelper.nextDoubleFromTo(0.2, 0.5);
+			double extinguish = RandomHelper.nextDoubleFromTo(0.3, 1.0);
 			int x = RandomHelper.nextIntFromTo(0,forestDim-1)+maxCloudDim;
 			int y = RandomHelper.nextIntFromTo(0,forestDim-1)+maxCloudDim;
-			BDIAgent agent = new BDIAgent(space, grid, speed, 2);
+			BDIAgent agent = new BDIAgent(space, grid, speed, extinguish);
 			context.add(agent);
 			space.moveTo(agent, x,y);
 		}
@@ -130,6 +130,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		statistic.setTotalAgentCount(numberAgents);
 		context.add(statistic);
 		
+		RunEnvironment.getInstance().endAt(2000);
 		return context;
 	}
 	

@@ -1,0 +1,15 @@
+<repast.simphony.data2.engine.FileSinkDescriptor>
+  <name>percentOutput</name>
+  <dataSet>Evaluation</dataSet>
+  <delimiter>,</delimiter>
+  <format>TABULAR</format>
+  <sourceIds class="linked-hash-set">
+    <string>FireExtinguishedPercent</string>
+    <string>FirePercent</string>
+    <string>WoodPercent</string>
+    <string>AgentPercent</string>
+    <string>tick</string>
+  </sourceIds>
+  <fileName>evaluation.txt</fileName>
+  <addTimeStamp>false</addTimeStamp>
+</repast.simphony.data2.engine.FileSinkDescriptor>

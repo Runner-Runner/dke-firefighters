@@ -19,13 +19,13 @@
 									
 		/>
 				<parameter name="sparking_factor" displayName="sparking_factor" type="double" 
-						defaultValue="0.05" 
+						defaultValue="0.02" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
 		/>
 				<parameter name="forest_dim" displayName="forest_dim" type="int" 
-						defaultValue="30" 
+						defaultValue="50" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
@@ -91,7 +91,7 @@
 									
 		/>
 				<parameter name="max_wind_speed" displayName="max_wind_speed" type="double" 
-						defaultValue="0.8" 
+						defaultValue="0.25" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
