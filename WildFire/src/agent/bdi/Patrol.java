@@ -1,5 +1,9 @@
 package agent.bdi;
 
+import java.util.ArrayList;
+
+import environment.Wood.WoodInformation;
+import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.GridPoint;
 import statistics.Statistic;
 import agent.ForesterAgent;
@@ -92,6 +96,29 @@ public class Patrol extends Action {
 			lastxVector = xVector;
 			lastyVector = yVector;
 			
+		}
+		//check direction for wood
+		boolean woodInDirection = false;
+		ArrayList<GridPoint> directionTiles = CommunicationTool.tilesInDirection(agent.getExactPosition(), new GridPoint(xTarget*100,yTarget*100));
+		for(GridPoint tile: directionTiles){
+			WoodInformation wi = agent.getBelief().getInformation(tile, WoodInformation.class);
+			if(wi==null || !wi.isEmptyInstance()){
+				woodInDirection = true;
+				break;
+			}	
+		}
+		if(!woodInDirection){
+			WoodInformation lastCheckedWood = null;
+			for(WoodInformation wi:agent.getBelief().getAllInformation(WoodInformation.class)){
+				if(!wi.isEmptyInstance() && (lastCheckedWood==null || lastCheckedWood.getTimestamp()>wi.getTimestamp())){
+					lastCheckedWood = wi;
+				}
+			}
+			NdPoint exact = agent.getExactPosition();
+			lastxVector = lastCheckedWood.getPosition().getX()-exact.getX(); 
+			lastyVector = lastCheckedWood.getPosition().getY()-exact.getY();
+			xTarget = lastCheckedWood.getPosition().getX();
+			yTarget = lastCheckedWood.getPosition().getY();
 		}
 		agent.moveTowards(new GridPoint(xTarget, yTarget));
 		

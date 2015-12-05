@@ -35,7 +35,7 @@ public class Wind implements InformationProvider {
 
 
 	private void changeDirection(){
-		this.windDirection += RandomHelper.createNormal(0,1).nextDouble() *Math.PI/2/6;
+		this.windDirection += RandomHelper.createNormal(0,1).nextDouble() *Math.PI/2/12;
 		this.windDirection%=2*Math.PI;
 	}
 	

@@ -120,14 +120,7 @@ public class BDIAgent extends ForesterAgent{
 			}
 			this.currentIntention = new Intention(new Extinguish(), nextFire, null,null);
 		}
-		//check if agents requested for obsolete requests
-//		for(Entry<String, ActionRequest> request: requestedAgents.entrySet()){
-//			GridPoint requestedPosition = request.getValue().getPosition();
-//			FireInformation fire = belief.getInformation(requestedPosition, FireInformation.class);
-//			if(fire == null || fire.isEmptyInstance()){
-//				costs+= communicationTool.sendRequestDismiss(request.getKey(), new RequestDismiss(request.getValue().getId(), communicationId));
-//			}
-//		}
+
 	}
 	@Override
 	public void doRequests() {
@@ -235,6 +228,9 @@ public class BDIAgent extends ForesterAgent{
 				smallestDistance = distance;
 				chosenRequest = actionRequest;
 			}
+			//integrate into beliefs
+			FireInformation fi = new FireInformation(target, 1);
+			belief.addInformation(fi);
 		}
 		if(chosenRequest != null)
 		{

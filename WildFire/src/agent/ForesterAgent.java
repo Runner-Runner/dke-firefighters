@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 import main.CommonKnowledge;
 import agent.bdi.Intention;
@@ -23,7 +22,6 @@ import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
-import repast.simphony.space.SpatialMath;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
@@ -39,7 +37,8 @@ import environment.Wind;
 import environment.Wood;
 import environment.Wood.WoodInformation;
 
-public abstract class ForesterAgent implements InformationProvider, DataProviderExtinguishedFireAmount {
+public abstract class ForesterAgent implements InformationProvider, DataProviderExtinguishedFireAmount 
+{
 	private static int agentCount = 0;
 	protected ContinuousSpace<Object> space;
 	protected Grid<Object> grid;
@@ -119,7 +118,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	 * agent will work with them in the next iteration-step
 	 * @param information
 	 */
-	public void receiveInformation(Information information){
+	public void receiveInformation(Information information)
+	{
 		this.messages.add(information);
 	}
 	/**
@@ -127,7 +127,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	 * agent will handle them in the next iteration-step
 	 * @param request
 	 */
-	public void receiveRequest(Request request){
+	public void receiveRequest(Request request)
+	{
 		if(request instanceof InformationRequest)
 		{
 			infoRequests.add((InformationRequest)request);
@@ -139,7 +140,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		}
 	}
 	
-	public void receiveConfirmation(RequestConfirm requestConfirmation){
+	public void receiveConfirmation(RequestConfirm requestConfirmation)
+	{
 		this.requestConfirmation = requestConfirmation;
 	}
 	
@@ -154,7 +156,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE, priority = 45)
 	public void changeConditions(){
 		// check if in burning environment
-		if (isOnBurningTile()) {
+		if (isOnBurningTile()) 
+		{
 			boolean lethal = burn();
 			if (lethal) {
 				return;
@@ -185,20 +188,24 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	 * 
 	 * @param pt
 	 */
-	public boolean extinguishFire(GridPoint pt) {
+	public boolean extinguishFire(GridPoint pt) 
+	{
 		GridPoint position = grid.getLocation(this);
 
 		// check if fire position really is in the Moore neighborhood
 		if (Math.abs(position.getX() - pt.getX()) > 1
-				|| Math.abs(position.getY() - pt.getY()) > 1) {
+				|| Math.abs(position.getY() - pt.getY()) > 1) 
+		{
 			// illegal action
 			return false;
 		}
 
 		Iterable<Object> objects = grid.getObjectsAt(pt.getX(), pt.getY());
 		Fire fire = null;
-		for (Object obj : objects) {
-			if (obj instanceof Fire) {
+		for (Object obj : objects) 
+		{
+			if (obj instanceof Fire) 
+			{
 				fire = (Fire) obj;
 				break;
 			}
@@ -285,21 +292,26 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		}
 		if(next != null){
 			if(next.getX()==(int)target.getX() && next.getY()==(int)target.getY())
+			{
 				space.moveTo(this, target.getX(), target.getY());
+			}
 			else
+			{
 				space.moveTo(this, next.getX()+0.5, next.getY()+0.5);
+			}
 			grid.moveTo(this, next.getX(), next.getY());
 		}
-		if(grid.getLocation(this).equals(oldPos)){
-			System.out.println();
-		}
+		
 	}
 	private boolean tileOccupied(GridPoint gp){
-		for (Object o : grid.getObjectsAt(gp.getX(), gp.getY())) {
-			if (o instanceof Fire) {
+		for (Object o : grid.getObjectsAt(gp.getX(), gp.getY())) 
+		{
+			if (o instanceof Fire) 
+			{
 				return true;
 			}
-			else if(o instanceof ForesterAgent && !o.equals(this)){
+			else if(o instanceof ForesterAgent && !o.equals(this))
+			{
 				return true;
 			}
 		}
@@ -308,29 +320,27 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 
 	
 
-	/***
-	 * calculates angle of two grids from the center
-	 * @param from
-	 * @param to
-	 * @return angle
-	 */
-	private double getAngle(NdPoint from, GridPoint to) {
-		NdPoint fromPt = new NdPoint(from.getX(), from.getY());
-		NdPoint toPt = new NdPoint(to.getX(), to.getY());
-		return SpatialMath.calcAngleFor2DMovement(space, fromPt, toPt);
-	}
+
 
 	public Grid<Object> getGrid()
 	{
 		return grid;
 	}
 	
-	public boolean isOnBurningTile() {
+	public NdPoint getExactPosition()
+	{
+		return space.getLocation(this);
+	}
+	
+	public boolean isOnBurningTile() 
+	{
 		GridPoint location = grid.getLocation(this);
 		Iterable<Object> objects = grid.getObjectsAt(location.getX(),
 				location.getY());
-		for (Object obj : objects) {
-			if (obj instanceof Fire) {
+		for (Object obj : objects) 
+		{
+			if (obj instanceof Fire) 
+			{
 				return true;
 			}
 		}
@@ -343,7 +353,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	 * 
 	 * @return All information that actually changed the belief
 	 */
-	protected List<Information> updateNeighborhoodBelief() {
+	protected List<Information> updateNeighborhoodBelief() 
+	{
 		List<Information> informationList = new ArrayList<>();
 
 		GridCellNgh<Object> nghCreator = new GridCellNgh<>(grid, getPosition(), Object.class, 
@@ -360,6 +371,27 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 			{
 				if(obj instanceof Fire || obj instanceof ForesterAgent || obj instanceof Wood)
 				{
+					//ask other agent about fire and wood beliefs
+					if(obj instanceof ForesterAgent)
+					{
+						ForesterAgent otherAgent = (ForesterAgent)obj;
+						for(FireInformation fi:otherAgent.getBelief().getAllInformation(FireInformation.class))
+						{
+							belief.addInformation(fi);
+						}
+						for(WoodInformation wi:otherAgent.getBelief().getAllInformation(WoodInformation.class))
+						{
+							belief.addInformation(wi);
+						}
+					}
+					else if(obj instanceof Fire)
+					{
+						foundFire = true;
+					}
+					else if(obj instanceof Wood)
+					{
+						foundWood = true;
+					}
 					Information information = ((InformationProvider)obj).getInformation();
 					boolean changed = belief.addInformation(information);
 					if(changed)
@@ -367,27 +399,20 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 						informationList.add(information);
 					}
 					
-					if(obj instanceof Fire)
-					{
-						foundFire = true;
-					}
-					if(obj instanceof Wood)
-					{
-						foundWood = true;
-					}
 				}				
 			}
 			
-			if (!foundFire) {
+			if (!foundFire) 
+			{
 				FireInformation removeInformation = new FireInformation(cell.getPoint());
 				boolean changed = belief.addInformation(removeInformation);
 				if(changed)
 				{
-					
 					informationList.add(removeInformation);
 				}
 			}
-			if (!foundWood) {
+			if (!foundWood) 
+			{
 				WoodInformation removeInformation = new WoodInformation(cell.getPoint());
 				boolean changed = belief.addInformation(removeInformation);
 				if(changed)

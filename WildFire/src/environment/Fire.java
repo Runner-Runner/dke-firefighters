@@ -142,7 +142,7 @@ public class Fire implements InformationProvider
 
 		private double heat;
 		
-		private FireInformation(GridPoint position, double heat) 
+		public FireInformation(GridPoint position, double heat) 
 		{
 			super(position);
 			this.heat = heat;
