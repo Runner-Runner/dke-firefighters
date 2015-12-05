@@ -153,6 +153,7 @@ public class BDIAgent extends ForesterAgent{
 			changeIntention(new Intention(new Extinguish(), nextFire, null,null));
 		}
 
+
 	}
 	@Override
 	public void doRequests() {

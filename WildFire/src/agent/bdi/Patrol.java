@@ -97,27 +97,30 @@ public class Patrol extends Action {
 			
 		}
 		//check direction for wood
-		boolean woodInDirection = false;
-		ArrayList<GridPoint> directionTiles = CommunicationTool.tilesInDirection(agent.getExactPosition(), new GridPoint(xTarget*100,yTarget*100));
-		for(GridPoint tile: directionTiles){
-			WoodInformation wi = agent.getBelief().getInformation(tile, WoodInformation.class);
-			if(wi==null || !wi.isEmptyInstance()){
-				woodInDirection = true;
-				break;
-			}	
-		}
-		if(!woodInDirection){
-			WoodInformation lastCheckedWood = null;
-			for(WoodInformation wi:agent.getBelief().getAllInformation(WoodInformation.class)){
-				if(!wi.isEmptyInstance() && (lastCheckedWood==null || lastCheckedWood.getTimestamp()>wi.getTimestamp())){
-					lastCheckedWood = wi;
-				}
+		if(lastxVector!=null && lastyVector!=null)
+		{
+			boolean woodInDirection = false;
+			ArrayList<GridPoint> directionTiles = CommunicationTool.tilesInDirection(agent.getExactPosition(), new NdPoint(lastxVector*100,lastyVector*100));
+			for(GridPoint tile: directionTiles){
+				WoodInformation wi = agent.getBelief().getInformation(tile, WoodInformation.class);
+				if(wi==null || !wi.isEmptyInstance()){
+					woodInDirection = true;
+					break;
+				}	
 			}
-			NdPoint exact = agent.getExactPosition();
-			lastxVector = lastCheckedWood.getPosition().getX()-exact.getX(); 
-			lastyVector = lastCheckedWood.getPosition().getY()-exact.getY();
-			xTarget = lastCheckedWood.getPosition().getX();
-			yTarget = lastCheckedWood.getPosition().getY();
+			if(!woodInDirection){
+				WoodInformation lastCheckedWood = null;
+				for(WoodInformation wi:agent.getBelief().getAllInformation(WoodInformation.class)){
+					if(!wi.isEmptyInstance() && (lastCheckedWood==null || lastCheckedWood.getTimestamp()>wi.getTimestamp())){
+						lastCheckedWood = wi;
+					}
+				}
+				NdPoint exact = agent.getExactPosition();
+				lastxVector = lastCheckedWood.getPosition().getX()-exact.getX(); 
+				lastyVector = lastCheckedWood.getPosition().getY()-exact.getY();
+				xTarget = lastCheckedWood.getPosition().getX();
+				yTarget = lastCheckedWood.getPosition().getY();
+			}
 		}
 		agent.moveTowards(new GridPoint(xTarget, yTarget));
 		
