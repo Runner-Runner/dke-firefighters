@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
 import main.CommonKnowledge;
 import agent.bdi.Intention;
@@ -268,33 +269,45 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		
 		NdPoint oldPos = space.getLocation(this);
 		
-		//angle of both tiles
-		double angle = getAngle(oldPos, pt);
-		//temporary speed
-		double tempSpeed = speed;
-		//if agent has been moved
-		boolean moved = false;
-		//distance of both tiles
-		NdPoint target = new NdPoint(pt.getX(),pt.getY());
-		double distance = space.getDistance(oldPos, target);
-		
+		NdPoint target;
+		double xDiff = pt.getX()-oldPos.getX();
+		double yDiff = pt.getY()-oldPos.getY();
+		double distance = Math.sqrt(Math.pow(xDiff,2)+Math.pow(yDiff,2));
 		if(distance>speed){
-			while(!moved && tempSpeed > 0)
-			{
-				// position of step tile
-				double x = oldPos.getX() + tempSpeed * Math.cos(angle);
-				double y = oldPos.getY() + tempSpeed * Math.sin(angle);
-				moved = moveTo(x,y);	
-				
-				if(!moved){
-					--tempSpeed;
-				}
-			}
-		}else{
-			//TODO implement not reaching the target point even now because another agent is on this tile
-			//if pt is reachable in one time step
-			moveTo(pt.getX(),pt.getY());
+			target = new NdPoint(oldPos.getX()+(speed/distance)*xDiff, oldPos.getY()+(speed/distance)*yDiff);
 		}
+		else{
+			target = new NdPoint(pt.getX(),pt.getY());
+		}
+		ArrayList<GridPoint> tiles = CommunicationTool.tilesInDirection(oldPos, target);
+		GridPoint next = null;
+		tiles = CommunicationTool.tilesInDirection(oldPos, target);
+		for(GridPoint gp:tiles){
+			if(tileOccupied(gp))
+				break;
+			next = gp;
+		}
+		if(next != null){
+			if(next.getX()==(int)target.getX() && next.getY()==(int)target.getY())
+				space.moveTo(this, target.getX(), target.getY());
+			else
+				space.moveTo(this, next.getX()+0.5, next.getY()+0.5);
+			grid.moveTo(this, next.getX(), next.getY());
+		}
+		if(grid.getLocation(this).equals(oldPos)){
+			System.out.println();
+		}
+	}
+	private boolean tileOccupied(GridPoint gp){
+		for (Object o : grid.getObjectsAt(gp.getX(), gp.getY())) {
+			if (o instanceof Fire) {
+				return true;
+			}
+			else if(o instanceof ForesterAgent && !o.equals(this)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/***

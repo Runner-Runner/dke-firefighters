@@ -13,6 +13,7 @@ import agent.communication.request.RequestConfirm;
 import agent.communication.request.RequestDismiss;
 import agent.communication.request.RequestOffer;
 import repast.simphony.context.Context;
+import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.collections.IndexedIterable;
@@ -260,5 +261,78 @@ public class CommunicationTool
 			return closestAgentInformation;
 		}
 		return null;
+	}
+	/**
+	 * http://www.cse.chalmers.se/edu/year/2010/course/TDA361/grid.pdf
+	 * @param start
+	 * @param xDirection
+	 * @param yDirection
+	 * @return
+	 */
+	public static ArrayList<GridPoint> tilesInDirection(NdPoint start, NdPoint end){
+		ArrayList<GridPoint> inDirection = new ArrayList<GridPoint>();
+		double xDirection = end.getX()-start.getX();
+		double yDirection = end.getY()-start.getY();
+		int x = (int)start.getX();
+		int y = (int) start.getY();
+		int endX = (int)end.getX();
+		int endY = (int)end.getY();
+		int stepX;
+		int stepY;
+		double tMaxX=Double.MAX_VALUE;
+		double tMaxY=Double.MAX_VALUE;
+		double nextXVoxel;
+		double nextYVoxel;
+		if(xDirection>0){
+			stepX = 1;
+			nextXVoxel = x+1;
+		}
+		else{
+			stepX=-1;
+			nextXVoxel = x;
+		}
+		tMaxX = (nextXVoxel-start.getX())/xDirection;
+		if(yDirection>0){
+			stepY = 1;
+			nextYVoxel = y+1;
+		}
+		else{
+			stepY = -1;
+			nextYVoxel = y;
+		}
+		tMaxY = (nextYVoxel-start.getY())/yDirection;
+		double tDeltaX = 1/xDirection*stepX;
+		double tDeltaY = 1/yDirection*stepY;
+		
+		GridPoint startGP = new GridPoint(x,y);
+		inDirection.add(startGP);
+		int counter = 0;
+		while(x!=endX || y!=endY){
+			if(tMaxX<tMaxY){
+				tMaxX+=tDeltaX;
+				x+=stepX;
+			}
+			else if (tMaxY<tMaxX){
+				tMaxY+=tDeltaY;
+				y+=stepY;
+			}
+			else if (endX != x){
+				tMaxX+=tDeltaX;
+				x+=stepX;
+			}
+			else{
+				tMaxY+=tDeltaY;
+				y+=stepY;
+			}
+			inDirection.add(new GridPoint(x,y));
+			counter ++;
+			if(counter > 4){
+				System.out.println();
+			}
+		}
+		return inDirection;
+	}
+	public static ArrayList<GridPoint> tilesInDirection(NdPoint start, GridPoint end){
+		return tilesInDirection(start, new NdPoint(end.getX(),end.getY()));
 	}
 }
