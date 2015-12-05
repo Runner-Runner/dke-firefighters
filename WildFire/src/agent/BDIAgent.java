@@ -102,9 +102,25 @@ public class BDIAgent extends ForesterAgent{
 		}
 		return false;
 	}
+	private void changeIntention(Intention newIntention)
+	{
+		for(Entry<Integer, String> entry : currentIntention.getRequester().entrySet()){
+			communicationTool.sendRequestDismiss(entry.getValue(), new RequestDismiss(entry.getKey(), communicationId));
+		}
+		this.currentIntention = newIntention;
+	}
 	@Override
 	public void checkNeighbourhood() {
 		updateNeighborhoodBelief();
+		//check if actual intention is obsolete
+		if(currentIntention.getAction() instanceof Extinguish)
+		{
+			FireInformation fi = belief.getInformation(currentIntention.getPosition(), FireInformation.class);
+			if(fi==null || fi.isEmptyInstance())
+			{
+				changeIntention(new Intention(new Patrol(), null, null, null));
+			}
+		}
 		
 		int startX = getPosition().getX();
 		int startY = getPosition().getY();
@@ -132,13 +148,9 @@ public class BDIAgent extends ForesterAgent{
 				}
 			}
 		}
-		
 		//change intention if better
 		if(nextFire!=null && (currentIntention.getPosition()==null || grid.getDistance(currentIntention.getPosition(), getPosition())>grid.getDistance(getPosition(), nextFire))){
-			for(Entry<Integer, String> entry : currentIntention.getRequester().entrySet()){
-				communicationTool.sendRequestDismiss(entry.getValue(), new RequestDismiss(entry.getKey(), communicationId));
-			}
-			this.currentIntention = new Intention(new Extinguish(), nextFire, null,null);
+			changeIntention(new Intention(new Extinguish(), nextFire, null,null));
 		}
 
 	}
@@ -148,10 +160,7 @@ public class BDIAgent extends ForesterAgent{
 		for(RequestDismiss rd: this.rejections){
 			//check if your intention is obsolete
 			if(currentIntention.removeRequester(rd.getRequestID())){
-				for(Entry<Integer, String> entry : currentIntention.getRequester().entrySet()){
-					costs += communicationTool.sendRequestDismiss(entry.getValue(), new RequestDismiss(entry.getKey(), communicationId));
-				}
-				this.currentIntention = new Intention(new Patrol(), null, null, null);
+				changeIntention(new Intention(new Patrol(), null, null, null));
 			}
 			//requested agent found better fire
 			else{
@@ -303,31 +312,34 @@ public class BDIAgent extends ForesterAgent{
 	}
 
 	@Override
-	public void doActions() {
-		if (!flee()) {
+	public void doActions()
+	{
+		if (!flee()) 
+		{
 			// TODO act with respect to your intention (move, extinguish, wetline, woodcutting, check weather)
 			
 			// Check confirmation
-			if(requestConfirmation != null){
+			if(requestConfirmation != null)
+			{
 				//offer was for current intention
-				if(myOffer.getPosition().equals(currentIntention.getPosition())){
+				if(myOffer.getPosition().equals(currentIntention.getPosition()))
+				{
 					currentIntention.addRequester(requestConfirmation.getSenderID(), requestConfirmation.getRequestID());
 				}
 				//change intention and send dismiss to all waiting agents
-				else{
-					for(Entry<Integer, String> entry: currentIntention.getRequester().entrySet()){
-						communicationTool.sendRequestDismiss(entry.getValue(), new RequestDismiss(entry.getKey(), communicationId));
-					}
-					this.currentIntention = new Intention(myOffer.getAction(), myOffer.getPosition(), requestConfirmation.getSenderID(),myOffer.getId());
+				else
+				{
+					changeIntention(new Intention(myOffer.getAction(), myOffer.getPosition(), requestConfirmation.getSenderID(),myOffer.getId()));
 				}
 				requestConfirmation = null;
 			}
 			myOffer = null;
-			
+			NdPoint me = getExactPosition();
 			//execute intention
 			boolean executeSuccess = currentIntention.getAction().
 					execute(this, currentIntention.getPosition());
-			if(!executeSuccess){
+			if(!executeSuccess)
+			{
 				this.currentIntention = new Intention(new Patrol(), null, null, null);
 			}
 		}
