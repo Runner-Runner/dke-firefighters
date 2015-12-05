@@ -92,7 +92,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	//(if injured).
 	protected final static int REGENERATE_RATE = 15;
 	//
-	protected final static int SEEING_RANGE = 2;
+	public final static int SEEING_RANGE = 2;
 
 	public ForesterAgent(ContinuousSpace<Object> space, Grid<Object> grid,
 			double speed, double extinguishRate) {
@@ -262,10 +262,6 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	 * @param pt target gridpoint
 	 */
 	public void moveTowards(GridPoint pt) {
-		if(pt.getX()<0||pt.getY()<0||pt.getX()>=grid.getDimensions().getWidth()||pt.getY()>=grid.getDimensions().getHeight()){
-			return;
-		}
-		//current grid position
 		
 		NdPoint oldPos = space.getLocation(this);
 		
@@ -310,33 +306,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		return false;
 	}
 
-	/***
-	 * move agent to GridPoint and test if it is already occupied
-	 * 
-	 * @param pt
-	 * @return if the move worked
-	 */
-	private boolean moveTo(double x, double y) {
-		GridPoint pt = new GridPoint((int)Math.round(x),(int)Math.round(y));
-		if( pt.equals(grid.getLocation(this))){
-			space.moveTo(this, x, y);
-			return true;
-		}
-			
-		boolean occupied = false;
-		for (Object o : grid.getObjectsAt(pt.getX(), pt.getY())) {
-			if (o instanceof ForesterAgent || o instanceof Fire) {
-				occupied = true;
-				break;
-			}
-		}
-
-		if (!occupied) {
-			space.moveTo(this, x, y);
-			grid.moveTo(this, pt.getX(), pt.getY());
-		}
-		return !occupied;
-	}
+	
 
 	/***
 	 * calculates angle of two grids from the center

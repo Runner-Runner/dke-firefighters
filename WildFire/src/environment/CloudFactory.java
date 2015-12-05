@@ -37,35 +37,35 @@ public class CloudFactory
 	{
 		//if new cloud is going to be created depends on actual wind speed, cloud frequency and random value
 		if(RandomHelper.nextDouble()<cloudFrequency*wind.getSpeed()){
-			int x;
-			int y;
-			int dim = forestDim+2*maxCloudDim;
-			double wD = this.wind.getWindDirection();
-			if(wD>Math.PI/4 && wD<=0.75*Math.PI)
-			{
-				x = RandomHelper.nextIntFromTo(0,dim-1);
-				y = 0;
-			}
-			else if(wD > 0.75*Math.PI && wD<=1.25*Math.PI)
-			{
-				x = dim-1;
-				y = RandomHelper.nextIntFromTo(0,dim-1);
-			}
-			else if(wD > 1.25*Math.PI && wD<=1.75*Math.PI)
-			{
-				x = RandomHelper.nextIntFromTo(0,dim-1);
-				y = dim-1;
-			}
-			else
-			{
-				x = 0;
-				y = RandomHelper.nextIntFromTo(0,dim-1);
-			}
+			double x = RandomHelper.nextDouble() * forestDim;
+			double y = RandomHelper.nextDouble() * forestDim;
+//			int dim = forestDim+2*maxCloudDim;
+//			double wD = this.wind.getWindDirection();
+//			if(wD>Math.PI/4 && wD<=0.75*Math.PI)
+//			{
+//				x = RandomHelper.nextIntFromTo(0,dim-1);
+//				y = 0;
+//			}
+//			else if(wD > 0.75*Math.PI && wD<=1.25*Math.PI)
+//			{
+//				x = dim-1;
+//				y = RandomHelper.nextIntFromTo(0,dim-1);
+//			}
+//			else if(wD > 1.25*Math.PI && wD<=1.75*Math.PI)
+//			{
+//				x = RandomHelper.nextIntFromTo(0,dim-1);
+//				y = dim-1;
+//			}
+//			else
+//			{
+//				x = 0;
+//				y = RandomHelper.nextIntFromTo(0,dim-1);
+//			}
 			double tank = minTank+RandomHelper.nextDouble()*(maxTank-minTank);
 			Cloud newCloud = new Cloud(context, wind, tank, maxRain, minRain);
 			context.add(newCloud);
 			CommonKnowledge.getSpace().moveTo(newCloud, x,y);
-			CommonKnowledge.getGrid().moveTo(newCloud, x,y);
+			CommonKnowledge.getGrid().moveTo(newCloud, (int)x,(int)y);
 			newCloud.init(minCloudDim,maxCloudDim);
 		}	
 	}

@@ -17,10 +17,9 @@ public class FireFactory
 	private double frequency;
 	private Wind wind;
 	private int forestDim;
-	private int maxCloudDim;
 	
 	public FireFactory(Context<Object> context, Grid<Object> grid, ContinuousSpace<Object> space, Wind wind,
-			double frequency, int forestDim, int maxCloudDim) {
+			double frequency, int forestDim) {
 		super();
 		this.context = context;
 		this.grid = grid;
@@ -28,14 +27,13 @@ public class FireFactory
 		this.space = space;
 		this.frequency = frequency;
 		this.forestDim = forestDim;
-		this.maxCloudDim = maxCloudDim;
 	}
 	
 	
 	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE*CommonKnowledge.FIRE_FACTOR, priority = 997)
 	public void step() {
-		int x = maxCloudDim+ RandomHelper.nextIntFromTo(0,forestDim-1);
-		int y = maxCloudDim + RandomHelper.nextIntFromTo(0,forestDim-1);
+		int x = RandomHelper.nextIntFromTo(1,forestDim);
+		int y = RandomHelper.nextIntFromTo(1,forestDim);
 		Iterator<Object> it = grid.getObjectsAt(x,y).iterator();
 		Wood w = null;
 		Fire f = null;

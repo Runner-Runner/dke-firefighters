@@ -184,7 +184,6 @@ public class BDIAgent extends ForesterAgent{
 				range = range+4;
 				this.communicationTool.setSendingRange(range);
 				costs+= this.communicationTool.sendRequest(request);
-				System.out.println("sent request");
 				this.openRequests.put(request.getId(), new Pair<ActionRequest,Double>(request, range));
 			}
 		}
@@ -229,7 +228,6 @@ public class BDIAgent extends ForesterAgent{
 		ActionRequest chosenRequest = null;
 		for(ActionRequest actionRequest : actionRequests.values())
 		{
-			System.out.println("got request");
 			GridPoint target = actionRequest.getPosition();
 			double distance = grid.getDistance(location, target);
 			if(smallestDistance > distance || target.equals(currentIntention.getPosition()))
@@ -240,7 +238,6 @@ public class BDIAgent extends ForesterAgent{
 		}
 		if(chosenRequest != null)
 		{
-			System.out.println("sent offer");
 			RequestOffer requestOffer = new RequestOffer(communicationId, 
 					chosenRequest.getId(), smallestDistance, false);
 			myOffer= chosenRequest;
@@ -269,7 +266,6 @@ public class BDIAgent extends ForesterAgent{
 		//choose best offers for each openRequest 
 		HashMap<Integer, RequestOffer> bestOffers = new HashMap<Integer, RequestOffer>();
 		for(RequestOffer offer: this.offers){
-			System.out.println("got offer");
 			RequestOffer best = bestOffers.get(offer.getRequestID());
 			Pair<ActionRequest,Double> tuple = openRequests.get(offer.getRequestID());
 			Request request = null;
@@ -281,7 +277,6 @@ public class BDIAgent extends ForesterAgent{
 		}
 		//send confirmations to best offers and add to requested agents
 		for(Entry<Integer, RequestOffer> entry: bestOffers.entrySet()){
-			System.out.println("sent confirmation");
 			this.costs+=communicationTool.sendRequestConfirm(entry.getValue().getSenderId(), new RequestConfirm(communicationId, entry.getValue().getRequestID()));
 			ActionRequest confirmed = openRequests.get(entry.getKey()).getFirst();
 			requestedAgents.put(entry.getValue().getSenderId(), confirmed);
@@ -298,7 +293,6 @@ public class BDIAgent extends ForesterAgent{
 			
 			// Check confirmation
 			if(requestConfirmation != null){
-				System.out.println("got confirmation");
 				//offer was for current intention
 				if(myOffer.getPosition().equals(currentIntention.getPosition())){
 					currentIntention.addRequester(requestConfirmation.getSenderID(), requestConfirmation.getRequestID());

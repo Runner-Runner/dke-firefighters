@@ -46,18 +46,18 @@ public class Patrol extends Action {
 				getClosestAgentInformation(agent, (int)sendingRange);
 		
 		GridPoint ownPosition = agent.getPosition();
-		int xTarget = -1;
-		int yTarget = -1;
+		int xTarget;
+		int yTarget;
 		GridPoint center = Statistic.getInstance().getCenter();
 		
 		//if no agent nearby or agent is at the forest border, move towards the center
-		final int BORDER_SIZE = 8;
+		final int BORDER_SIZE = 1;
 		int gridHeight = Statistic.getInstance().getGridHeight();
 		int gridWidth = Statistic.getInstance().getGridWidth();
-		if(ownPosition.getX() <= BORDER_SIZE 
-				|| ownPosition.getX() >= gridWidth - BORDER_SIZE
-				|| ownPosition.getY() <= BORDER_SIZE
-				|| ownPosition.getY() >= gridHeight - BORDER_SIZE)
+		if(ownPosition.getX()-ForesterAgent.SEEING_RANGE <= BORDER_SIZE 
+				|| ownPosition.getX()+ForesterAgent.SEEING_RANGE >= gridWidth - BORDER_SIZE
+				|| ownPosition.getY()-ForesterAgent.SEEING_RANGE <= BORDER_SIZE
+				|| ownPosition.getY()+ForesterAgent.SEEING_RANGE >= gridHeight - BORDER_SIZE)
 		{
 			xTarget = center.getX();
 			yTarget = center.getY();
@@ -81,7 +81,6 @@ public class Patrol extends Action {
 		{
 			double xDiff = ownPosition.getX() - closestAgentInformation.getPosition().getX(); 
 			double yDiff = ownPosition.getY() - closestAgentInformation.getPosition().getY();
-			double norm = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
 			
 			double xVector = xDiff;// / norm * agent.getSpeed();
 			double yVector = yDiff;// / norm * agent.getSpeed();
@@ -89,26 +88,12 @@ public class Patrol extends Action {
 			xTarget = (int)(ownPosition.getX() + xVector);
 			yTarget = (int)(ownPosition.getY() + yVector);
 		
-			if(xTarget<0 || yTarget<0 || xTarget >=gridWidth || yTarget >= gridHeight){
-				xTarget = center.getX();
-				yTarget = center.getY();
-				lastxVector = null;
-				lastyVector = null;
-			}
-			else
-			{
-				xTarget = (int)(ownPosition.getX() + xVector);
-				yTarget = (int)(ownPosition.getY() + yVector);
 				
-				lastxVector = xVector;
-				lastyVector = yVector;
-			}
+			lastxVector = xVector;
+			lastyVector = yVector;
+			
 		}
-		
-		if(xTarget != -1)
-		{
-			agent.moveTowards(new GridPoint(xTarget, yTarget));
-		}
+		agent.moveTowards(new GridPoint(xTarget, yTarget));
 		
 		return true;
 	}

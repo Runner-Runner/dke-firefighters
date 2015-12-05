@@ -63,7 +63,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		RandomCartesianAdder<Object> terrainAdder = new RandomCartesianAdder<Object>(); //adder who places objects in terrain
 		
 		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
-		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace("space", context, terrainAdder , new repast.simphony.space.continuous.StrictBorders(), forestDim+2*maxCloudDim, forestDim+2*maxCloudDim);
+		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace("space", context, terrainAdder , new repast.simphony.space.continuous.StrictBorders(), forestDim+2, forestDim+2);
 		CommonKnowledge.setSpace(space);
 		
 		//create grid (to use for neighbourhood)
@@ -71,7 +71,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		
 		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
 		//the boolean determines if more than one object can occupy a gridcell
-		Grid<Object> grid = gridFactory.createGrid("grid", context, new GridBuilderParameters <Object >(new StrictBorders(), gridAdder, true, forestDim+2*maxCloudDim, forestDim+2*maxCloudDim));
+		Grid<Object> grid = gridFactory.createGrid("grid", context, new GridBuilderParameters <Object >(new StrictBorders(), gridAdder, true, forestDim+2, forestDim+2));
 		CommonKnowledge.setGrid(grid);
 		
 		//-------------------------------------------------
@@ -90,8 +90,8 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		//value for statistics
 		double totalWoodHealth = 0;
 		ForestFactory forest = new ForestFactory(maxWoodHealth, minWoodHealth, maxMaterialFactor, minMaterialFactor);
-		for(int i = maxCloudDim;i<maxCloudDim+forestDim;i++){
-			for(int j = maxCloudDim;j<maxCloudDim+forestDim;j++){
+		for(int i = 1;i<=forestDim;i++){
+			for(int j = 1;j<=forestDim;j++){
 				Wood w = forest.getWood(i, j);
 				totalWoodHealth += w.getHealth();
 				context.add(w);
@@ -103,14 +103,14 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		for(int i = 0;i<numberAgents;i++){
 			double speed = RandomHelper.nextDoubleFromTo(0.2, 0.5);
 			double extinguish = RandomHelper.nextDoubleFromTo(0.3, 1.0);
-			int x = RandomHelper.nextIntFromTo(0,forestDim-1)+maxCloudDim;
-			int y = RandomHelper.nextIntFromTo(0,forestDim-1)+maxCloudDim;
+			int x = RandomHelper.nextIntFromTo(1,forestDim);
+			int y = RandomHelper.nextIntFromTo(1,forestDim);
 			BDIAgent agent = new BDIAgent(space, grid, speed, extinguish);
 			context.add(agent);
 			space.moveTo(agent, x,y);
 		}
 		
-		FireFactory fire = new FireFactory(context, grid, space, wind, sparkingFactor, forestDim, maxCloudDim);
+		FireFactory fire = new FireFactory(context, grid, space, wind, sparkingFactor, forestDim);
 		context.add(fire);
 		
 		//-------------------------------------

@@ -306,7 +306,7 @@ public class CommunicationTool
 		
 		GridPoint startGP = new GridPoint(x,y);
 		inDirection.add(startGP);
-		int counter = 0;
+		Grid<Object> grid = CommonKnowledge.getGrid();
 		while(x!=endX || y!=endY){
 			if(tMaxX<tMaxY){
 				tMaxX+=tDeltaX;
@@ -324,11 +324,9 @@ public class CommunicationTool
 				tMaxY+=tDeltaY;
 				y+=stepY;
 			}
+			if(x<0||y<0||x>grid.getDimensions().getHeight()||y>grid.getDimensions().getWidth())
+				break;
 			inDirection.add(new GridPoint(x,y));
-			counter ++;
-			if(counter > 4){
-				System.out.println();
-			}
 		}
 		return inDirection;
 	}
