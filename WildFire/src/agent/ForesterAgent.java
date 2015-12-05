@@ -139,7 +139,19 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 			actionRequests.put(actionRequest.getId(), actionRequest);
 		}
 	}
+	public void addCosts(double costs){
+		this.costs+=costs;
+	}
+	public void addBounty(double bounty){
+		this.bounty+=bounty;
+	}
 	
+	public double getBounty() {
+		return bounty;
+	}
+	public double getCosts() {
+		return costs;
+	}
 	public void receiveConfirmation(RequestConfirm requestConfirmation)
 	{
 		this.requestConfirmation = requestConfirmation;

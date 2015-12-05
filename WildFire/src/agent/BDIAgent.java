@@ -206,7 +206,7 @@ public class BDIAgent extends ForesterAgent{
 				}
 				range = range+4;
 				this.communicationTool.setSendingRange(range);
-				costs+= this.communicationTool.sendRequest(request);
+				this.communicationTool.sendRequest(request);
 				this.openRequests.put(request.getId(), new Pair<ActionRequest,Double>(request, range));
 			}
 		}
@@ -232,7 +232,7 @@ public class BDIAgent extends ForesterAgent{
 			}
 			Information info = this.belief.getInformation(asked, infoRequest.getInformationClass());
 			if(info != null && RunEnvironment.getInstance().getCurrentSchedule().getTickCount() - info.getTimestamp() < 20){ // only "new" information
-				this.costs+=communicationTool.sendInformation(info, infoRequest.getSenderID());
+				communicationTool.sendInformation(info, infoRequest.getSenderID());
 			}
 		}
 		infoRequests.clear();
@@ -268,7 +268,7 @@ public class BDIAgent extends ForesterAgent{
 					chosenRequest.getId(), smallestDistance, false);
 			myOffer= chosenRequest;
 			actionRequests.remove(chosenRequest.getId());
-			this.costs+=communicationTool.sendRequestOffer(chosenRequest.getSenderID(), requestOffer);
+			communicationTool.sendRequestOffer(chosenRequest.getSenderID(), requestOffer);
 		}
 		//delete old requests
 		LinkedList<Integer> old =new LinkedList<Integer>();
@@ -303,7 +303,7 @@ public class BDIAgent extends ForesterAgent{
 		}
 		//send confirmations to best offers and add to requested agents
 		for(Entry<Integer, RequestOffer> entry: bestOffers.entrySet()){
-			this.costs+=communicationTool.sendRequestConfirm(entry.getValue().getSenderId(), new RequestConfirm(communicationId, entry.getValue().getRequestID()));
+			communicationTool.sendRequestConfirm(entry.getValue().getSenderId(), new RequestConfirm(communicationId, entry.getValue().getRequestID()));
 			ActionRequest confirmed = openRequests.get(entry.getKey()).getFirst();
 			requestedAgents.put(entry.getValue().getSenderId(), confirmed);
 			openRequests.remove(confirmed.getId());

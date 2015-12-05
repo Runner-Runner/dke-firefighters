@@ -1,9 +1,9 @@
 <repast.simphony.chart2.engine.TimeSeriesChartDescriptor>
-  <name>Number of Fires</name>
+  <name>FireExtinguished</name>
   <dataSet>Evaluation</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
   <yAxisLabel></yAxisLabel>
-  <chartTitle>Number of Fires</chartTitle>
+  <chartTitle>Fire Extinguished by Foresters</chartTitle>
   <type>TIME_SERIES</type>
   <background>
     <red>192</red>
@@ -21,13 +21,13 @@
   <showLegend>true</showLegend>
   <seriesIds>
     <entry>
-      <string>Fire</string>
+      <string>FireExtinguished</string>
       <SeriesData>
-        <label>Fire</label>
+        <label>FireExtinguished</label>
         <color>
-          <red>255</red>
-          <green>0</green>
-          <blue>0</blue>
+          <red>0</red>
+          <green>102</green>
+          <blue>51</blue>
           <alpha>255</alpha>
         </color>
       </SeriesData>
