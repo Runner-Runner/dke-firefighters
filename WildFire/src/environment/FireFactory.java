@@ -32,8 +32,8 @@ public class FireFactory
 	
 	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE*CommonKnowledge.FIRE_FACTOR, priority = 997)
 	public void step() {
-		int x = RandomHelper.nextIntFromTo(1,forestDim);
-		int y = RandomHelper.nextIntFromTo(1,forestDim);
+		int x = RandomHelper.nextIntFromTo(0,forestDim-1);
+		int y = RandomHelper.nextIntFromTo(0,forestDim-1);
 		Iterator<Object> it = grid.getObjectsAt(x,y).iterator();
 		Wood w = null;
 		Fire f = null;
@@ -55,7 +55,7 @@ public class FireFactory
 				Fire newFire = new Fire(heat, wind);
 				context.add(newFire);
 				grid.moveTo(newFire, x,y);
-				space.moveTo(newFire, x,y);
+				space.moveTo(newFire, x+0.5,y+0.5);
 			}
 		}
 	}

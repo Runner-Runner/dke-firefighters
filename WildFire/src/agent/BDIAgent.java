@@ -10,6 +10,7 @@ import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.space.continuous.ContinuousSpace;
+import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import agent.bdi.Extinguish;
@@ -44,40 +45,59 @@ public class BDIAgent extends ForesterAgent{
 	
 	private boolean flee(){
 		GridPoint location = grid.getLocation(this);
-		if(isOnBurningTile())
+		Fire fire = isOnBurningTile();
+		if(fire!=null)
 		{
-			GridPoint fleeingPoint = null;
-			//move to burned wood tile (secure space) if possible
-			GridCellNgh<Wood> nghWoodCreator = new GridCellNgh<>(grid, location,
-					Wood.class, 1, 1);
-			List<GridCell<Wood>> woodGridCells = nghWoodCreator.getNeighborhood(false);
-			for(GridCell<Wood> cell : woodGridCells)
-			{
-				if (cell.size() == 0) {
-					fleeingPoint = cell.getPoint();
-					break;
-				}
+			//if little fire -> extinguish
+			if(fire.getHeat()<=extinguishRate){
+				extinguishFire(location);
 			}
-			if(fleeingPoint == null)
-			{	
-				//otherwise, move to first non-burning tile
-				GridCellNgh<Fire> nghFireCreator = new GridCellNgh<>(grid, location,
-						Fire.class, 1, 1);
-				List<GridCell<Fire>> fireGridCells = nghFireCreator.getNeighborhood(false);
-				for (GridCell<Fire> cell : fireGridCells) {
+			//else run away
+			else{
+				NdPoint exact = getExactPosition();
+				GridPoint fleeingPoint = null;
+				double fleeingDistance = Double.MAX_VALUE;
+				//move to burned wood tile (secure space) if possible
+				GridCellNgh<Wood> nghWoodCreator = new GridCellNgh<>(grid, location,
+						Wood.class, 1, 1);
+				List<GridCell<Wood>> woodGridCells = nghWoodCreator.getNeighborhood(false);
+				for(GridCell<Wood> cell : woodGridCells)
+				{
 					if (cell.size() == 0) {
-						fleeingPoint = cell.getPoint();
-						break;
+						double distance = Math.sqrt(Math.pow(exact.getX()-cell.getPoint().getX(), 2)+Math.pow(exact.getY()-cell.getPoint().getY(), 2));
+						if(distance<fleeingDistance){
+							fleeingPoint = cell.getPoint();
+							fleeingDistance = distance;
+						}
 					}
 				}
-				
-				// all neighbor tiles on fire - move to first one
+				if(fleeingPoint == null)
+				{	
+					//otherwise, move to first non-burning tile
+					GridCellNgh<Fire> nghFireCreator = new GridCellNgh<>(grid, location,
+							Fire.class, 1, 1);
+					List<GridCell<Fire>> fireGridCells = nghFireCreator.getNeighborhood(false);
+					for (GridCell<Fire> cell : fireGridCells) {
+						if (cell.size() == 0) {
+							double distance = Math.sqrt(Math.pow(exact.getX()-cell.getPoint().getX(), 2)+Math.pow(exact.getY()-cell.getPoint().getY(), 2));
+							if(distance<fleeingDistance){
+								fleeingPoint = cell.getPoint();
+								fleeingDistance = distance;
+							}
+						}
+					}
+					
+				}
+				// all neighbor tiles on fire - try to extinguish
 				if(fleeingPoint == null)
 				{
-					fleeingPoint = fireGridCells.get(0).getPoint();
+					extinguishFire(location);
+				}
+				else
+				{
+					moveTowards(fleeingPoint);
 				}
 			}
-			moveTowards(fleeingPoint);
 			return true;
 		}
 		return false;

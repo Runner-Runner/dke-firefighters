@@ -55,13 +55,12 @@ public class Patrol extends Action {
 		GridPoint center = Statistic.getInstance().getCenter();
 		
 		//if no agent nearby or agent is at the forest border, move towards the center
-		final int BORDER_SIZE = 1;
 		int gridHeight = Statistic.getInstance().getGridHeight();
 		int gridWidth = Statistic.getInstance().getGridWidth();
-		if(ownPosition.getX()-ForesterAgent.SEEING_RANGE <= BORDER_SIZE 
-				|| ownPosition.getX()+ForesterAgent.SEEING_RANGE >= gridWidth - BORDER_SIZE
-				|| ownPosition.getY()-ForesterAgent.SEEING_RANGE <= BORDER_SIZE
-				|| ownPosition.getY()+ForesterAgent.SEEING_RANGE >= gridHeight - BORDER_SIZE)
+		if(ownPosition.getX()-ForesterAgent.SEEING_RANGE <= 0 
+				|| ownPosition.getX()+ForesterAgent.SEEING_RANGE >= gridWidth 
+				|| ownPosition.getY()-ForesterAgent.SEEING_RANGE <= 0
+				|| ownPosition.getY()+ForesterAgent.SEEING_RANGE >= gridHeight )
 		{
 			xTarget = center.getX();
 			yTarget = center.getY();

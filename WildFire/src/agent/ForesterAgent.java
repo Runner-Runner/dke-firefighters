@@ -156,7 +156,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	@ScheduledMethod(start = 1, interval = CommonKnowledge.GENERAL_SCHEDULE_TICK_RATE, priority = 45)
 	public void changeConditions(){
 		// check if in burning environment
-		if (isOnBurningTile()) 
+		if (isOnBurningTile()!=null) 
 		{
 			boolean lethal = burn();
 			if (lethal) {
@@ -332,7 +332,7 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		return space.getLocation(this);
 	}
 	
-	public boolean isOnBurningTile() 
+	public Fire isOnBurningTile() 
 	{
 		GridPoint location = grid.getLocation(this);
 		Iterable<Object> objects = grid.getObjectsAt(location.getX(),
@@ -341,10 +341,10 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		{
 			if (obj instanceof Fire) 
 			{
-				return true;
+				return (Fire)obj;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	/**
@@ -375,6 +375,9 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 					if(obj instanceof ForesterAgent)
 					{
 						ForesterAgent otherAgent = (ForesterAgent)obj;
+						if(obj.equals(this)){
+							continue;
+						}
 						for(FireInformation fi:otherAgent.getBelief().getAllInformation(FireInformation.class))
 						{
 							belief.addInformation(fi);
