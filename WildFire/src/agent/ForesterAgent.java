@@ -349,6 +349,15 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		else{
 			target = new NdPoint(pt.getX(),pt.getY());
 		}
+		
+		if (target.getX() < 0 || target.getY() < 0 || 
+				target.getX() >= grid.getDimensions().getWidth() || 
+				target.getY() >= grid.getDimensions().getHeight()) 
+		{
+			//Out of the grid
+			return false;
+		}
+		
 		List<GridPoint> tiles = CommunicationTool.tilesInDirection(oldPos, target);
 		GridPoint next = null;
 		
@@ -367,14 +376,6 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 			next = null;
 		}
 		if(next != null){
-			if (target.getX() < 0 || target.getY() < 0 || 
-					target.getX() >= grid.getDimensions().getWidth() || 
-					target.getY() >= grid.getDimensions().getHeight()) 
-			{
-				//Out of the grid
-				return false;
-			}
-			
 			if(next.getX()==(int)target.getX() && next.getY()==(int)target.getY())
 			{
 				space.moveTo(this, target.getX(), target.getY());
