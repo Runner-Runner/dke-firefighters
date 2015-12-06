@@ -330,6 +330,7 @@ public class CommunicationTool
 		}
 		return inDirection;
 	}
+	
 	public static ArrayList<GridPoint> tilesInDirection(NdPoint start, GridPoint end){
 		return tilesInDirection(start, new NdPoint(end.getX(),end.getY()));
 	}

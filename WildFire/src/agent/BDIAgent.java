@@ -85,7 +85,6 @@ public class BDIAgent extends ForesterAgent{
 	@Override
 	public void checkNeighbourhood() {
 		updateNeighborhoodBelief();
-		
 		int startX = getPosition().getX();
 		int startY = getPosition().getY();
 		
@@ -118,7 +117,7 @@ public class BDIAgent extends ForesterAgent{
 			for(Entry<Integer, String> entry : currentIntention.getRequester().entrySet()){
 				communicationTool.sendRequestDismiss(entry.getValue(), new RequestDismiss(entry.getKey(), communicationId));
 			}
-			this.currentIntention = new Intention(new Extinguish(), nextFire, null,null);
+			setCurrentIntention(new Intention(new Extinguish(), nextFire, null,null));
 		}
 
 	}
@@ -131,7 +130,7 @@ public class BDIAgent extends ForesterAgent{
 				for(Entry<Integer, String> entry : currentIntention.getRequester().entrySet()){
 					costs += communicationTool.sendRequestDismiss(entry.getValue(), new RequestDismiss(entry.getKey(), communicationId));
 				}
-				this.currentIntention = new Intention(new Patrol(), null, null, null);
+				setCurrentIntention(new Intention(new Patrol(), null, null, null));
 			}
 			//requested agent found better fire
 			else{
@@ -298,7 +297,7 @@ public class BDIAgent extends ForesterAgent{
 					for(Entry<Integer, String> entry: currentIntention.getRequester().entrySet()){
 						communicationTool.sendRequestDismiss(entry.getValue(), new RequestDismiss(entry.getKey(), communicationId));
 					}
-					this.currentIntention = new Intention(myOffer.getAction(), myOffer.getPosition(), requestConfirmation.getSenderID(),myOffer.getId());
+					setCurrentIntention(new Intention(myOffer.getAction(), myOffer.getPosition(), requestConfirmation.getSenderID(),myOffer.getId()));
 				}
 				requestConfirmation = null;
 			}
@@ -308,7 +307,7 @@ public class BDIAgent extends ForesterAgent{
 			boolean executeSuccess = currentIntention.getAction().
 					execute(this, currentIntention.getPosition());
 			if(!executeSuccess){
-				this.currentIntention = new Intention(new Patrol(), null, null, null);
+				setCurrentIntention(new Intention(new Patrol(), null, null, null));
 			}
 		}
 	}

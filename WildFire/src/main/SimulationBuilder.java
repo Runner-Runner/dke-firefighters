@@ -130,7 +130,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		statistic.setTotalAgentCount(numberAgents);
 		context.add(statistic);
 		
-		RunEnvironment.getInstance().endAt(4000);
+//		RunEnvironment.getInstance().endAt(4000);
 		return context;
 	}
 	

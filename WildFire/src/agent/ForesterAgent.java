@@ -54,7 +54,6 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	private int regenerateTime = 0;
 	// how much fire this agent extinguished so far
 	private double extinguishedFireAmount = 0;
-
 	//belief of environment (fire/wood/agents/wind/clouds)
 	protected Belief belief;
 	//tool to send information and requests to other agents
@@ -78,6 +77,8 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	protected double bounty;
 	//costs the agent pays for communication
 	protected double costs;
+	
+	private int lastDirection = 1;
 	
 	/**
 	 * Does not have to be set. If set, represents a way for other agents 
@@ -113,6 +114,12 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		
 		currentIntention = new Intention(new Patrol(), null, null, null);
 	}
+	
+	public void setCurrentIntention(Intention currentIntention)
+	{
+		this.currentIntention = currentIntention;
+	}
+	
 	/**
 	 * used by other agents to communicate information
 	 * agent will work with them in the next iteration-step
@@ -267,10 +274,63 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 	 * moves agent to a further away GridPoint in an angle to it, whereby max distance is its speed
 	 * (uses the center of the grids (e.g. 2.5| 3.5))
 	 * @param pt target gridpoint
+	 * @return if the agent actually moved
 	 */
 	public void moveTowards(GridPoint pt) {
 		
+		boolean moveSuccess = moveTowardsIfUnoccupied(pt);
+		
+		if(!moveSuccess)
+		{
+			//Tiles on direct route are occupied - make turn to detour
+			NdPoint currentPos = space.getLocation(this);
+			//Try gradually increasing turn up to (excl.) 360 degrees
+			int[] directions = new int[]
+			{
+				1, -1	
+			};
+			if (lastDirection == -1)
+			{
+				directions[0] = -1;
+				directions[1] = 1;
+			}
+			outer:
+			for(int direction : directions)
+			{
+				for(int i=1; i<=12; i++)
+				{
+					double xDetourDiff = pt.getX() - currentPos.getX();
+					double yDetourDiff = pt.getY() - currentPos.getY();
+					
+					double detourAngle = i * (1d/12) * Math.PI * direction;
+					
+					double cos = Math.cos(detourAngle);
+					double sin = Math.sin(detourAngle);
+					
+					double xDetourVector = xDetourDiff * cos - yDetourDiff * sin;
+					double yDetourVector = xDetourDiff * sin + yDetourDiff * cos;
+					
+					GridPoint gridDetourTarget = new GridPoint(
+							(int)Math.round(currentPos.getX() + xDetourVector), 
+							(int)Math.round(currentPos.getY() + yDetourVector));
+					
+					moveSuccess = moveTowardsIfUnoccupied(gridDetourTarget);
+					if(moveSuccess)
+					{
+						//if turn > 180 degrees, remember direction to prevent loop 
+						lastDirection = direction;
+						
+						break outer;
+					}
+				}
+			}
+		}
+	}
+	
+	private boolean moveTowardsIfUnoccupied(GridPoint pt) 
+	{
 		NdPoint oldPos = space.getLocation(this);
+		GridPoint oldGridPos = grid.getLocation(this);
 		
 		NdPoint target;
 		double xDiff = pt.getX()-oldPos.getX();
@@ -282,15 +342,32 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 		else{
 			target = new NdPoint(pt.getX(),pt.getY());
 		}
-		ArrayList<GridPoint> tiles = CommunicationTool.tilesInDirection(oldPos, target);
+		List<GridPoint> tiles = CommunicationTool.tilesInDirection(oldPos, target);
 		GridPoint next = null;
-		tiles = CommunicationTool.tilesInDirection(oldPos, target);
-		for(GridPoint gp:tiles){
-			if(tileOccupied(gp))
+		
+		for(GridPoint gp:tiles)
+		{
+			if(!gp.equals(oldGridPos) && tileOccupied(gp))
+			{
 				break;
+			}
 			next = gp;
 		}
+		//If only the own tile is not occupied (and the target is another tile), 
+		//do not consider this as a move
+		if(next.equals(oldGridPos) && tiles.size() > 1)
+		{
+			next = null;
+		}
 		if(next != null){
+			if (target.getX() < 0 || target.getY() < 0 || 
+					target.getX() >= grid.getDimensions().getWidth() || 
+					target.getY() >= grid.getDimensions().getHeight()) 
+			{
+				//Out of the grid
+				return false;
+			}
+			
 			if(next.getX()==(int)target.getX() && next.getY()==(int)target.getY())
 			{
 				space.moveTo(this, target.getX(), target.getY());
@@ -300,9 +377,12 @@ public abstract class ForesterAgent implements InformationProvider, DataProvider
 				space.moveTo(this, next.getX()+0.5, next.getY()+0.5);
 			}
 			grid.moveTo(this, next.getX(), next.getY());
+			
+			return true;
 		}
-		
+		return false;
 	}
+	
 	private boolean tileOccupied(GridPoint gp){
 		for (Object o : grid.getObjectsAt(gp.getX(), gp.getY())) 
 		{
