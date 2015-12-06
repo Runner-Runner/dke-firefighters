@@ -63,7 +63,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		RandomCartesianAdder<Object> terrainAdder = new RandomCartesianAdder<Object>(); //adder who places objects in terrain
 		
 		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
-		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace("space", context, terrainAdder , new repast.simphony.space.continuous.StrictBorders(), forestDim+2, forestDim+2);
+		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace("space", context, terrainAdder , new repast.simphony.space.continuous.StrictBorders(), forestDim, forestDim);
 		CommonKnowledge.setSpace(space);
 		
 		//create grid (to use for neighbourhood)
@@ -71,7 +71,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		
 		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
 		//the boolean determines if more than one object can occupy a gridcell
-		Grid<Object> grid = gridFactory.createGrid("grid", context, new GridBuilderParameters <Object >(new StrictBorders(), gridAdder, true, forestDim+2, forestDim+2));
+		Grid<Object> grid = gridFactory.createGrid("grid", context, new GridBuilderParameters <Object >(new StrictBorders(), gridAdder, true, forestDim, forestDim));
 		CommonKnowledge.setGrid(grid);
 		
 		//-------------------------------------------------
@@ -90,12 +90,12 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		//value for statistics
 		double totalWoodHealth = 0;
 		ForestFactory forest = new ForestFactory(maxWoodHealth, minWoodHealth, maxMaterialFactor, minMaterialFactor);
-		for(int i = 1;i<=forestDim;i++){
-			for(int j = 1;j<=forestDim;j++){
+		for(int i = 0;i<forestDim;i++){
+			for(int j = 0;j<forestDim;j++){
 				Wood w = forest.getWood(i, j);
 				totalWoodHealth += w.getHealth();
 				context.add(w);
-				space.moveTo(w, i, j);
+				space.moveTo(w, i+0.5, j+0.5);
 			}
 		}
 		
@@ -103,8 +103,8 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		for(int i = 0;i<numberAgents;i++){
 			double speed = RandomHelper.nextDoubleFromTo(0.2, 0.5);
 			double extinguish = RandomHelper.nextDoubleFromTo(0.3, 1.0);
-			int x = RandomHelper.nextIntFromTo(1,forestDim);
-			int y = RandomHelper.nextIntFromTo(1,forestDim);
+			int x = RandomHelper.nextIntFromTo(0,forestDim-1);
+			int y = RandomHelper.nextIntFromTo(0,forestDim-1);
 			BDIAgent agent = new BDIAgent(space, grid, speed, extinguish);
 			context.add(agent);
 			space.moveTo(agent, x,y);
@@ -130,7 +130,7 @@ public class SimulationBuilder implements ContextBuilder<Object>{
 		statistic.setTotalAgentCount(numberAgents);
 		context.add(statistic);
 		
-//		RunEnvironment.getInstance().endAt(4000);
+//		RunEnvironment.getInstance().endAt(1000);
 		return context;
 	}
 	

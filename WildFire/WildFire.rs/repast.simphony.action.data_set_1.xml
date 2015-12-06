@@ -16,83 +16,25 @@
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>ForestHealth</string>
+      <string>Costs</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>ForestHealth</id>
-        <className>environment.Wood</className>
-        <methodName>getHealth</methodName>
+        <id>Costs</id>
+        <className>agent.ForesterAgent</className>
+        <methodName>getCosts</methodName>
         <aggType>SUM</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>FirePercent</string>
+      <string>Bounty</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>FirePercent</id>
-        <className>statistics.Statistic</className>
-        <methodName>getFireCountPercent</methodName>
-        <aggType>SUM</aggType>
-      </repast.simphony.data2.engine.MethodDataSourceDefinition>
-    </entry>
-    <entry>
-      <string>FireExtinguishedPercent</string>
-      <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>FireExtinguishedPercent</id>
-        <className>statistics.Statistic</className>
-        <methodName>getFireExtinguishedPercent</methodName>
-        <aggType>SUM</aggType>
-      </repast.simphony.data2.engine.MethodDataSourceDefinition>
-    </entry>
-    <entry>
-      <string>WoodPercent</string>
-      <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>WoodPercent</id>
-        <className>statistics.Statistic</className>
-        <methodName>getWoodHealthPercent</methodName>
-        <aggType>SUM</aggType>
-      </repast.simphony.data2.engine.MethodDataSourceDefinition>
-    </entry>
-    <entry>
-      <string>AgentPercent</string>
-      <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>AgentPercent</id>
-        <className>statistics.Statistic</className>
-        <methodName>getAgentCountPercent</methodName>
-        <aggType>SUM</aggType>
-      </repast.simphony.data2.engine.MethodDataSourceDefinition>
-    </entry>
-    <entry>
-      <string>FireExtinguished</string>
-      <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>FireExtinguished</id>
-        <className>statistics.DataProviderExtinguishedFireAmount</className>
-        <methodName>getExtinguishedFireAmount</methodName>
+        <id>Bounty</id>
+        <className>agent.ForesterAgent</className>
+        <methodName>getBounty</methodName>
         <aggType>SUM</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>
-  <countSources class="linked-hash-map">
-    <entry>
-      <string>Agents</string>
-      <repast.simphony.data2.engine.CountSourceDefinition>
-        <typeName>agent.ForesterAgent</typeName>
-        <id>Agents</id>
-      </repast.simphony.data2.engine.CountSourceDefinition>
-    </entry>
-    <entry>
-      <string>Fire</string>
-      <repast.simphony.data2.engine.CountSourceDefinition>
-        <typeName>environment.Fire</typeName>
-        <id>Fire</id>
-      </repast.simphony.data2.engine.CountSourceDefinition>
-    </entry>
-    <entry>
-      <string>Forest</string>
-      <repast.simphony.data2.engine.CountSourceDefinition>
-        <typeName>environment.Wood</typeName>
-        <id>Forest</id>
-      </repast.simphony.data2.engine.CountSourceDefinition>
-    </entry>
-  </countSources>
+  <countSources class="linked-hash-map"/>
   <customNADataSources class="linked-hash-map"/>
   <customAggDataSources class="linked-hash-map"/>
 </repast.simphony.data2.engine.DataSetDescriptor>

@@ -40,107 +40,119 @@ public class CommunicationTool
 		this.sendingRange = sendingRange;
 	}
 	
-	public double sendInformation(Information information)
+	public void sendInformation(Information information)
 	{
-		return sendInformation(getAgentsInRange(sender, sendingRange), information);
+		sendInformation(getAgentsInRange(sender, sendingRange), information);
 	}
 	
-	public double sendInformation(Information information, List<String> recipientIDs){
+	public void sendInformation(Information information, List<String> recipientIDs){
 		List<ForesterAgent> list = getAgents(recipientIDs);
-		return sendInformation(list, information);
+		sendInformation(list, information);
 	}
 	
-	public double sendInformation(Information information, String id){
+	public boolean sendInformation(Information information, String id){
 		return sendInformation(information, getAgent(id));
 	}
-	public double sendRequest(Request request)
+	public void sendRequest(Request request)
 	{
-		return sendRequest(request, getAgentsInRange(sender, sendingRange));
+		sendRequest(request, getAgentsInRange(sender, sendingRange));
 	}
-	public double sendRequest(List<String> recipientIDs, Request request){
-		return sendRequest(request, getAgents(recipientIDs));
+	public void sendRequest(List<String> recipientIDs, Request request){
+		sendRequest(request, getAgents(recipientIDs));
 	}
-	public double sendRequest(Request request, String id){
+	public boolean sendRequest(Request request, String id){
 		return sendRequest(request, getAgent(id));
 	}
-	public double sendRequestOffer(String id, RequestOffer ro){
+	public boolean sendRequestOffer(String id, RequestOffer ro){
 		ForesterAgent recipient = getAgent(id);
 		
 		if(recipient == null)
 		{
 			//recipient not reachable, possibly dead
-			return 0;
+			return false;
 		}
-		
-		recipient.receiveOffer(ro);
-		return calculateDistance(sender, recipient);
+		else
+		{
+			recipient.receiveOffer(ro);
+			sender.addCosts(calculateDistance(sender, recipient));
+			return true;
+		}
 	}
-	public double sendRequestDismiss(String id, RequestDismiss dismiss){
+	public boolean sendRequestDismiss(String id, RequestDismiss dismiss){
 		ForesterAgent recipient = getAgent(id);
 		
 		if(recipient == null)
 		{
 			//recipient not reachable, possibly dead
-			return 0;
+			return false;
 		}
-		
-		recipient.receiveDismiss(dismiss);
-		return calculateDistance(sender, recipient);
+		else
+		{
+			recipient.receiveDismiss(dismiss);
+			sender.addCosts(calculateDistance(sender, recipient));
+			return true;
+		}
 	}
-	public double sendRequestConfirm(String id, RequestConfirm rc){
+	public boolean sendRequestConfirm(String id, RequestConfirm rc){
 		ForesterAgent recipient = getAgent(id);
 		
 		if(recipient == null)
 		{
 			//recipient not reachable, possibly dead
-			return 0;
+			return false;
 		}
-		
-		recipient.receiveConfirmation(rc);
-		return calculateDistance(sender, recipient);
+		else
+		{
+			recipient.receiveConfirmation(rc);
+			sender.addCosts(calculateDistance(sender, recipient));
+			return true;
+		}
 	}
 	
-	private double sendInformation(List<ForesterAgent> recipients, Information information)
+	private void sendInformation(List<ForesterAgent> recipients, Information information)
 	{
-		double sum = 0;
 		for(ForesterAgent recipient : recipients)
 		{
-			sum+=sendInformation(information, recipient);
+			sendInformation(information, recipient);
 		}
-		return sum;
 	}
 	
-	private double sendInformation(Information information, ForesterAgent recipient)
+	private boolean sendInformation(Information information, ForesterAgent recipient)
 	{
 		if(recipient == null)
 		{
 			//recipient not reachable, possibly dead
-			return 0;
+			return false;
 		}
-		recipient.receiveInformation(information);
-		return calculateDistance(sender, recipient);
+		else
+		{
+			recipient.receiveInformation(information);
+			sender.addCosts(calculateDistance(sender, recipient));
+			return true;
+		}
 	}
 	
-	private double sendRequest(Request request, List<ForesterAgent> recipients)
+	private void sendRequest(Request request, List<ForesterAgent> recipients)
 	{
-		double sum = 0;
 		for(ForesterAgent recipient : recipients)
 		{
-			sum+=sendRequest(request, recipient);
+			sendRequest(request, recipient);
 		}
-		return sum;
 	}
 	
-	private double sendRequest(Request request, ForesterAgent recipient)
+	private boolean sendRequest(Request request, ForesterAgent recipient)
 	{
 		if(recipient == null)
 		{
 			//recipient not reachable, possibly dead
-			return 0;
+			return false;
 		}
-		
-		recipient.receiveRequest(request);
-		return calculateDistance(sender, recipient);
+		else
+		{
+			recipient.receiveRequest(request);
+			sender.addCosts(calculateDistance(sender, recipient));
+			return true;
+		}
 	}
 	
 	private List<ForesterAgent> getAgents(List<String> ids){

@@ -10,6 +10,7 @@ import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.space.continuous.ContinuousSpace;
+import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import agent.bdi.Extinguish;
@@ -44,47 +45,84 @@ public class BDIAgent extends ForesterAgent{
 	
 	private boolean flee(){
 		GridPoint location = grid.getLocation(this);
-		if(isOnBurningTile())
+		Fire fire = isOnBurningTile();
+		if(fire!=null)
 		{
-			GridPoint fleeingPoint = null;
-			//move to burned wood tile (secure space) if possible
-			GridCellNgh<Wood> nghWoodCreator = new GridCellNgh<>(grid, location,
-					Wood.class, 1, 1);
-			List<GridCell<Wood>> woodGridCells = nghWoodCreator.getNeighborhood(false);
-			for(GridCell<Wood> cell : woodGridCells)
-			{
-				if (cell.size() == 0) {
-					fleeingPoint = cell.getPoint();
-					break;
-				}
+			//if little fire -> extinguish
+			if(fire.getHeat()<=extinguishRate){
+				extinguishFire(location);
 			}
-			if(fleeingPoint == null)
-			{	
-				//otherwise, move to first non-burning tile
-				GridCellNgh<Fire> nghFireCreator = new GridCellNgh<>(grid, location,
-						Fire.class, 1, 1);
-				List<GridCell<Fire>> fireGridCells = nghFireCreator.getNeighborhood(false);
-				for (GridCell<Fire> cell : fireGridCells) {
+			//else run away
+			else{
+				NdPoint exact = getExactPosition();
+				GridPoint fleeingPoint = null;
+				double fleeingDistance = Double.MAX_VALUE;
+				//move to burned wood tile (secure space) if possible
+				GridCellNgh<Wood> nghWoodCreator = new GridCellNgh<>(grid, location,
+						Wood.class, 1, 1);
+				List<GridCell<Wood>> woodGridCells = nghWoodCreator.getNeighborhood(false);
+				for(GridCell<Wood> cell : woodGridCells)
+				{
 					if (cell.size() == 0) {
-						fleeingPoint = cell.getPoint();
-						break;
+						double distance = Math.sqrt(Math.pow(exact.getX()-cell.getPoint().getX(), 2)+Math.pow(exact.getY()-cell.getPoint().getY(), 2));
+						if(distance<fleeingDistance){
+							fleeingPoint = cell.getPoint();
+							fleeingDistance = distance;
+						}
 					}
 				}
-				
-				// all neighbor tiles on fire - move to first one
+				if(fleeingPoint == null)
+				{	
+					//otherwise, move to first non-burning tile
+					GridCellNgh<Fire> nghFireCreator = new GridCellNgh<>(grid, location,
+							Fire.class, 1, 1);
+					List<GridCell<Fire>> fireGridCells = nghFireCreator.getNeighborhood(false);
+					for (GridCell<Fire> cell : fireGridCells) {
+						if (cell.size() == 0) {
+							double distance = Math.sqrt(Math.pow(exact.getX()-cell.getPoint().getX(), 2)+Math.pow(exact.getY()-cell.getPoint().getY(), 2));
+							if(distance<fleeingDistance){
+								fleeingPoint = cell.getPoint();
+								fleeingDistance = distance;
+							}
+						}
+					}
+					
+				}
+				// all neighbor tiles on fire - try to extinguish
 				if(fleeingPoint == null)
 				{
-					fleeingPoint = fireGridCells.get(0).getPoint();
+					extinguishFire(location);
+				}
+				else
+				{
+					moveTowards(fleeingPoint);
 				}
 			}
-			moveTowards(fleeingPoint);
 			return true;
 		}
 		return false;
 	}
+	private void changeIntention(Intention newIntention)
+	{
+		for(Entry<Integer, String> entry : currentIntention.getRequester().entrySet()){
+			communicationTool.sendRequestDismiss(entry.getValue(), new RequestDismiss(entry.getKey(), communicationId));
+		}
+		this.currentIntention = newIntention;
+	}
 	@Override
 	public void checkNeighbourhood() {
 		updateNeighborhoodBelief();
+		
+		//check if actual intention is obsolete
+		if(currentIntention.getAction() instanceof Extinguish)
+		{
+			FireInformation fi = belief.getInformation(currentIntention.getPosition(), FireInformation.class);
+			if(fi==null || fi.isEmptyInstance())
+			{
+				changeIntention(new Intention(new Patrol(), null, null, null));
+			}
+		}
+		
 		int startX = getPosition().getX();
 		int startY = getPosition().getY();
 		
@@ -111,14 +149,11 @@ public class BDIAgent extends ForesterAgent{
 				}
 			}
 		}
-		
 		//change intention if better
 		if(nextFire!=null && (currentIntention.getPosition()==null || grid.getDistance(currentIntention.getPosition(), getPosition())>grid.getDistance(getPosition(), nextFire))){
-			for(Entry<Integer, String> entry : currentIntention.getRequester().entrySet()){
-				communicationTool.sendRequestDismiss(entry.getValue(), new RequestDismiss(entry.getKey(), communicationId));
-			}
-			setCurrentIntention(new Intention(new Extinguish(), nextFire, null,null));
+			changeIntention(new Intention(new Extinguish(), nextFire, null,null));
 		}
+
 
 	}
 	@Override
@@ -127,10 +162,7 @@ public class BDIAgent extends ForesterAgent{
 		for(RequestDismiss rd: this.rejections){
 			//check if your intention is obsolete
 			if(currentIntention.removeRequester(rd.getRequestID())){
-				for(Entry<Integer, String> entry : currentIntention.getRequester().entrySet()){
-					costs += communicationTool.sendRequestDismiss(entry.getValue(), new RequestDismiss(entry.getKey(), communicationId));
-				}
-				setCurrentIntention(new Intention(new Patrol(), null, null, null));
+				changeIntention(new Intention(new Patrol(), null, null, null));
 			}
 			//requested agent found better fire
 			else{
@@ -175,7 +207,7 @@ public class BDIAgent extends ForesterAgent{
 				}
 				range = range+4;
 				this.communicationTool.setSendingRange(range);
-				costs+= this.communicationTool.sendRequest(request);
+				this.communicationTool.sendRequest(request);
 				this.openRequests.put(request.getId(), new Pair<ActionRequest,Double>(request, range));
 			}
 		}
@@ -201,7 +233,7 @@ public class BDIAgent extends ForesterAgent{
 			}
 			Information info = this.belief.getInformation(asked, infoRequest.getInformationClass());
 			if(info != null && RunEnvironment.getInstance().getCurrentSchedule().getTickCount() - info.getTimestamp() < 20){ // only "new" information
-				this.costs+=communicationTool.sendInformation(info, infoRequest.getSenderID());
+				communicationTool.sendInformation(info, infoRequest.getSenderID());
 			}
 		}
 		infoRequests.clear();
@@ -237,7 +269,7 @@ public class BDIAgent extends ForesterAgent{
 					chosenRequest.getId(), smallestDistance, false);
 			myOffer= chosenRequest;
 			actionRequests.remove(chosenRequest.getId());
-			this.costs+=communicationTool.sendRequestOffer(chosenRequest.getSenderID(), requestOffer);
+			communicationTool.sendRequestOffer(chosenRequest.getSenderID(), requestOffer);
 		}
 		//delete old requests
 		LinkedList<Integer> old =new LinkedList<Integer>();
@@ -272,7 +304,7 @@ public class BDIAgent extends ForesterAgent{
 		}
 		//send confirmations to best offers and add to requested agents
 		for(Entry<Integer, RequestOffer> entry: bestOffers.entrySet()){
-			this.costs+=communicationTool.sendRequestConfirm(entry.getValue().getSenderId(), new RequestConfirm(communicationId, entry.getValue().getRequestID()));
+			communicationTool.sendRequestConfirm(entry.getValue().getSenderId(), new RequestConfirm(communicationId, entry.getValue().getRequestID()));
 			ActionRequest confirmed = openRequests.get(entry.getKey()).getFirst();
 			requestedAgents.put(entry.getValue().getSenderId(), confirmed);
 			openRequests.remove(confirmed.getId());
@@ -282,32 +314,35 @@ public class BDIAgent extends ForesterAgent{
 	}
 
 	@Override
-	public void doActions() {
-		if (!flee()) {
+	public void doActions()
+	{
+		if (!flee()) 
+		{
 			// TODO act with respect to your intention (move, extinguish, wetline, woodcutting, check weather)
 			
 			// Check confirmation
-			if(requestConfirmation != null){
+			if(requestConfirmation != null)
+			{
 				//offer was for current intention
-				if(myOffer.getPosition().equals(currentIntention.getPosition())){
+				if(myOffer.getPosition().equals(currentIntention.getPosition()))
+				{
 					currentIntention.addRequester(requestConfirmation.getSenderID(), requestConfirmation.getRequestID());
 				}
 				//change intention and send dismiss to all waiting agents
-				else{
-					for(Entry<Integer, String> entry: currentIntention.getRequester().entrySet()){
-						communicationTool.sendRequestDismiss(entry.getValue(), new RequestDismiss(entry.getKey(), communicationId));
-					}
-					setCurrentIntention(new Intention(myOffer.getAction(), myOffer.getPosition(), requestConfirmation.getSenderID(),myOffer.getId()));
+				else
+				{
+					changeIntention(new Intention(myOffer.getAction(), myOffer.getPosition(), requestConfirmation.getSenderID(),myOffer.getId()));
 				}
 				requestConfirmation = null;
 			}
 			myOffer = null;
-			
+			NdPoint me = getExactPosition();
 			//execute intention
 			boolean executeSuccess = currentIntention.getAction().
 					execute(this, currentIntention.getPosition());
-			if(!executeSuccess){
-				setCurrentIntention(new Intention(new Patrol(), null, null, null));
+			if(!executeSuccess)
+			{
+				this.currentIntention = new Intention(new Patrol(), null, null, null);
 			}
 		}
 	}

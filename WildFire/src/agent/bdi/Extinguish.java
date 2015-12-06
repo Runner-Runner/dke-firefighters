@@ -4,23 +4,32 @@ import agent.ForesterAgent;
 import agent.communication.CommunicationTool;
 import repast.simphony.space.grid.GridPoint;
 
-public class Extinguish extends Action{
+public class Extinguish extends Action
+{
 
-	public Extinguish() {
+	public Extinguish() 
+	{
 		super(3, 20);
 	}
 
 	@Override
-	protected boolean isInExecutePosition(ForesterAgent agent, GridPoint gp) {
+	protected boolean isInExecutePosition(ForesterAgent agent, GridPoint gp) 
+	{
 		return CommunicationTool.inMooreRange(agent, gp);
 	}
 	
 	@Override
-	public boolean executeInner(ForesterAgent agent, GridPoint gp) {
-		if(agent.extinguishFire(gp)){
-			//TODO increase agents bounty
+	public boolean executeInner(ForesterAgent agent, GridPoint gp) 
+	{
+		if(agent.extinguishFire(gp))
+		{
+			agent.addBounty(incrementalBounty*agent.getExtinguishedFireAmount());
 			return true;
 		}
-		return false;
+		else
+		{
+			agent.addBounty(finalBounty);
+			return false;
+		}
 	}
 }

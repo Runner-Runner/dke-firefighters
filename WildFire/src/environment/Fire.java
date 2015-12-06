@@ -71,7 +71,7 @@ public class Fire implements InformationProvider
 							Fire f = new Fire(wind.getSpeed()*0.05*this.heat, this.wind);
 							CommonKnowledge.getContext().add(f);
 							grid.moveTo(f, cell.getPoint().getX(), cell.getPoint().getY());
-							CommonKnowledge.getSpace().moveTo(f, cell.getPoint().getX(), cell.getPoint().getY());
+							CommonKnowledge.getSpace().moveTo(f, cell.getPoint().getX()+0.5, cell.getPoint().getY()+0.5);
 						}
 					}
 					else
