@@ -1,9 +1,9 @@
 <repast.simphony.chart2.engine.TimeSeriesChartDescriptor>
-  <name>Number of Agents</name>
+  <name>Combined Overview</name>
   <dataSet>Evaluation</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
   <yAxisLabel></yAxisLabel>
-  <chartTitle>Number of Agents</chartTitle>
+  <chartTitle>Combined Overview</chartTitle>
   <type>TIME_SERIES</type>
   <background>
     <red>192</red>
@@ -21,13 +21,49 @@
   <showLegend>true</showLegend>
   <seriesIds>
     <entry>
-      <string>Agents</string>
+      <string>FireExtinguishedPercent</string>
       <SeriesData>
-        <label>Agents</label>
+        <label>FireExtinguishedPercent</label>
+        <color>
+          <red>0</red>
+          <green>153</green>
+          <blue>255</blue>
+          <alpha>255</alpha>
+        </color>
+      </SeriesData>
+    </entry>
+    <entry>
+      <string>FirePercent</string>
+      <SeriesData>
+        <label>FirePercent</label>
+        <color>
+          <red>204</red>
+          <green>0</green>
+          <blue>0</blue>
+          <alpha>255</alpha>
+        </color>
+      </SeriesData>
+    </entry>
+    <entry>
+      <string>AgentPercent</string>
+      <SeriesData>
+        <label>AgentPercent</label>
         <color>
           <red>255</red>
           <green>255</green>
-          <blue>51</blue>
+          <blue>0</blue>
+          <alpha>255</alpha>
+        </color>
+      </SeriesData>
+    </entry>
+    <entry>
+      <string>WoodPercent</string>
+      <SeriesData>
+        <label>WoodPercent</label>
+        <color>
+          <red>0</red>
+          <green>153</green>
+          <blue>0</blue>
           <alpha>255</alpha>
         </color>
       </SeriesData>
