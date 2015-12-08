@@ -61,7 +61,7 @@ public class TestSimulationBuilder implements ContextBuilder<Object>{
 		RandomCartesianAdder<Object> terrainAdder = new RandomCartesianAdder<Object>(); //adder who places objects in terrain
 		
 		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
-		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace("space", context, terrainAdder , new repast.simphony.space.continuous.StrictBorders(), forestDim+2, forestDim+2);
+		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace("space", context, terrainAdder , new repast.simphony.space.continuous.StrictBorders(), forestDim, forestDim);
 		CommonKnowledge.setSpace(space);
 		
 		//create grid (to use for neighbourhood)
@@ -69,7 +69,7 @@ public class TestSimulationBuilder implements ContextBuilder<Object>{
 		
 		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
 		//the boolean determines if more than one object can occupy a gridcell
-		Grid<Object> grid = gridFactory.createGrid("grid", context, new GridBuilderParameters <Object >(new StrictBorders(), gridAdder, true, forestDim+2, forestDim+2));
+		Grid<Object> grid = gridFactory.createGrid("grid", context, new GridBuilderParameters <Object >(new StrictBorders(), gridAdder, true, forestDim, forestDim));
 		CommonKnowledge.setGrid(grid);
 		
 		//-------------------------------------------------
@@ -87,14 +87,13 @@ public class TestSimulationBuilder implements ContextBuilder<Object>{
 		//add forest
 		//value for statistics
 		double totalWoodHealth = 0;
-		//live forever
-		ForestFactory forest = new ForestFactory(100000000, 100000000, maxMaterialFactor, minMaterialFactor);
-		for(int i = 1;i<=forestDim;i++){
-			for(int j = 1;j<=forestDim;j++){
+		ForestFactory forest = new ForestFactory(1000000000, 1000000000, maxMaterialFactor, minMaterialFactor);
+		for(int i = 0;i<forestDim;i++){
+			for(int j = 0;j<forestDim;j++){
 				Wood w = forest.getWood(i, j);
 				totalWoodHealth += w.getHealth();
 				context.add(w);
-				space.moveTo(w, i, j);
+				space.moveTo(w, i+0.5, j+0.5);
 			}
 		}
 		
@@ -112,28 +111,28 @@ public class TestSimulationBuilder implements ContextBuilder<Object>{
 		int[][] posArray =
 			{
 				{
-					22, 22
+					5, 6
 				},
 				{
-					22, 23
+					5, 5
 				},
 				{
-					21, 23
+					3, 6
 				},
 				{
-					21, 22
+					4, 6
 				},
 				{
-					23, 22
+					4, 5
 				},	
 				{
-					23, 23
+					3, 7
 				},
 				{
-					22, 25
+					6, 5
 				},
 				{
-					23, 25
+					6, 6
 				},
 			};
 		
@@ -144,11 +143,29 @@ public class TestSimulationBuilder implements ContextBuilder<Object>{
 			space.moveTo(agent, pos[0], pos[1]);
 		}
 		
-		//live forever
-		Fire newFire = new Fire(1000, wind);
-		context.add(newFire);
-		grid.moveTo(newFire, 22, 24);
-		space.moveTo(newFire, 22, 24);
+		int[][] fireArray =
+			{
+				{
+					5, 7
+				},
+				{
+					5, 8
+				},
+				{
+					6, 7
+				},
+				{
+					6, 8
+				},
+			};
+		
+		for(int[] pos : fireArray)
+		{
+			Fire fire = new Fire(2, wind);
+			context.add(fire);
+			grid.moveTo(fire, pos[0], pos[1]);
+			space.moveTo(fire, pos[0], pos[1]);
+		}
 		
 //		FireFactory fire = new FireFactory(context, grid, space, wind, sparkingFactor, forestDim);
 //		context.add(fire);
