@@ -1,19 +1,25 @@
 package agent.communication.request;
 
-public class RequestConfirm {
+public class RequestConfirm
+{
 	private String senderID;
 	private int requestID;
-	public RequestConfirm(String senderID, int requestID) {
+
+	public RequestConfirm(String senderID, int requestID)
+	{
 		super();
 		this.senderID = senderID;
 		this.requestID = requestID;
 	}
-	public String getSenderID() {
+
+	public String getSenderID()
+	{
 		return senderID;
 	}
-	public int getRequestID() {
+
+	public int getRequestID()
+	{
 		return requestID;
 	}
-	
-	
+
 }

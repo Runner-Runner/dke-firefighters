@@ -1,12 +1,15 @@
 package agent.communication.request;
 
-public class RequestOffer{
+public class RequestOffer
+{
 	private double distance;
 	private String senderId;
 	private boolean otherIntention;
 	private int requestID;
-	
-	public RequestOffer(String senderId, int requestID, double distance, boolean otherIntention) {
+
+	public RequestOffer(String senderId, int requestID, double distance,
+			boolean otherIntention)
+	{
 		super();
 		this.requestID = requestID;
 		this.distance = distance;
@@ -14,20 +17,24 @@ public class RequestOffer{
 		this.otherIntention = otherIntention;
 	}
 
-	public double getDistance() {
+	public double getDistance()
+	{
 		return distance;
 	}
 
-	public String getSenderId() {
+	public String getSenderId()
+	{
 		return senderId;
 	}
 
-	public int getRequestID() {
+	public int getRequestID()
+	{
 		return requestID;
 	}
-	
-	public boolean hasOtherIntention(){
+
+	public boolean hasOtherIntention()
+	{
 		return otherIntention;
 	}
-	
+
 }

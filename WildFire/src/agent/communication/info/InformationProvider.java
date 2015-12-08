@@ -1,6 +1,6 @@
 package agent.communication.info;
 
-
-public interface InformationProvider {
+public interface InformationProvider
+{
 	public Information getInformation();
 }
