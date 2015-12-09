@@ -1,5 +1,6 @@
 package agent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -144,7 +145,6 @@ public class BDIAgent extends ForesterAgent
 				changeIntention(new Intention(new Patrol(), null, null, null));
 			}
 		}
-
 		int startX = getPosition().getX();
 		int startY = getPosition().getY();
 
@@ -185,7 +185,30 @@ public class BDIAgent extends ForesterAgent
 			changeIntention(new Intention(new Extinguish(), nextFire, null,
 					null));
 		}
-
+		// clean open requests
+		ArrayList<Integer> obsolete = new ArrayList<>();
+		for(Entry<Integer,Pair<ActionRequest,Double>> entry:openRequests.entrySet())
+		{
+			GridPoint target = entry.getValue().getFirst().getPosition();
+			FireInformation fi = belief.getInformation(target, FireInformation.class);
+			if(fi.isEmptyInstance())
+			{
+				obsolete.add(entry.getKey());
+			}
+		}
+		openRequests.keySet().removeAll(obsolete);
+		//inform requested agents about obsolete intentions
+		ArrayList<String> rejected = new ArrayList<>();
+		for(Entry<String,ActionRequest> entry: requestedAgents.entrySet())
+		{
+			GridPoint target = entry.getValue().getPosition();
+			if(belief.getInformation(target, FireInformation.class).isEmptyInstance())
+			{
+				communicationTool.sendRequestDismiss(entry.getKey(), new RequestDismiss(entry.getValue().getId(), communicationId));
+				rejected.add(entry.getKey());
+			}
+		}
+		requestedAgents.keySet().removeAll(rejected);
 	}
 
 	@Override
