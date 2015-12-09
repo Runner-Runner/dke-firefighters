@@ -15,6 +15,10 @@
       <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
     </entry>
     <entry>
+      <string>environment.Fire$ExtinguishMarker</string>
+      <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
+    </entry>
+    <entry>
       <string>agent.ForesterAgent</string>
       <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
     </entry>
@@ -33,6 +37,10 @@
       <string>wildFire.Wood.style_0.xml</string>
     </entry>
     <entry>
+      <string>environment.Fire$ExtinguishMarker</string>
+      <string>environment.Fire.ExtinguishMarker.style_0.xml</string>
+    </entry>
+    <entry>
       <string>agent.ForesterAgent</string>
       <string>wildFire.ForesterAgent.style_0.xml</string>
     </entry>
@@ -47,7 +55,7 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>1389836127</hashCode>
+    <hashCode>733955489</hashCode>
   </schedParams>
   <layoutClassName>foo.bar.baz</layoutClassName>
   <layoutProjection>space</layoutProjection>
@@ -55,7 +63,7 @@
   <layerOrder>
     <entry>
       <string>environment.WaterCell</string>
-      <int>2</int>
+      <int>3</int>
     </entry>
     <entry>
       <string>environment.Fire</string>
@@ -66,8 +74,12 @@
       <int>0</int>
     </entry>
     <entry>
+      <string>environment.Fire$ExtinguishMarker</string>
+      <int>2</int>
+    </entry>
+    <entry>
       <string>agent.ForesterAgent</string>
-      <int>3</int>
+      <int>4</int>
     </entry>
   </layerOrder>
   <projections>
