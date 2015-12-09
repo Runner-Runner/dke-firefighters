@@ -8,7 +8,12 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
-
+/**
+ * This class is used to create fire-spots by random but with respect to wind-speed
+ * 
+ * @author carsten
+ *
+ */
 public class FireFactory
 {
 	private Grid<Object> grid;
@@ -17,7 +22,16 @@ public class FireFactory
 	private double frequency;
 	private Wind wind;
 	private int forestDim;
-
+	
+	/**
+	 * create a firefactory
+	 * @param context
+	 * @param grid
+	 * @param space
+	 * @param wind
+	 * @param frequency chance to create a new fire
+	 * @param forestDim
+	 */
 	public FireFactory(Context<Object> context, Grid<Object> grid,
 			ContinuousSpace<Object> space, Wind wind, double frequency,
 			int forestDim)
@@ -35,11 +49,13 @@ public class FireFactory
 			* SimulationManager.FIRE_FACTOR, priority = 997)
 	public void step()
 	{
+		//choose random cell
 		int x = RandomHelper.nextIntFromTo(0, forestDim - 1);
 		int y = RandomHelper.nextIntFromTo(0, forestDim - 1);
 		Iterator<Object> it = grid.getObjectsAt(x, y).iterator();
 		Wood w = null;
 		Fire f = null;
+		//check if there is already fire or wood in the chosen cell
 		while (it.hasNext())
 		{
 			Object o = it.next();
@@ -55,7 +71,7 @@ public class FireFactory
 		// wood without fire
 		if (w != null && f == null)
 		{
-			// TODO with respect to wetness and material
+			// try to create a fire
 			if (RandomHelper.nextDouble() < frequency)
 			{
 				double heat = 2;

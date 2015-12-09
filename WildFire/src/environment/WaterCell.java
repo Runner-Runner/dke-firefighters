@@ -7,12 +7,20 @@ import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
-
+/**
+ * A water cell is one little cell and belongs to a "mother-cloud"
+ * @author carsten
+ *
+ */
 public class WaterCell
 {
-	private Wind wind; // reference to global wind
+	private Wind wind; 
 	private Cloud cloud;
-
+	/**
+	 * create a watercell
+	 * @param wind
+	 * @param cloud
+	 */
 	public WaterCell(Wind wind, Cloud cloud)
 	{
 		super();
@@ -20,13 +28,8 @@ public class WaterCell
 		this.cloud = cloud;
 	}
 
-	@ScheduledMethod(start = 1, interval = SimulationManager.GENERAL_SCHEDULE_TICK_RATE, priority = 995)
-	public void step()
-	{
-		if (move())
-			rain();
-	}
-
+	
+	//drop water on current cell
 	private void rain()
 	{
 		double rain = this.cloud.getRain();
@@ -52,10 +55,13 @@ public class WaterCell
 					wood = (Wood) o;
 				}
 			}
+			//extinguish fire in this cell
 			if (fire != null)
 			{
 				fire.decreaseHeat(rain, false);
-			} else if (wood != null)
+			} 
+			//or wet the wood in this cell
+			else if (wood != null)
 			{
 				wood.shower(rain);
 			}
@@ -92,5 +98,12 @@ public class WaterCell
 			grid.moveTo(this, (int) myPoint.getX(), (int) myPoint.getY());
 			return true;
 		}
+	}
+	
+	@ScheduledMethod(start = 1, interval = SimulationManager.GENERAL_SCHEDULE_TICK_RATE, priority = 995)
+	public void step()
+	{
+		if (move())
+			rain();
 	}
 }
