@@ -84,7 +84,8 @@ public class Wood implements InformationProvider
 	@ScheduledMethod(start = 1, interval = SimulationManager.GENERAL_SCHEDULE_TICK_RATE, priority = 993)
 	public void transpire()
 	{
-		this.wetness -= this.wetness * material * 0.1;
+		///TODO Test
+		//this.wetness -= this.wetness * material * 0.1;
 	}
 
 	@Override

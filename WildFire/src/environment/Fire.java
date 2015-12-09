@@ -10,6 +10,7 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.random.RandomHelper;
+import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import statistics.Statistic;
@@ -23,7 +24,12 @@ public class Fire implements InformationProvider
 {
 	// number of points to decrease woods lifepoints each iteration
 	private double heat;
+	
+	// fire spreads in winds direction
 	private Wind wind; 
+
+	private boolean beingExtinguished;
+	private ExtinguishMarker extinguishingMarker;
 	
 	/**
 	 * create a fire cell 
@@ -43,33 +49,17 @@ public class Fire implements InformationProvider
 		return this.heat;
 	}
 	
-	/**
-	 * decrease heat - used by clouds (watercells) and firefighters
-	 * @param sub
-	 * @return The amount of heat that was actually decreased.
-	 */
-	public double decreaseHeat(double sub, boolean byForester)
-	{
-		this.heat -= sub;
-		//if there is no heat, the fire "dies"
-		if (this.heat <= 0)
-		{
-			Context<Object> context = SimulationManager.getContext();
-			context.remove(this);
-
-			if (byForester)
-			{
-				Statistic.getInstance().incrementExtinguishedFireCount();
-			}
-
-			return sub + this.heat;
-		}
-		return sub;
-	}
-	
 	@ScheduledMethod(start = 1, interval = SimulationManager.GENERAL_SCHEDULE_TICK_RATE, priority = 996)
 	public void step()
 	{
+		//Remove marker if the fire is not getting extinguished anymore
+		if(!beingExtinguished && extinguishingMarker != null)
+		{
+			SimulationManager.getContext().remove(extinguishingMarker);
+			extinguishingMarker = null;
+		}
+		beingExtinguished = false;
+		
 		Grid<Object> grid = SimulationManager.getGrid();
 		GridPoint pt = grid.getLocation(this);
 		// Propagation
@@ -142,8 +132,7 @@ public class Fire implements InformationProvider
 		// no material -> fire dies
 		if (material == null)
 		{
-			Context<Object> context = SimulationManager.getContext();
-			context.remove(this);
+			die();
 		} else
 		{
 			//max heat depends on amount and quality of material
@@ -162,8 +151,54 @@ public class Fire implements InformationProvider
 		this.heat += add;
 	}
 
-	
+	/**
+	 * decrease heat - used by clouds (watercells) and firefighters
+	 * @param sub
+	 * @return The amount of heat that was actually decreased.
+	 */
+	public double decreaseHeat(double sub, boolean byForester)
+	{
+		this.heat -= sub;
 
+		Context<Object> context = SimulationManager.getContext();
+		if (this.heat <= 0)
+		{
+			die();
+
+			if (byForester)
+			{
+				Statistic.getInstance().incrementExtinguishedFireCount();
+			}
+			return sub + this.heat;
+		}
+		else
+		{
+			beingExtinguished = true;
+			if(extinguishingMarker == null)
+			{
+				//Add visual marker
+				Grid<Object> grid = SimulationManager.getGrid();
+				ContinuousSpace<Object> space = SimulationManager.getSpace();
+				GridPoint pt = SimulationManager.getGrid().getLocation(this);
+				extinguishingMarker = new ExtinguishMarker();
+				context.add(extinguishingMarker);
+				grid.moveTo(extinguishingMarker, pt.getX(), pt.getY());
+				space.moveTo(extinguishingMarker, pt.getX() + 0.5, pt.getY() + 0.5);
+			}
+		}
+		return sub;
+	}
+
+	private void die()
+	{
+		Context<Object> context = SimulationManager.getContext();
+		context.remove(this);
+		if(extinguishingMarker != null)
+		{
+			context.remove(extinguishingMarker);
+		}
+	}
+	
 	@Override
 	public FireInformation getInformation()
 	{
@@ -206,5 +241,11 @@ public class Fire implements InformationProvider
 		{
 			return heat;
 		}
+	}
+	
+	public static class ExtinguishMarker
+	{
+		//Marker solely for UI to visualize fire that is being 
+		//extinguished differently in the simulation.
 	}
 }
