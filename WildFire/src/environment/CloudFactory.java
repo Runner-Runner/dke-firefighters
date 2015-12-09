@@ -4,7 +4,11 @@ import main.SimulationManager;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.random.RandomHelper;
-
+/**
+ * CloudFactory, which creates arbitrarily creates clouds on map
+ * @author carsten
+ *
+ */
 public class CloudFactory
 {
 	private Wind wind;
@@ -18,6 +22,19 @@ public class CloudFactory
 	private double maxRain;
 	private double minRain;
 
+	/**
+	 * create the cloudFactory
+	 * @param context context to add clouds to
+	 * @param wind	clouds appear with respect to current wind speed
+	 * @param cloudFrequency defines how often clouds appear
+	 * @param minCloudDim
+	 * @param maxCloudDim
+	 * @param forestDim
+	 * @param maxRain
+	 * @param minRain
+	 * @param maxTank
+	 * @param minTank
+	 */
 	public CloudFactory(Context<Object> context, Wind wind,
 			double cloudFrequency, int minCloudDim, int maxCloudDim,
 			int forestDim, double maxRain, double minRain, double maxTank,
@@ -45,28 +62,7 @@ public class CloudFactory
 		{
 			double x = RandomHelper.nextDouble() * forestDim;
 			double y = RandomHelper.nextDouble() * forestDim;
-			// int dim = forestDim+2*maxCloudDim;
-			// double wD = this.wind.getWindDirection();
-			// if(wD>Math.PI/4 && wD<=0.75*Math.PI)
-			// {
-			// x = RandomHelper.nextIntFromTo(0,dim-1);
-			// y = 0;
-			// }
-			// else if(wD > 0.75*Math.PI && wD<=1.25*Math.PI)
-			// {
-			// x = dim-1;
-			// y = RandomHelper.nextIntFromTo(0,dim-1);
-			// }
-			// else if(wD > 1.25*Math.PI && wD<=1.75*Math.PI)
-			// {
-			// x = RandomHelper.nextIntFromTo(0,dim-1);
-			// y = dim-1;
-			// }
-			// else
-			// {
-			// x = 0;
-			// y = RandomHelper.nextIntFromTo(0,dim-1);
-			// }
+
 			double tank = minTank + RandomHelper.nextDouble()
 					* (maxTank - minTank);
 			Cloud newCloud = new Cloud(context, wind, tank, maxRain, minRain);

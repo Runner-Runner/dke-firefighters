@@ -6,7 +6,11 @@ import agent.communication.info.InformationProvider;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.grid.GridPoint;
-
+/**
+ * Wood-class which represents a square piece of forest
+ * @author carsten
+ *
+ */
 public class Wood implements InformationProvider
 {
 	// Increases by rain decreases by time and fire in neighborhood fire cannot
@@ -19,6 +23,12 @@ public class Wood implements InformationProvider
 	private double material;
 	private GridPoint position;
 
+	/**
+	 * create a piece of forest
+	 * @param health
+	 * @param material
+	 * @param position
+	 */
 	public Wood(double health, double material, GridPoint position)
 	{
 		this.wetness = health * material;
@@ -26,7 +36,11 @@ public class Wood implements InformationProvider
 		this.material = material;
 		this.position = position;
 	}
-
+	/**
+	 * decrease wetness or life points - used by fire
+	 * @param decrease
+	 * @return
+	 */
 	public double burn(double decrease)
 	{
 		if (this.wetness > 0)

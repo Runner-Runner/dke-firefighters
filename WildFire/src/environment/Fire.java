@@ -13,13 +13,23 @@ import repast.simphony.random.RandomHelper;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import statistics.Statistic;
-
+/**
+ * Fire-Class which represents a fire-cell
+ * heats up and spreads with respect to wind direction and speed and the material
+ * @author carsten
+ *
+ */
 public class Fire implements InformationProvider
 {
-	private double heat; // number of points to decrease woods lifepoints each
-							// iteration
-	private Wind wind; // fire spreads in winds direction
-
+	// number of points to decrease woods lifepoints each iteration
+	private double heat;
+	private Wind wind; 
+	
+	/**
+	 * create a fire cell 
+	 * @param heat initial heat
+	 * @param wind
+	 */
 	public Fire(double heat, Wind wind)
 	{
 		super();
@@ -32,7 +42,31 @@ public class Fire implements InformationProvider
 	{
 		return this.heat;
 	}
+	
+	/**
+	 * decrease heat - used by clouds (watercells) and firefighters
+	 * @param sub
+	 * @return The amount of heat that was actually decreased.
+	 */
+	public double decreaseHeat(double sub, boolean byForester)
+	{
+		this.heat -= sub;
+		//if there is no heat, the fire "dies"
+		if (this.heat <= 0)
+		{
+			Context<Object> context = SimulationManager.getContext();
+			context.remove(this);
 
+			if (byForester)
+			{
+				Statistic.getInstance().incrementExtinguishedFireCount();
+			}
+
+			return sub + this.heat;
+		}
+		return sub;
+	}
+	
 	@ScheduledMethod(start = 1, interval = SimulationManager.GENERAL_SCHEDULE_TICK_RATE, priority = 996)
 	public void step()
 	{
@@ -44,6 +78,7 @@ public class Fire implements InformationProvider
 		List<GridCell<Wood>> gridCells = nghCreator.getNeighborhood(true);
 		double windX = Math.cos(this.wind.getWindDirection()) * wind.getSpeed();
 		double windY = Math.sin(this.wind.getWindDirection()) * wind.getSpeed();
+		//effects cells in Moore neighborhood in wind-direction
 		for (GridCell<Wood> cell : gridCells)
 		{
 			double xDiff = cell.getPoint().getX() - pt.getX();
@@ -56,9 +91,7 @@ public class Fire implements InformationProvider
 				// Decrease wetness
 				if (w.getWetness() > 0)
 				{
-					w.burn(wind.getSpeed() * heat); // TODO take length of
-													// windvector into
-													// consideration
+					w.burn(wind.getSpeed() * heat); 
 				}
 				// Increase fire or spread fire
 				else
@@ -73,10 +106,12 @@ public class Fire implements InformationProvider
 							break;
 						}
 					}
+					// try to spread new fire
 					if (fire == null)
 					{
+						// Spreads with respect to wind-speed
 						if (RandomHelper.nextDouble() < wind.getSpeed() * 0.1)
-						{// TODO take length of windvector into consideration
+						{
 							Fire f = new Fire(wind.getSpeed() * 0.05
 									* this.heat, this.wind);
 							SimulationManager.getContext().add(f);
@@ -88,18 +123,13 @@ public class Fire implements InformationProvider
 						}
 					} else
 					{
-						fire.increaseHeat(wind.getSpeed() * 0.01 * this.heat);// TODO
-																				// take
-																				// length
-																				// of
-																				// windvector
-																				// into
-																				// consideration
+						//heat up existing fire
+						fire.increaseHeat(wind.getSpeed() * 0.01 * this.heat);
 					}
 				}
 			}
 		}
-		// burn actual
+		// burn wood in own cell
 		Wood material = null;
 		for (Object o : grid.getObjectsAt(pt.getX(), pt.getY()))
 		{
@@ -116,37 +146,23 @@ public class Fire implements InformationProvider
 			context.remove(this);
 		} else
 		{
+			//max heat depends on amount and quality of material
 			double maxHeat = material.burn(heat);
+			//heats up with respect to wind-speed
 			this.heat += (maxHeat - this.heat) * 0.05 * wind.getSpeed();
 		}
 	}
-
+	
+	/**
+	 * increase heat - used by fires in moore neighborhood
+	 * @param add
+	 */
 	public void increaseHeat(double add)
 	{
 		this.heat += add;
 	}
 
-	/**
-	 * @param sub
-	 * @return The amount of heat that was actually decreased.
-	 */
-	public double decreaseHeat(double sub, boolean byForester)
-	{
-		this.heat -= sub;
-		if (this.heat <= 0)
-		{
-			Context<Object> context = SimulationManager.getContext();
-			context.remove(this);
-
-			if (byForester)
-			{
-				Statistic.getInstance().incrementExtinguishedFireCount();
-			}
-
-			return sub + this.heat;
-		}
-		return sub;
-	}
+	
 
 	@Override
 	public FireInformation getInformation()
@@ -154,12 +170,21 @@ public class Fire implements InformationProvider
 		return new FireInformation(SimulationManager.getGrid()
 				.getLocation(this), heat);
 	}
-
+	
+	/**
+	 * Class used by agents to keep fireinformation in mind
+	 * @author carsten
+	 *
+	 */
 	public static class FireInformation extends Information
 	{
 
 		private double heat;
-
+		/**
+		 * create fireInformation
+		 * @param position
+		 * @param heat
+		 */
 		public FireInformation(GridPoint position, double heat)
 		{
 			super(position);
