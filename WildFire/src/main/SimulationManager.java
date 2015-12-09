@@ -90,23 +90,21 @@ public class SimulationManager
 	 * @param yDirection
 	 * @return
 	 */
-	public static ArrayList<GridPoint> tilesInDirection(NdPoint start,
-			NdPoint end)
+	public static ArrayList<GridPoint> tilesInDirection(NdPoint start, double xDirection, double yDirection,
+			GridPoint end)
 	{
 		ArrayList<GridPoint> inDirection = new ArrayList<GridPoint>();
-		double xDirection = end.getX() - start.getX();
-		double yDirection = end.getY() - start.getY();
 		int x = (int) start.getX();
 		int y = (int) start.getY();
-		int endX = (int) end.getX();
-		int endY = (int) end.getY();
+		int endX = end.getX();
+		int endY = end.getY();
 		int stepX;
 		int stepY;
 		double tMaxX = Double.MAX_VALUE;
 		double tMaxY = Double.MAX_VALUE;
 		double nextXVoxel;
 		double nextYVoxel;
-		if (xDirection > 0)
+		if (xDirection >= 0)
 		{
 			stepX = 1;
 			nextXVoxel = x + 1;
@@ -116,7 +114,7 @@ public class SimulationManager
 			nextXVoxel = x;
 		}
 		tMaxX = (nextXVoxel - start.getX()) / xDirection;
-		if (yDirection > 0)
+		if (yDirection >= 0)
 		{
 			stepY = 1;
 			nextYVoxel = y + 1;
@@ -151,19 +149,19 @@ public class SimulationManager
 				tMaxY += tDeltaY;
 				y += stepY;
 			}
-			if (x < 0 || y < 0 || x > grid.getDimensions().getHeight()
-					|| y > grid.getDimensions().getWidth())
+			if (x < 0 || y < 0 || x >= grid.getDimensions().getHeight()
+					|| y >= grid.getDimensions().getWidth())
 				break;
 			inDirection.add(new GridPoint(x, y));
 		}
 		return inDirection;
 	}
 
-	public static ArrayList<GridPoint> tilesInDirection(NdPoint start,
-			GridPoint end)
-	{
-		return tilesInDirection(start, new NdPoint(end.getX(), end.getY()));
-	}
+//	public static ArrayList<GridPoint> tilesInDirection(NdPoint start,
+//			GridPoint end)
+//	{
+//		return tilesInDirection(start, end.getX()-start.getX(),);
+//	}
 
 	public static double calculateDistance(GridPoint start, GridPoint end)
 	{

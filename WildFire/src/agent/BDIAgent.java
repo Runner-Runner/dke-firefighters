@@ -422,7 +422,10 @@ public class BDIAgent extends ForesterAgent
 					currentIntention.getPosition());
 			if (!executeSuccess)
 			{
-				this.currentIntention = new Intention(new Patrol(), null, null,
+				//patrol in fire-direction
+				double x = currentIntention.getPosition().getX()-getPosition().getX();
+				double y = currentIntention.getPosition().getY()-getPosition().getY();
+				this.currentIntention = new Intention(new Patrol(x,y), null, null,
 						null);
 			}
 		}

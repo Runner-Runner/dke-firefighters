@@ -387,8 +387,8 @@ public abstract class ForesterAgent implements InformationProvider,
 			return false;
 		}
 
-		List<GridPoint> tiles = SimulationManager.tilesInDirection(oldPos,
-				target);
+		List<GridPoint> tiles = SimulationManager.tilesInDirection(oldPos, xDiff, yDiff,
+				new GridPoint((int)target.getX(),(int)target.getY()));
 		GridPoint next = null;
 
 		for (GridPoint gp : tiles)
@@ -412,11 +412,13 @@ public abstract class ForesterAgent implements InformationProvider,
 					&& next.getY() == (int) target.getY())
 			{
 				space.moveTo(this, target.getX(), target.getY());
+				grid.moveTo(this, (int)target.getX(), (int)target.getY());
 			} else
 			{
 				space.moveTo(this, next.getX() + 0.5, next.getY() + 0.5);
+				grid.moveTo(this, next.getX(), next.getY());
 			}
-			grid.moveTo(this, next.getX(), next.getY());
+			
 
 			return true;
 		}
@@ -472,6 +474,8 @@ public abstract class ForesterAgent implements InformationProvider,
 	 */
 	protected List<Information> updateNeighborhoodBelief()
 	{
+		NdPoint actual = getExactPosition();
+		GridPoint current = getPosition();
 		List<Information> informationList = new ArrayList<>();
 
 		GridCellNgh<Object> nghCreator = new GridCellNgh<>(grid, getPosition(),
@@ -630,7 +634,7 @@ public abstract class ForesterAgent implements InformationProvider,
 	public AgentInformation getInformation()
 	{
 		GridPoint location = grid.getLocation(this);
-		return new AgentInformation(communicationId, location, speed, health);
+		return new AgentInformation(communicationId, location, speed, health, getExactPosition());
 	}
 
 	public static class AgentInformation extends Information
@@ -639,14 +643,16 @@ public abstract class ForesterAgent implements InformationProvider,
 		private String communicationId;
 		private double speed;
 		private int health;
+		private NdPoint exactPosition;
 
 		private AgentInformation(String communicationId, GridPoint position,
-				double speed, int health)
+				double speed, int health, NdPoint exactPosition)
 		{
 			super(position);
 			this.communicationId = communicationId;
 			this.speed = speed;
 			this.health = health;
+			this.exactPosition = exactPosition;
 		}
 
 		// TODO Delete remove const?
@@ -676,6 +682,12 @@ public abstract class ForesterAgent implements InformationProvider,
 		{
 			return health;
 		}
+
+		public NdPoint getExactPosition() {
+			return exactPosition;
+		}
+		
+		
 	}
 
 	public enum Behavior

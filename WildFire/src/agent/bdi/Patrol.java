@@ -25,6 +25,13 @@ public class Patrol extends Action
 		super(1, 0);
 		sendingRange = -1;
 	}
+	public Patrol(double initialX, double initialY)
+	{
+		super(1, 0);
+		sendingRange = -1;
+		this.lastxVector = initialX;
+		this.lastyVector = initialY;
+	}
 
 	@Override
 	protected boolean isInExecutePosition(ForesterAgent agent, GridPoint gp)
@@ -58,66 +65,64 @@ public class Patrol extends Action
 				.getClosestAgentInformation(agent, (int) sendingRange);
 
 		GridPoint ownPosition = agent.getPosition();
-		int xTarget;
-		int yTarget;
+		NdPoint exactPosition = agent.getExactPosition();
 		GridPoint center = Statistic.getInstance().getCenter();
+		int xTarget = center.getX();
+		int yTarget = center.getY();
 
 		// if no agent nearby or agent is at the forest border, move towards the
 		// center
 		int gridHeight = Statistic.getInstance().getGridHeight();
 		int gridWidth = Statistic.getInstance().getGridWidth();
-		if (ownPosition.getX() - ForesterAgent.SEEING_RANGE <= 0
+		
+		
+		if (closestAgentInformation != null)
+		{
+			double newXVector = exactPosition.getX()
+					- closestAgentInformation.getExactPosition().getX();
+			double newYVector = exactPosition.getY()
+					- closestAgentInformation.getExactPosition().getY();
+			//exact opposite direction
+			if(lastxVector != null && newXVector/lastxVector == newYVector/lastyVector)
+			{
+				double angle = Math.atan(newYVector/newXVector);
+				angle+=Math.PI/13;
+				lastxVector = 10.0;
+				lastyVector = Math.tan(angle)*10;
+			}
+			else
+			{
+				lastxVector = newXVector;
+				lastyVector = newYVector;
+			}
+		}
+		else if (ownPosition.getX() - ForesterAgent.SEEING_RANGE <= 0
 				|| ownPosition.getX() + ForesterAgent.SEEING_RANGE >= gridWidth
 				|| ownPosition.getY() - ForesterAgent.SEEING_RANGE <= 0
 				|| ownPosition.getY() + ForesterAgent.SEEING_RANGE >= gridHeight)
 		{
-			xTarget = center.getX();
-			yTarget = center.getY();
 			lastxVector = null;
 			lastyVector = null;
-		} else if (closestAgentInformation == null)
-		{
-			if (lastxVector == null)
-			{
-				xTarget = center.getX();
-				yTarget = center.getY();
-			} else
-			{
-				xTarget = (int) (ownPosition.getX() + lastxVector);
-				yTarget = (int) (ownPosition.getY() + lastyVector);
-			}
-		} else
-		{
-			double xDiff = ownPosition.getX()
-					- closestAgentInformation.getPosition().getX();
-			double yDiff = ownPosition.getY()
-					- closestAgentInformation.getPosition().getY();
-
-			double xVector = xDiff;// / norm * agent.getSpeed();
-			double yVector = yDiff;// / norm * agent.getSpeed();
-
-			xTarget = (int) (ownPosition.getX() + xVector);
-			yTarget = (int) (ownPosition.getY() + yVector);
-
-			lastxVector = xVector;
-			lastyVector = yVector;
-
-		}
+		} 
 		// check direction for wood
 		if (lastxVector != null && lastyVector != null)
 		{
+			
 			boolean woodInDirection = false;
 			ArrayList<GridPoint> directionTiles = SimulationManager
-					.tilesInDirection(agent.getExactPosition(), new NdPoint(
-							lastxVector * 100, lastyVector * 100));
+					.tilesInDirection(exactPosition, 
+							lastxVector, lastyVector,new GridPoint(Integer.MAX_VALUE, Integer.MAX_VALUE));
 			for (GridPoint tile : directionTiles)
 			{
-				WoodInformation wi = agent.getBelief().getInformation(tile,
-						WoodInformation.class);
-				if (wi == null || !wi.isEmptyInstance())
+				if(!tile.equals(ownPosition))
 				{
-					woodInDirection = true;
-					break;
+					WoodInformation wi = agent.getBelief().getInformation(tile,
+							WoodInformation.class);
+					if (wi == null || !wi.isEmptyInstance())
+					{
+						woodInDirection = true;
+						break;
+					}
 				}
 			}
 			if (!woodInDirection)
@@ -133,13 +138,17 @@ public class Patrol extends Action
 						lastCheckedWood = wi;
 					}
 				}
-				NdPoint exact = agent.getExactPosition();
 				lastxVector = lastCheckedWood.getPosition().getX()
-						- exact.getX();
+						- exactPosition.getX();
 				lastyVector = lastCheckedWood.getPosition().getY()
-						- exact.getY();
+						- exactPosition.getY();
 				xTarget = lastCheckedWood.getPosition().getX();
 				yTarget = lastCheckedWood.getPosition().getY();
+			}
+			else
+			{
+				xTarget = (int)(exactPosition.getX()+lastxVector);
+				yTarget = (int)(exactPosition.getY()+lastyVector);
 			}
 		}
 		agent.moveTowards(new GridPoint(xTarget, yTarget));
