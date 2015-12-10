@@ -304,12 +304,17 @@ public class BDIAgent extends ForesterAgent
 		for (InformationRequest infoRequest : infoRequests)
 		{
 			GridPoint asked = infoRequest.getPosition();
+			Information info;
 			if (asked == null) // send my position
 			{
 				asked = getPosition();
+				info = getInformation();
 			}
-			Information info = this.belief.getInformation(asked,
+			else
+			{
+			info = this.belief.getInformation(asked,
 					infoRequest.getInformationClass());
+			}
 			if (info != null
 					&& RunEnvironment.getInstance().getCurrentSchedule()
 							.getTickCount()

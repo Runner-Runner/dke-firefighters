@@ -474,8 +474,6 @@ public abstract class ForesterAgent implements InformationProvider,
 	 */
 	protected List<Information> updateNeighborhoodBelief()
 	{
-		NdPoint actual = getExactPosition();
-		GridPoint current = getPosition();
 		List<Information> informationList = new ArrayList<>();
 
 		GridCellNgh<Object> nghCreator = new GridCellNgh<>(grid, getPosition(),
