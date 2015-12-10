@@ -220,6 +220,9 @@ public class BDIAgent extends ForesterAgent
 			// check if your intention is obsolete
 			if (currentIntention.removeRequester(rd.getRequestID()))
 			{
+				// Remove belief
+				if(currentIntention.getAction() instanceof Extinguish)
+					belief.addInformation(new FireInformation(currentIntention.getPosition()));
 				changeIntention(new Intention(new Patrol(), null, null, null));
 			}
 			// requested agent found better fire
