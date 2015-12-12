@@ -8,6 +8,12 @@ import repast.simphony.util.collections.IndexedIterable;
 import environment.Fire;
 import environment.Wood;
 
+/**
+ * Stores evaluation data of a simulation run and makes certain calculations for convenience, e.g. to percent values.
+ * 
+ * @author Daniel
+ *
+ */
 public class Statistic
 {
 	private double totalWoodHealth;

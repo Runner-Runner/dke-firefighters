@@ -4,8 +4,11 @@ import main.SimulationManager;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.random.RandomHelper;
+
+
 /**
  * CloudFactory, which creates arbitrarily creates clouds on map
+ * 
  * @author carsten
  *
  */
@@ -24,9 +27,13 @@ public class CloudFactory
 
 	/**
 	 * create the cloudFactory
-	 * @param context context to add clouds to
-	 * @param wind	clouds appear with respect to current wind speed
-	 * @param cloudFrequency defines how often clouds appear
+	 * 
+	 * @param context
+	 *            context to add clouds to
+	 * @param wind
+	 *            clouds appear with respect to current wind speed
+	 * @param cloudFrequency
+	 *            defines how often clouds appear
 	 * @param minCloudDim
 	 * @param maxCloudDim
 	 * @param forestDim

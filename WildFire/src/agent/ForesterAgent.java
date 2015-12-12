@@ -26,17 +26,21 @@ import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
-import repast.simphony.util.collections.IndexedIterable;
 import statistics.DataProviderExtinguishedFireAmount;
 import statistics.GraveyardStatistic;
-import environment.Cloud;
-import environment.Cloud.CloudInformation;
 import environment.Fire;
 import environment.Fire.FireInformation;
-import environment.Wind;
 import environment.Wood;
 import environment.Wood.WoodInformation;
 
+/**
+ * Represents a forester agent and all his/her attributes and available actions.
+ * Some actions are explicitly designed as action classes while others, like
+ * moving, are defined as methods in this class.
+ * <p>
+ * Implementing classes have to define how to handle the request cycle and how
+ * to decide which intention to follow.
+ */
 public abstract class ForesterAgent implements InformationProvider,
 		DataProviderExtinguishedFireAmount
 {
@@ -44,57 +48,102 @@ public abstract class ForesterAgent implements InformationProvider,
 	protected ContinuousSpace<Object> space;
 	protected Grid<Object> grid;
 
-	// in distance per step
+	/**
+	 * in distance per step
+	 */
 	protected double speed;
-	// rate at which the fire heat is lowered when extinguishing
+	/**
+	 * rate at which the fire heat is lowered when extinguishing
+	 */
 	protected double extinguishRate;
-	// defines the number of time steps this forester experienced burning
-	// injuries
+	/**
+	 * defines the number of time steps this forester experienced burning
+	 * injuries
+	 */
 	protected int health = STARTING_HEALTH;
-	// how many time steps until the last burning injury
+	/**
+	 * how many time steps until the last burning injury
+	 */
 	private int regenerateTime = 0;
-	// how much fire this agent extinguished so far
+	/**
+	 * how much fire this agent extinguished so far
+	 */
 	private double extinguishedFireAmount = 0;
-	// belief of environment (fire/wood/agents/wind/clouds)
+	/**
+	 * belief of environment (fire/wood/agents/wind/clouds)
+	 */
 	protected Belief belief;
-	// tool to send information and requests to other agents
+	/**
+	 * tool to send information and requests to other agents
+	 */
 	protected CommunicationTool communicationTool;
-	// action and position, the agent wants to execute next
+	/**
+	 * action and position, the agent wants to execute next
+	 */
 	protected Intention currentIntention;
-	// list of information other agents sent via communicationtool in the last
-	// iteration "mailbox for information"
-	// trusting agents should integrate them in beliefs
+	/**
+	 * list of information other agents sent via communicationtool in the last
+	 * iteration "mailbox for information" trusting agents should integrate them
+	 * in beliefs
+	 */
 	protected List<Information> messages;
-	// list of requests other agents sent via communicationtool in the last
-	// iteration "mailbox for requests"
+	/**
+	 * list of requests other agents sent via communicationtool in the last
+	 * iteration "mailbox for requests"
+	 */
 	protected List<InformationRequest> infoRequests;
-	// ActionRequests: agent can decide to help/answer
+	/**
+	 * ActionRequests: agent can decide to help/answer
+	 */
 	protected HashMap<Integer, ActionRequest> actionRequests;
-	// other agents responds to your request
+	/**
+	 * other agents responds to your request
+	 */
 	protected List<RequestOffer> offers;
-	// confirmation accepting your offer
+	/**
+	 * confirmation accepting your offer
+	 */
 	protected RequestConfirm requestConfirmation;
-	// already confirmed agents, who changed their intention
+	/**
+	 * already confirmed agents, who changed their intention
+	 */
 	protected List<RequestDismiss> rejections;
-	// bounty the agent gets for extinguish fire, wetline or wood-cutting
+	/**
+	 * bounty the agent gets for extinguish fire, wetline or wood-cutting
+	 */
 	protected double bounty;
-	// costs the agent pays for communication
+	/**
+	 * costs the agent pays for communication
+	 */
 	protected double costs;
 
-	private int lastDirection = 1;
+	/**
+	 * Defines if the last detour was done clockwise (1) or counterclockwise
+	 * (-1).
+	 */
+	private int lastDetourDirection = 1;
 
 	/**
-	 * Does not have to be set. If set, represents a way for other agents to
-	 * directly communicate with this agent instance.
+	 * Represents a way for other agents to directly communicate with this agent
+	 * instance.
 	 */
 	protected String communicationId;
 
-	// number of burning injuries it takes to kill a forester.
+	/**
+	 * number of burning injuries it takes to kill a forester.
+	 */
 	protected final static int STARTING_HEALTH = 5;
-	// defines the number of time steps it takes to regenerate 1 health point
-	// (if injured).
+	/**
+	 * defines the number of time steps it takes to regenerate 1 health point
+	 * (if injured).
+	 */
 	protected final static int REGENERATE_RATE = 15;
-	//
+
+	/**
+	 * An agent can perceive all information on all tiles up to two tiles in
+	 * distance from his/her position. Gaining this information does not
+	 * explicitly cost time.
+	 */
 	public final static int SEEING_RANGE = 2;
 
 	public ForesterAgent(ContinuousSpace<Object> space, Grid<Object> grid,
@@ -200,18 +249,34 @@ public abstract class ForesterAgent implements InformationProvider,
 		regenerate();
 	}
 
+	/**
+	 * Check neighborhood for information on the tiles in seeing range. Gaining this information does not
+	 * explicitly cost time.
+	 */
 	@ScheduledMethod(start = 1, interval = SimulationManager.GENERAL_SCHEDULE_TICK_RATE, priority = 40)
 	public abstract void checkNeighbourhood();
 
+	/**
+	 * Decide on sending requests.
+	 */
 	@ScheduledMethod(start = 1, interval = SimulationManager.GENERAL_SCHEDULE_TICK_RATE, priority = 38)
 	public abstract void doRequests();
 
+	/**
+	 * Decide on sending request offers or dismisses.
+	 */
 	@ScheduledMethod(start = 1, interval = SimulationManager.GENERAL_SCHEDULE_TICK_RATE, priority = 37)
 	public abstract void sendAnswers();
 
+	/**
+	 * Decide on sending request confirmations or dismisses.
+	 */
 	@ScheduledMethod(start = 1, interval = SimulationManager.GENERAL_SCHEDULE_TICK_RATE, priority = 30)
 	public abstract void checkResponses();
 
+	/**
+	 * Decide on and execute an action.
+	 */
 	@ScheduledMethod(start = 1, interval = SimulationManager.GENERAL_SCHEDULE_TICK_RATE, priority = 20)
 	public abstract void doActions();
 
@@ -257,61 +322,14 @@ public abstract class ForesterAgent implements InformationProvider,
 	}
 
 	/**
-	 * Obtain information about the weather conditions in the Moore neighborhood
-	 */
-	protected void checkWeather()
-	{
-		// TODO send newly obtained information to (nearby?) agents
-
-		// get information about wind
-		Context<Object> context = SimulationManager.getContext();
-		IndexedIterable<Object> windObjects = context.getObjects(Wind.class);
-
-		Wind wind = (Wind) windObjects.get(0);
-		belief.setWindInformation(wind.getInformation());
-
-		// get information about clouds
-		GridPoint location = grid.getLocation(this);
-		int startX = location.getX() - 1;
-		int startY = location.getY() - 1;
-		for (int xOffset = 0; xOffset < 3; xOffset++)
-		{
-			for (int yOffset = 0; yOffset < 3; yOffset++)
-			{
-				Iterable<Object> gridObjects = grid.getObjectsAt(startX
-						+ xOffset, startY + yOffset);
-				boolean foundCloud = false;
-				for (Object obj : gridObjects)
-				{
-					if (obj instanceof Cloud)
-					{
-						Cloud cloud = (Cloud) obj;
-						belief.addInformation(cloud.getInformation());
-						foundCloud = true;
-						break;
-					}
-				}
-
-				if (!foundCloud)
-				{
-					belief.addInformation(new CloudInformation(new GridPoint(
-							startX + xOffset, startY + yOffset)));
-				}
-			}
-		}
-	}
-
-	/**
 	 * moves agent to a further away GridPoint in an angle to it, whereby max
 	 * distance is its speed (uses the center of the grids (e.g. 2.5| 3.5))
 	 * 
-	 * @param pt
-	 *            target gridpoint
+	 * @param pt target gridpoint
 	 * @return if the agent actually moved
 	 */
 	public void moveTowards(GridPoint pt)
 	{
-
 		boolean moveSuccess = moveTowardsIfUnoccupied(pt);
 
 		if (!moveSuccess)
@@ -321,7 +339,7 @@ public abstract class ForesterAgent implements InformationProvider,
 			// Try gradually increasing turn up to (excl.) 360 degrees
 			int[] directions = new int[]
 			{ 1, -1 };
-			if (lastDirection == -1)
+			if (lastDetourDirection == -1)
 			{
 				directions[0] = -1;
 				directions[1] = 1;
@@ -352,7 +370,7 @@ public abstract class ForesterAgent implements InformationProvider,
 					{
 						// if turn > 180 degrees, remember direction to prevent
 						// loop
-						lastDirection = direction;
+						lastDetourDirection = direction;
 
 						break outer;
 					}
@@ -361,6 +379,11 @@ public abstract class ForesterAgent implements InformationProvider,
 		}
 	}
 
+	/**
+	 * Makes a move towards a target if at least part of the path is not occupied.
+	 * @param pt
+	 * @return
+	 */
 	private boolean moveTowardsIfUnoccupied(GridPoint pt)
 	{
 		NdPoint oldPos = space.getLocation(this);
@@ -387,8 +410,9 @@ public abstract class ForesterAgent implements InformationProvider,
 			return false;
 		}
 
-		List<GridPoint> tiles = SimulationManager.tilesInDirection(oldPos, xDiff, yDiff,
-				new GridPoint((int)target.getX(),(int)target.getY()));
+		List<GridPoint> tiles = SimulationManager.tilesInDirection(oldPos,
+				xDiff, yDiff,
+				new GridPoint((int) target.getX(), (int) target.getY()));
 		GridPoint next = null;
 
 		for (GridPoint gp : tiles)
@@ -412,13 +436,12 @@ public abstract class ForesterAgent implements InformationProvider,
 					&& next.getY() == (int) target.getY())
 			{
 				space.moveTo(this, target.getX(), target.getY());
-				grid.moveTo(this, (int)target.getX(), (int)target.getY());
+				grid.moveTo(this, (int) target.getX(), (int) target.getY());
 			} else
 			{
 				space.moveTo(this, next.getX() + 0.5, next.getY() + 0.5);
 				grid.moveTo(this, next.getX(), next.getY());
 			}
-			
 
 			return true;
 		}
@@ -450,6 +473,9 @@ public abstract class ForesterAgent implements InformationProvider,
 		return space.getLocation(this);
 	}
 
+	/**
+	 * @return The fire which is on the forester agent's current tile, or null if no fire is there.
+	 */
 	public Fire isOnBurningTile()
 	{
 		GridPoint location = grid.getLocation(this);
@@ -467,7 +493,7 @@ public abstract class ForesterAgent implements InformationProvider,
 
 	/**
 	 * 
-	 * Updates belief about fire in Moore neighborhood. This action does not
+	 * Updates belief about fire in seeing range. This action does not
 	 * require a time step.
 	 * 
 	 * @return All information that actually changed the belief
@@ -553,9 +579,9 @@ public abstract class ForesterAgent implements InformationProvider,
 	}
 
 	/**
-	 * Returns true if the agent died from burning injuries.
+	 * Injures the agent due to burning.
 	 * 
-	 * @return
+	 * @return Whether the agent died from burning injuries.
 	 */
 	protected boolean burn()
 	{
@@ -590,6 +616,85 @@ public abstract class ForesterAgent implements InformationProvider,
 				health++;
 			}
 		}
+	}
+	
+	/**
+	 * Makes the agent flee if he is on the same tile as a fire.
+	 * @return Whether the agent actually had to flee.
+	 */
+	protected boolean flee()
+	{
+		GridPoint location = grid.getLocation(this);
+		Fire fire = isOnBurningTile();
+		if (fire != null)
+		{
+			// if little fire -> extinguish
+			if (fire.getHeat() <= extinguishRate)
+			{
+				extinguishFire(location);
+			}
+			// else run away
+			else
+			{
+				NdPoint exact = getExactPosition();
+				GridPoint fleeingPoint = null;
+				double fleeingDistance = Double.MAX_VALUE;
+				// move to burned wood tile (secure space) if possible
+				GridCellNgh<Wood> nghWoodCreator = new GridCellNgh<>(grid,
+						location, Wood.class, 1, 1);
+				List<GridCell<Wood>> woodGridCells = nghWoodCreator
+						.getNeighborhood(false);
+				for (GridCell<Wood> cell : woodGridCells)
+				{
+					if (cell.size() == 0)
+					{
+						double distance = Math.sqrt(Math.pow(exact.getX()
+								- cell.getPoint().getX(), 2)
+								+ Math.pow(exact.getY()
+										- cell.getPoint().getY(), 2));
+						if (distance < fleeingDistance)
+						{
+							fleeingPoint = cell.getPoint();
+							fleeingDistance = distance;
+						}
+					}
+				}
+				if (fleeingPoint == null)
+				{
+					// otherwise, move to first non-burning tile
+					GridCellNgh<Fire> nghFireCreator = new GridCellNgh<>(grid,
+							location, Fire.class, 1, 1);
+					List<GridCell<Fire>> fireGridCells = nghFireCreator
+							.getNeighborhood(false);
+					for (GridCell<Fire> cell : fireGridCells)
+					{
+						if (cell.size() == 0)
+						{
+							double distance = Math.sqrt(Math.pow(exact.getX()
+									- cell.getPoint().getX(), 2)
+									+ Math.pow(exact.getY()
+											- cell.getPoint().getY(), 2));
+							if (distance < fleeingDistance)
+							{
+								fleeingPoint = cell.getPoint();
+								fleeingDistance = distance;
+							}
+						}
+					}
+
+				}
+				// all neighbor tiles on fire - try to extinguish
+				if (fleeingPoint == null)
+				{
+					extinguishFire(location);
+				} else
+				{
+					moveTowards(fleeingPoint);
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 
 	public CommunicationTool getCommunicationTool()
@@ -632,9 +737,13 @@ public abstract class ForesterAgent implements InformationProvider,
 	public AgentInformation getInformation()
 	{
 		GridPoint location = grid.getLocation(this);
-		return new AgentInformation(communicationId, location, speed, health, getExactPosition());
+		return new AgentInformation(communicationId, location, speed, health,
+				getExactPosition());
 	}
 
+	/**
+	 * Information for belief snapshot.
+	 */
 	public static class AgentInformation extends Information
 	{
 
@@ -681,11 +790,11 @@ public abstract class ForesterAgent implements InformationProvider,
 			return health;
 		}
 
-		public NdPoint getExactPosition() {
+		public NdPoint getExactPosition()
+		{
 			return exactPosition;
 		}
-		
-		
+
 	}
 
 	public enum Behavior

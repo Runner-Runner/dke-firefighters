@@ -4,6 +4,11 @@ import java.util.HashMap;
 
 import repast.simphony.space.grid.GridPoint;
 
+/**
+ * Represents an agent's intention to execute an action at a certain position. 
+ * If this action was suggested from an external source, also stores the requester 
+ * who asked for this action to be carried out.
+ */
 public class Intention
 {
 	private Action action;
@@ -28,7 +33,9 @@ public class Intention
 	public void addRequester(String requesterId, Integer requestId)
 	{
 		if (requesterId != null)
+		{
 			this.requester.put(requestId, requesterId);
+		}
 	}
 
 	public boolean removeRequester(Integer requestId)

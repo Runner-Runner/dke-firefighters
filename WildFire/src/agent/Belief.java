@@ -13,10 +13,19 @@ import environment.Fire.FireInformation;
 import environment.Wind.WindInformation;
 import environment.Wood.WoodInformation;
 
+/**
+ * Represents the belief of a forester agent about the simulation environment and its entities.
+ */
 public class Belief
 {
+	/**
+	 * Stored separately, because it is global.
+	 */
 	private WindInformation windInformation;
 
+	/**
+	 * Hashes information maps of different entities by their class for convenient access.
+	 */
 	private HashMap<Class<? extends Information>, InformationMap<? extends Information>> specificInformationMap;
 
 	public Belief()

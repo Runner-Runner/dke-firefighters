@@ -1,10 +1,20 @@
 package agent.communication.request;
 
+/**
+ * Provides the offer of an agent to except and carry out an action request from
+ * another agent. Also stores different decision criteria for the request sender to evaluate.
+ */
 public class RequestOffer
 {
+	/**
+	 * The distance to the action's execution position.
+	 */
 	private double distance;
-	private String senderId;
+	/**
+	 * Whether this agent already has another intention he/she wants to fulfill.
+	 */
 	private boolean otherIntention;
+	private String senderId;
 	private int requestID;
 
 	public RequestOffer(String senderId, int requestID, double distance,

@@ -4,6 +4,9 @@ import main.SimulationManager;
 import agent.ForesterAgent;
 import repast.simphony.space.grid.GridPoint;
 
+/**
+ * Action "extinguish fire". Time-consuming: Takes up a time step to execute.
+ */
 public class Extinguish extends Action
 {
 
@@ -23,8 +26,8 @@ public class Extinguish extends Action
 	{
 		if (agent.extinguishFire(gp))
 		{
-			agent.addBounty(incrementalBounty
-					* agent.getExtinguishedFireAmount());
+			//bounty dependent on the amount of fire the agent extinguished in this time step.
+			agent.addBounty(incrementalBounty * agent.getExtinguishedFireAmount());
 			return true;
 		} else
 		{

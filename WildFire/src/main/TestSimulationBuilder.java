@@ -17,12 +17,20 @@ import repast.simphony.space.grid.SimpleGridAdder;
 import repast.simphony.space.grid.StrictBorders;
 import statistics.GraveyardStatistic;
 import statistics.Statistic;
-import agent.BDIAgent;
+import agent.LocalOperatingAgent;
 import environment.Fire;
 import environment.ForestFactory;
 import environment.Wind;
 import environment.Wood;
 
+/**
+ * Simulation builder specifically for testing specific scenarios with
+ * agents/fires/etc. at fixed starting locations and e.g. without factors like
+ * wind.
+ * 
+ * @author Daniel
+ *
+ */
 public class TestSimulationBuilder implements ContextBuilder<Object>
 {
 
@@ -146,7 +154,8 @@ public class TestSimulationBuilder implements ContextBuilder<Object>
 
 		for (int[] pos : posArray)
 		{
-			BDIAgent agent = new BDIAgent(space, grid, 0.3, 0);
+			LocalOperatingAgent agent = new LocalOperatingAgent(space, grid,
+					0.3, 0);
 			context.add(agent);
 			space.moveTo(agent, pos[0], pos[1]);
 		}

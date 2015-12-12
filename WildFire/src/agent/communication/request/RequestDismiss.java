@@ -1,5 +1,13 @@
 package agent.communication.request;
 
+/**
+ * Provides a dismiss towards agents that were already confirmed as executor of
+ * the given request. This can happen when for example the requested action
+ * suddenly becomes not executable anymore.
+ * 
+ * @author Daniel
+ *
+ */
 public class RequestDismiss
 {
 	private int requestID;

@@ -28,95 +28,20 @@ import environment.Fire;
 import environment.Fire.FireInformation;
 import environment.Wood;
 
-public class BDIAgent extends ForesterAgent
+public class LocalOperatingAgent extends ForesterAgent
 {
 	private HashMap<Integer, Pair<ActionRequest, Double>> openRequests;
 	private HashMap<String, ActionRequest> requestedAgents; // agentID ->
 															// request
 	private ActionRequest myOffer;
 
-	public BDIAgent(ContinuousSpace<Object> space, Grid<Object> grid,
+	public LocalOperatingAgent(ContinuousSpace<Object> space, Grid<Object> grid,
 			double speed, double extinguishRate)
 	{
 		super(space, grid, speed, extinguishRate);
 		this.openRequests = new HashMap<>();
 		this.requestedAgents = new HashMap<String, ActionRequest>();
 		this.myOffer = null;
-	}
-
-	private boolean flee()
-	{
-		GridPoint location = grid.getLocation(this);
-		Fire fire = isOnBurningTile();
-		if (fire != null)
-		{
-			// if little fire -> extinguish
-			if (fire.getHeat() <= extinguishRate)
-			{
-				extinguishFire(location);
-			}
-			// else run away
-			else
-			{
-				NdPoint exact = getExactPosition();
-				GridPoint fleeingPoint = null;
-				double fleeingDistance = Double.MAX_VALUE;
-				// move to burned wood tile (secure space) if possible
-				GridCellNgh<Wood> nghWoodCreator = new GridCellNgh<>(grid,
-						location, Wood.class, 1, 1);
-				List<GridCell<Wood>> woodGridCells = nghWoodCreator
-						.getNeighborhood(false);
-				for (GridCell<Wood> cell : woodGridCells)
-				{
-					if (cell.size() == 0)
-					{
-						double distance = Math.sqrt(Math.pow(exact.getX()
-								- cell.getPoint().getX(), 2)
-								+ Math.pow(exact.getY()
-										- cell.getPoint().getY(), 2));
-						if (distance < fleeingDistance)
-						{
-							fleeingPoint = cell.getPoint();
-							fleeingDistance = distance;
-						}
-					}
-				}
-				if (fleeingPoint == null)
-				{
-					// otherwise, move to first non-burning tile
-					GridCellNgh<Fire> nghFireCreator = new GridCellNgh<>(grid,
-							location, Fire.class, 1, 1);
-					List<GridCell<Fire>> fireGridCells = nghFireCreator
-							.getNeighborhood(false);
-					for (GridCell<Fire> cell : fireGridCells)
-					{
-						if (cell.size() == 0)
-						{
-							double distance = Math.sqrt(Math.pow(exact.getX()
-									- cell.getPoint().getX(), 2)
-									+ Math.pow(exact.getY()
-											- cell.getPoint().getY(), 2));
-							if (distance < fleeingDistance)
-							{
-								fleeingPoint = cell.getPoint();
-								fleeingDistance = distance;
-							}
-						}
-					}
-
-				}
-				// all neighbor tiles on fire - try to extinguish
-				if (fleeingPoint == null)
-				{
-					extinguishFire(location);
-				} else
-				{
-					moveTowards(fleeingPoint);
-				}
-			}
-			return true;
-		}
-		return false;
 	}
 
 	private void changeIntention(Intention newIntention)
@@ -328,8 +253,6 @@ public class BDIAgent extends ForesterAgent
 
 		// Send offer
 		// choose request with smallest distance (for now)
-		// TODO Integrate importance: if distance difference insignificant
-		// (threshold), choose by importance
 		GridPoint location = grid.getLocation(this);
 		GridPoint intentionPosition = currentIntention.getPosition();
 		double smallestDistance = Double.MAX_VALUE;
@@ -424,9 +347,6 @@ public class BDIAgent extends ForesterAgent
 	{
 		if (!flee())
 		{
-			// TODO act with respect to your intention (move, extinguish,
-			// wetline, woodcutting, check weather)
-
 			// Check confirmation
 			if (requestConfirmation != null)
 			{
