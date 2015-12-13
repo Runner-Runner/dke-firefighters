@@ -191,7 +191,7 @@ public class BDIAgent extends ForesterAgent
 		{
 			GridPoint target = entry.getValue().getFirst().getPosition();
 			FireInformation fi = belief.getInformation(target, FireInformation.class);
-			if(fi.isEmptyInstance())
+			if(fi.isEmptyInstance() || target.equals(currentIntention.getPosition()))
 			{
 				obsolete.add(entry.getKey());
 			}
@@ -368,7 +368,7 @@ public class BDIAgent extends ForesterAgent
 				.getCurrentSchedule().getTickCount();
 		for (Request request : actionRequests.values())
 		{
-			if (currentTimestamp - request.getTimestamp() > 10)
+			if (currentTimestamp - request.getTimestamp() > 3)
 			{
 				old.add(request.getId());
 			}

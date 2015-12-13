@@ -50,7 +50,8 @@ public class Patrol extends Action
 			int gridHeight = Statistic.getInstance().getGridHeight();
 			sendingRange = (gridWidth + gridHeight)
 					/ (Statistic.getInstance().getTotalAgentCount());
-			sendingRange = Math.min(sendingRange, 5);
+			sendingRange = Math.min(sendingRange, 4);
+			sendingRange = 8;
 		}
 		if (timeSinceDistanceCheck >= DISTANCE_CHECK_RATE)
 		{
@@ -96,9 +97,9 @@ public class Patrol extends Action
 				lastyVector = newYVector;
 			}
 		}
-		else if (ownPosition.getX() - ForesterAgent.SEEING_RANGE <= 0
+		else if (ownPosition.getX() - ForesterAgent.SEEING_RANGE+1 <= 0
 				|| ownPosition.getX() + ForesterAgent.SEEING_RANGE >= gridWidth
-				|| ownPosition.getY() - ForesterAgent.SEEING_RANGE <= 0
+				|| ownPosition.getY() - ForesterAgent.SEEING_RANGE+1 <= 0
 				|| ownPosition.getY() + ForesterAgent.SEEING_RANGE >= gridHeight)
 		{
 			lastxVector = null;

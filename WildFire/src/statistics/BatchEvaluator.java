@@ -11,8 +11,8 @@ import java.util.Locale;
 public class BatchEvaluator
 {
 	public static final int tickColumn = 5;
-	public static final int ticks = 1001;
-	public static final int runs = 1;
+	public static final int ticks = 30001;
+	public static final int runs = 50;
 
 	public static void main(String[] args)
 	{

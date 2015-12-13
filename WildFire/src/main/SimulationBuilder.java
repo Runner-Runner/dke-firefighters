@@ -128,7 +128,7 @@ public class SimulationBuilder implements ContextBuilder<Object>
 		for (int i = 0; i < numberAgents; i++)
 		{
 			double speed = RandomHelper.nextDoubleFromTo(0.2, 0.5);
-			double extinguish = RandomHelper.nextDoubleFromTo(0.3, 1.0);
+			double extinguish = RandomHelper.nextDoubleFromTo(0.15, 0.2);
 			int x = RandomHelper.nextIntFromTo(0, forestDim - 1);
 			int y = RandomHelper.nextIntFromTo(0, forestDim - 1);
 			BDIAgent agent = new BDIAgent(space, grid, speed, extinguish);
@@ -159,7 +159,7 @@ public class SimulationBuilder implements ContextBuilder<Object>
 		statistic.setTotalAgentCount(numberAgents);
 		context.add(statistic);
 
-		// RunEnvironment.getInstance().endAt(1000);
+		RunEnvironment.getInstance().endAt(30000);
 		return context;
 	}
 

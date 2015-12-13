@@ -29,6 +29,7 @@ import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.collections.IndexedIterable;
 import statistics.DataProviderExtinguishedFireAmount;
 import statistics.GraveyardStatistic;
+import statistics.Statistic;
 import environment.Cloud;
 import environment.Cloud.CloudInformation;
 import environment.Fire;
@@ -483,6 +484,7 @@ public abstract class ForesterAgent implements InformationProvider,
 		while (nghIterator.hasNext())
 		{
 			GridCell<Object> cell = nghIterator.next();
+			//Statistic.getInstance().tileObserved(cell.getPoint().getX(), cell.getPoint().getY());
 			boolean foundFire = false;
 			boolean foundWood = false;
 			Iterable<Object> items = cell.items();

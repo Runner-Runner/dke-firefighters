@@ -1,13 +1,18 @@
 package environment;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 
 import main.SimulationManager;
 import repast.simphony.context.Context;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
+import statistics.Statistic;
 /**
  * This class is used to create fire-spots by random but with respect to wind-speed
  * 
@@ -81,6 +86,22 @@ public class FireFactory
 				space.moveTo(newFire, x + 0.5, y + 0.5);
 			}
 		}
+//		if(RunEnvironment.getInstance().getCurrentSchedule().getTickCount()>10000.0){
+//			PrintWriter writer;
+//			try {
+//				writer = new PrintWriter("covering.csv", "UTF-8");
+//				long[][] covering = Statistic.getInstance().getCovering();
+//				for(int i = 0;i<50;i++){
+//					for(int j = 0;j<50;j++){
+//						writer.print(covering[i][j]+";");
+//					}
+//					writer.println();
+//				}
+//				writer.close();
+//			} catch (FileNotFoundException | UnsupportedEncodingException e) {
+//				e.printStackTrace();
+//			}
+//		}
 	}
 
 }

@@ -81,7 +81,7 @@ public class Fire implements InformationProvider
 				// Decrease wetness
 				if (w.getWetness() > 0)
 				{
-					w.burn(wind.getSpeed() * heat); 
+					w.burn(wind.getSpeed() * heat*0.8); 
 				}
 				// Increase fire or spread fire
 				else
@@ -114,7 +114,7 @@ public class Fire implements InformationProvider
 					} else
 					{
 						//heat up existing fire
-						fire.increaseHeat(wind.getSpeed() * 0.01 * this.heat);
+						fire.increaseHeat(wind.getSpeed() * 0.005 * this.heat);
 					}
 				}
 			}
@@ -138,7 +138,7 @@ public class Fire implements InformationProvider
 			//max heat depends on amount and quality of material
 			double maxHeat = material.burn(heat);
 			//heats up with respect to wind-speed
-			this.heat += (maxHeat - this.heat) * 0.05 * wind.getSpeed();
+			this.heat += (maxHeat - this.heat) * 0.01 * wind.getSpeed();
 		}
 	}
 	

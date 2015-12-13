@@ -16,6 +16,7 @@ public class Statistic
 	private int extinguishedFireCount;
 	private int gridWidth;
 	private int gridHeight;
+	private long[][] covering;
 
 	private static Statistic statistic;
 
@@ -57,8 +58,14 @@ public class Statistic
 	{
 		this.gridWidth = gridWidth;
 		this.gridHeight = gridHeight;
+		this.covering = new long[gridHeight][gridWidth];
 	}
-
+	
+	public void tileObserved(int row, int column)
+	{
+		covering[row][column]++;
+	}
+	
 	public void setTotalWoodHealth(double totalWoodHealth)
 	{
 		this.totalWoodHealth = totalWoodHealth;
@@ -94,7 +101,9 @@ public class Statistic
 	{
 		return getWoodHealthPercent();
 	}
-
+	public long[][] getCovering(){
+		return covering;
+	}
 	public double getWoodHealthPercent()
 	{
 		if (totalWoodHealth == 0)
@@ -142,5 +151,6 @@ public class Statistic
 		totalAgentCount = 0;
 		totalFireCount = 0;
 		extinguishedFireCount = 0;
+		covering = new long[gridHeight][gridWidth];
 	}
 }
