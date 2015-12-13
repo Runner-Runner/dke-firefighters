@@ -11,7 +11,6 @@ import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.space.continuous.ContinuousSpace;
-import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import agent.bdi.Extinguish;
@@ -26,33 +25,17 @@ import agent.communication.request.RequestDismiss;
 import agent.communication.request.RequestOffer;
 import environment.Fire;
 import environment.Fire.FireInformation;
-import environment.Wood;
 
+/**
+ * Implements an forester agent communicating in a range based on the urgency of the request, but incorporates 
+ * mostly local information into the decision how to act.
+ */
 public class LocalOperatingAgent extends ForesterAgent
 {
-	private HashMap<Integer, Pair<ActionRequest, Double>> openRequests;
-	private HashMap<String, ActionRequest> requestedAgents; // agentID ->
-															// request
-	private ActionRequest myOffer;
-
 	public LocalOperatingAgent(ContinuousSpace<Object> space, Grid<Object> grid,
 			double speed, double extinguishRate)
 	{
 		super(space, grid, speed, extinguishRate);
-		this.openRequests = new HashMap<>();
-		this.requestedAgents = new HashMap<String, ActionRequest>();
-		this.myOffer = null;
-	}
-
-	private void changeIntention(Intention newIntention)
-	{
-		for (Entry<Integer, String> entry : currentIntention.getRequester()
-				.entrySet())
-		{
-			communicationTool.sendRequestDismiss(entry.getValue(),
-					new RequestDismiss(entry.getKey(), communicationId));
-		}
-		this.currentIntention = newIntention;
 	}
 
 	@Override
@@ -210,22 +193,10 @@ public class LocalOperatingAgent extends ForesterAgent
 		}
 	}
 
-	private String agentRequested(GridPoint p)
-	{
-		for (Entry<String, ActionRequest> request : requestedAgents.entrySet())
-		{
-			if (request.getValue().getPosition().equals(p))
-			{
-				return request.getKey();
-			}
-		}
-		return null;
-	}
-
 	@Override
 	public void sendAnswers()
 	{
-		// answer inforeqeusts
+		// answer info requests
 		for (InformationRequest infoRequest : infoRequests)
 		{
 			GridPoint asked = infoRequest.getPosition();

@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 
+import main.Pair;
 import main.SimulationManager;
 import agent.bdi.Intention;
 import agent.bdi.Patrol;
@@ -129,6 +131,15 @@ public abstract class ForesterAgent implements InformationProvider,
 	 */
 	protected String communicationId;
 
+	protected HashMap<Integer, Pair<ActionRequest, Double>> openRequests;
+	
+	/**
+	 * agentID -> request
+	 */
+	protected HashMap<String, ActionRequest> requestedAgents;
+	
+	protected ActionRequest myOffer;
+	
 	/**
 	 * number of burning injuries it takes to kill a forester.
 	 */
@@ -160,6 +171,9 @@ public abstract class ForesterAgent implements InformationProvider,
 		this.actionRequests = new HashMap<Integer, ActionRequest>();
 		this.offers = new LinkedList<RequestOffer>();
 		this.rejections = new ArrayList<>();
+		this.openRequests = new HashMap<>();
+		this.requestedAgents = new HashMap<String, ActionRequest>();
+		this.myOffer = null;
 
 		this.communicationTool = new CommunicationTool(this, grid);
 
@@ -473,6 +487,29 @@ public abstract class ForesterAgent implements InformationProvider,
 		return space.getLocation(this);
 	}
 
+	protected void changeIntention(Intention newIntention)
+	{
+		for (Entry<Integer, String> entry : currentIntention.getRequester()
+				.entrySet())
+		{
+			communicationTool.sendRequestDismiss(entry.getValue(),
+					new RequestDismiss(entry.getKey(), communicationId));
+		}
+		this.currentIntention = newIntention;
+	}
+	
+	protected String agentRequested(GridPoint p)
+	{
+		for (Entry<String, ActionRequest> request : requestedAgents.entrySet())
+		{
+			if (request.getValue().getPosition().equals(p))
+			{
+				return request.getKey();
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * @return The fire which is on the forester agent's current tile, or null if no fire is there.
 	 */
