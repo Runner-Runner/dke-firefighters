@@ -1,5 +1,9 @@
 package agent.communication.request;
 
+/**
+ * Provides confirmation to an offering agent. An agent only is accepted to
+ * execute a request if he/she receives a confirmation.
+ */
 public class RequestConfirm
 {
 	private String senderID;

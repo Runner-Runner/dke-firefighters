@@ -14,9 +14,12 @@ import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import statistics.Statistic;
+
+
 /**
- * Fire-Class which represents a fire-cell
- * heats up and spreads with respect to wind direction and speed and the material
+ * Fire-Class which represents a fire-cell heats up and spreads with respect to
+ * wind direction and speed and the material
+ * 
  * @author carsten
  *
  */
@@ -24,16 +27,18 @@ public class Fire implements InformationProvider
 {
 	// number of points to decrease woods lifepoints each iteration
 	private double heat;
-	
+
 	// fire spreads in winds direction
-	private Wind wind; 
+	private Wind wind;
 
 	private boolean beingExtinguished;
 	private ExtinguishMarker extinguishingMarker;
-	
+
 	/**
-	 * create a fire cell 
-	 * @param heat initial heat
+	 * create a fire cell
+	 * 
+	 * @param heat
+	 *            initial heat
 	 * @param wind
 	 */
 	public Fire(double heat, Wind wind)
@@ -48,18 +53,18 @@ public class Fire implements InformationProvider
 	{
 		return this.heat;
 	}
-	
+
 	@ScheduledMethod(start = 1, interval = SimulationManager.GENERAL_SCHEDULE_TICK_RATE, priority = 996)
 	public void step()
 	{
-		//Remove marker if the fire is not getting extinguished anymore
-		if(!beingExtinguished && extinguishingMarker != null)
+		// Remove marker if the fire is not getting extinguished anymore
+		if (!beingExtinguished && extinguishingMarker != null)
 		{
 			SimulationManager.getContext().remove(extinguishingMarker);
 			extinguishingMarker = null;
 		}
 		beingExtinguished = false;
-		
+
 		Grid<Object> grid = SimulationManager.getGrid();
 		GridPoint pt = grid.getLocation(this);
 		// Propagation
@@ -68,7 +73,7 @@ public class Fire implements InformationProvider
 		List<GridCell<Wood>> gridCells = nghCreator.getNeighborhood(true);
 		double windX = Math.cos(this.wind.getWindDirection()) * wind.getSpeed();
 		double windY = Math.sin(this.wind.getWindDirection()) * wind.getSpeed();
-		//effects cells in Moore neighborhood in wind-direction
+		// effects cells in Moore neighborhood in wind-direction
 		for (GridCell<Wood> cell : gridCells)
 		{
 			double xDiff = cell.getPoint().getX() - pt.getX();
@@ -135,15 +140,16 @@ public class Fire implements InformationProvider
 			die();
 		} else
 		{
-			//max heat depends on amount and quality of material
+			// max heat depends on amount and quality of material
 			double maxHeat = material.burn(heat);
 			//heats up with respect to wind-speed
 			this.heat += (maxHeat - this.heat) * 0.01 * wind.getSpeed();
 		}
 	}
-	
+
 	/**
 	 * increase heat - used by fires in moore neighborhood
+	 * 
 	 * @param add
 	 */
 	public void increaseHeat(double add)
@@ -153,6 +159,7 @@ public class Fire implements InformationProvider
 
 	/**
 	 * decrease heat - used by clouds (watercells) and firefighters
+	 * 
 	 * @param sub
 	 * @return The amount of heat that was actually decreased.
 	 */
@@ -170,20 +177,20 @@ public class Fire implements InformationProvider
 				Statistic.getInstance().incrementExtinguishedFireCount();
 			}
 			return sub + this.heat;
-		}
-		else
+		} else
 		{
 			beingExtinguished = true;
-			if(extinguishingMarker == null)
+			if (extinguishingMarker == null)
 			{
-				//Add visual marker
+				// Add visual marker
 				Grid<Object> grid = SimulationManager.getGrid();
 				ContinuousSpace<Object> space = SimulationManager.getSpace();
 				GridPoint pt = SimulationManager.getGrid().getLocation(this);
 				extinguishingMarker = new ExtinguishMarker();
 				context.add(extinguishingMarker);
 				grid.moveTo(extinguishingMarker, pt.getX(), pt.getY());
-				space.moveTo(extinguishingMarker, pt.getX() + 0.5, pt.getY() + 0.5);
+				space.moveTo(extinguishingMarker, pt.getX() + 0.5,
+						pt.getY() + 0.5);
 			}
 		}
 		return sub;
@@ -193,21 +200,22 @@ public class Fire implements InformationProvider
 	{
 		Context<Object> context = SimulationManager.getContext();
 		context.remove(this);
-		if(extinguishingMarker != null)
+		if (extinguishingMarker != null)
 		{
 			context.remove(extinguishingMarker);
 		}
 	}
-	
+
 	@Override
 	public FireInformation getInformation()
 	{
 		return new FireInformation(SimulationManager.getGrid()
 				.getLocation(this), heat);
 	}
-	
+
 	/**
 	 * Class used by agents to keep fireinformation in mind
+	 * 
 	 * @author carsten
 	 *
 	 */
@@ -215,8 +223,10 @@ public class Fire implements InformationProvider
 	{
 
 		private double heat;
+
 		/**
 		 * create fireInformation
+		 * 
 		 * @param position
 		 * @param heat
 		 */
@@ -242,10 +252,10 @@ public class Fire implements InformationProvider
 			return heat;
 		}
 	}
-	
+
 	public static class ExtinguishMarker
 	{
-		//Marker solely for UI to visualize fire that is being 
-		//extinguished differently in the simulation.
+		// Marker solely for UI to visualize fire that is being
+		// extinguished differently in the simulation.
 	}
 }

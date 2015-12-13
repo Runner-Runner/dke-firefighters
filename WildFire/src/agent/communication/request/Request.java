@@ -3,15 +3,18 @@ package agent.communication.request;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.space.grid.GridPoint;
 
+/**
+ * Provides a message type requesting a certain type of help from other agents.
+ */
 public abstract class Request
 {
-	private static int requestCounter = 0;
-	// TODO maybe use enum for importance
+	protected int id;
 	protected int importance;
 	protected GridPoint position;
 	protected String senderID;
-	protected int id;
 	protected double timestamp;
+
+	private static int requestCounter = 0;
 
 	public Request(String senderID, int importance, GridPoint position)
 	{

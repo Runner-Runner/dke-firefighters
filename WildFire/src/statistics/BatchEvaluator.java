@@ -8,6 +8,9 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+/**
+ * Provides a parser for batch runs.
+ */
 public class BatchEvaluator
 {
 	public static final int tickColumn = 5;

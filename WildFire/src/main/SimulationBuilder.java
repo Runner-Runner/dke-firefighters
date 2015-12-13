@@ -18,16 +18,21 @@ import repast.simphony.space.grid.SimpleGridAdder;
 import repast.simphony.space.grid.StrictBorders;
 import statistics.GraveyardStatistic;
 import statistics.Statistic;
-import agent.BDIAgent;
+import agent.LocalOperatingAgent;
 import environment.CloudFactory;
 import environment.FireFactory;
 import environment.ForestFactory;
 import environment.Wind;
 import environment.Wood;
 
+/**
+ * Sets up simulation environment and attributes.
+ * 
+ * @author Daniel
+ *
+ */
 public class SimulationBuilder implements ContextBuilder<Object>
 {
-
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Context build(Context<Object> context)
@@ -131,7 +136,7 @@ public class SimulationBuilder implements ContextBuilder<Object>
 			double extinguish = RandomHelper.nextDoubleFromTo(0.15, 0.2);
 			int x = RandomHelper.nextIntFromTo(0, forestDim - 1);
 			int y = RandomHelper.nextIntFromTo(0, forestDim - 1);
-			BDIAgent agent = new BDIAgent(space, grid, speed, extinguish);
+			LocalOperatingAgent agent = new LocalOperatingAgent(space, grid, speed, extinguish);
 			context.add(agent);
 			space.moveTo(agent, x, y);
 		}

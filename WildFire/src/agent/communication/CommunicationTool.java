@@ -17,9 +17,13 @@ import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.collections.IndexedIterable;
 
+/**
+ * Provides a tool for forester agents to communicate with each other and send
+ * messages or requests to a single other agent or to all agents within a
+ * specified sending range.
+ */
 public class CommunicationTool
 {
-
 	private ForesterAgent sender;
 	private Grid<Object> grid;
 
@@ -40,21 +44,33 @@ public class CommunicationTool
 		this.sendingRange = sendingRange;
 	}
 
+	/**
+	 * Send to all agents within the set sending range.
+	 * 
+	 * @param information
+	 */
 	public void sendInformation(Information information)
 	{
 		sendInformation(getAgentsInRange(sender, sendingRange), information);
 	}
 
+	/**
+	 * Send to one agent.
+	 * 
+	 * @param information
+	 * @param id ID of the recipient.
+	 * @return
+	 */
+	public boolean sendInformation(Information information, String id)
+	{
+		return sendInformation(information, getAgent(id));
+	}
+	
 	public void sendInformation(Information information,
 			List<String> recipientIDs)
 	{
 		List<ForesterAgent> list = getAgents(recipientIDs);
 		sendInformation(list, information);
-	}
-
-	public boolean sendInformation(Information information, String id)
-	{
-		return sendInformation(information, getAgent(id));
 	}
 
 	public void sendRequest(Request request)
@@ -72,6 +88,13 @@ public class CommunicationTool
 		return sendRequest(request, getAgent(id));
 	}
 
+	/**
+	 * Send request offer at request sender.
+	 * 
+	 * @param id
+	 * @param ro
+	 * @return Whether the recipient actually received the offer.
+	 */
 	public boolean sendRequestOffer(String id, RequestOffer ro)
 	{
 		ForesterAgent recipient = getAgent(id);
@@ -88,6 +111,13 @@ public class CommunicationTool
 		}
 	}
 
+	/**
+	 * Send request dismiss at request sender.
+	 * 
+	 * @param id
+	 * @param dismiss
+	 * @return Whether the recipient actually received the dismiss.
+	 */
 	public boolean sendRequestDismiss(String id, RequestDismiss dismiss)
 	{
 		ForesterAgent recipient = getAgent(id);
@@ -104,6 +134,13 @@ public class CommunicationTool
 		}
 	}
 
+	/**
+	 * Send request confirmation at request sender.
+	 * 
+	 * @param id
+	 * @param rc
+	 * @return Whether the recipient actually received the confirmation.
+	 */
 	public boolean sendRequestConfirm(String id, RequestConfirm rc)
 	{
 		ForesterAgent recipient = getAgent(id);
@@ -211,6 +248,11 @@ public class CommunicationTool
 		return SimulationManager.calculateDistance(aP, bP);
 	}
 
+	/**
+	 * @param originAgent
+	 * @param sendingRange
+	 * @return All agents in sending range, with the sender as origin.
+	 */
 	private List<ForesterAgent> getAgentsInRange(ForesterAgent originAgent,
 			Double sendingRange)
 	{
@@ -240,6 +282,11 @@ public class CommunicationTool
 		return recipients;
 	}
 
+	/**
+	 * @param originAgent
+	 * @param sendingRange
+	 * @return All agent information in sending range, with the sender as origin.
+	 */
 	public static List<AgentInformation> getAgentInformationInRange(
 			ForesterAgent originAgent, Integer sendingRange)
 	{

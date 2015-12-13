@@ -11,6 +11,12 @@ import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 
+/**
+ * Provides generally known information and helper methods.
+ * 
+ * @author Daniel
+ *
+ */
 public class SimulationManager
 {
 	public static final int GENERAL_SCHEDULE_TICK_RATE = 1;
@@ -52,6 +58,11 @@ public class SimulationManager
 		SimulationManager.space = s;
 	}
 
+	/**
+	 * @param originAgent
+	 * @param sendingRange
+	 * @return The information of the agent that is closest to the given agent within a certain sending range.
+	 */
 	public static AgentInformation getClosestAgentInformation(
 			ForesterAgent originAgent, Integer sendingRange)
 	{
@@ -156,12 +167,6 @@ public class SimulationManager
 		}
 		return inDirection;
 	}
-
-//	public static ArrayList<GridPoint> tilesInDirection(NdPoint start,
-//			GridPoint end)
-//	{
-//		return tilesInDirection(start, end.getX()-start.getX(),);
-//	}
 
 	public static double calculateDistance(GridPoint start, GridPoint end)
 	{
