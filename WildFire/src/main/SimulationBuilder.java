@@ -42,25 +42,22 @@ public class SimulationBuilder implements ContextBuilder<Object>
 		int forestDim = (Integer) params.getValue("forest_dim");
 
 		double maxWindSpeed = (Double) params.getValue("max_wind_speed");
-
-		int maxCloudDim = (Integer) params.getValue("max_cloud_dim");
-		int minCloudDim = (Integer) params.getValue("min_cloud_dim");
-		double maxRain = (Double) params.getValue("max_rain");
-		double minRain = (Double) params.getValue("min_rain");
-		double maxCloudTank = (Double) params.getValue("max_cloud_tank");
-		double minCloudTank = (Double) params.getValue("min_cloud_tank");
 		double cloudRate = (Double) params.getValue("cloud_rate");
-
-		double maxWoodHealth = (Double) params.getValue("max_wood_health");
-		double minWoodHealth = (Double) params.getValue("min_wood_health");
-		double maxMaterialFactor = (Double) params
-				.getValue("max_material_factor");
-		double minMaterialFactor = (Double) params
-				.getValue("min_material_factor");
-
 		double sparkingFactor = (Double) params.getValue("sparking_factor");
-
 		int numberAgents = (Integer) params.getValue("number_agents");
+
+		int maxCloudDim = 10;
+		int minCloudDim = 3;
+		double maxRain = 0.3;
+		double minRain = 0.1;
+		double maxCloudTank = 6000;
+		double minCloudTank = 4000;
+
+		double maxWoodHealth = 1500;
+		double minWoodHealth = 800;
+		double maxMaterialFactor = 0.2;
+		double minMaterialFactor = 0.05;
+
 
 		SimulationManager.setContext(context);
 
